@@ -211,7 +211,25 @@ object ApiModel_common {
       */
     def _suggest = `/$indexes/$types/_suggest`(indexes, types)
   }
-  //TODO: object version (String*)(String*)
+
+  /**
+    * A nicer constructor for the index resource
+    */
+  object `/$indexes/$types` {
+    /**
+      * Specify the indexes for the index resource
+      * @param indexes The indexes for the index resource
+      * @return An intermediate object which is converted to a index resource via types
+      */
+    def apply(indexes: String*) = new Object {
+      /**
+        * Specify the types for the index resource
+        * @param types The types for the index resource
+        * @return The index resource
+        */
+      def apply(types: String*) = `/$indexes/$types`(indexes, types)
+    }
+  }
 
   /**
     * An intermediate step to search all indexes
@@ -268,10 +286,16 @@ object ApiModel_common {
   }
 
   /**
-    * An intermediate step that can be used to get to other parts of the API mode
+    * Create/configure/delete an entire index
+    * Also an intermediate step that can be used to get to other parts of the API mode
     * @param index The index
     */
-  case class `/$index`(index: String) {
+  case class `/$index`(index: String)
+    extends SimpleReadable with SimpleDeletable with SimpleWritable
+      with EsResource
+  {
+    //TODO: use HEAD to check existence
+
     /**
       * Sub-resources that require the type
       * @param `type` The type
@@ -980,7 +1004,6 @@ object ApiModel_common {
   // 2.8 Explain API
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-explain.html
 
-
   /**
     * Explain the query over the specified indexes and types
     */
@@ -1026,9 +1049,110 @@ object ApiModel_common {
 
   //TODO
 
-  // 2.10 Field stats API
-  // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-field-stats.html
+  // 3 Index operations
 
-  //TODO
+  // 3.1 Opening and closing indexes
+  //https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html
 
+  /**
+    * Open one or more indexes
+    * @param indexes The index or indexes to open
+    */
+  case class `/$indexes/_open`(indexes: String*)
+    extends SimpleWritable
+      with EsResource
+  {
+    //TODO parent
+    //TODO modifier
+    //TODO need POST without data
+  }
+
+  /**
+    * Open all the indexes
+    */
+  case class `/_all/_open`()
+    extends SimpleWritable
+      with EsResource
+  {
+    //TODO parent
+    //TODO need POST without data
+  }
+
+  /**
+    * Close one or more indexes
+    * @param indexes The index or indexes to open
+    */
+  case class `/$indexes/_close`(indexes: String*)
+    extends SimpleWritable
+      with EsResource
+  {
+    //TODO parent
+    //TODO modifier
+    //TODO need POST without data
+  }
+
+  /**
+    * Close all the indexes
+    */
+  case class `/_all/_close`()
+    extends SimpleWritable
+      with EsResource
+  {
+    //TODO parent
+    //TODO need POST without data
+  }
+
+  // 3.2 Mappings
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html
+
+  /**
+    * Get, Update or create the mapping for 1+ indexes and 1 type
+    * @param indexes The index or indexes whose mapping to update
+    * @param type The type whose mapping to update
+    */
+  case class `/$indexes/_mapping/$type`(indexes: Seq[String], `type`: String)
+    extends SimpleReadable with SimpleWritable
+      with EsResource
+  {
+    //TODO parent
+  }
+  //TODO: object version with nicer constructor
+
+  /**
+    * Gets the mapping for 1+ indexes and 1+ types
+    * @param indexes The index or indexes whose mapping to get
+    * @param types The type or type whose mapping to get
+    */
+  case class `/$indexes/_mapping/$types`(indexes: Seq[String], types: Seq[String])
+    extends SimpleReadable
+      with EsResource
+  {
+    //TODO parent
+  }
+  //TODO: object version with nicer constructor (> 1 type)
+
+  /**
+    * Gets the mapping for all indexes and all types
+    */
+  case class `/_all/_mapping`()
+    extends SimpleReadable
+      with EsResource
+  {
+    //TODO parent
+  }
+
+  /**
+    * Gets the mapping for all indexes and 1+ types
+    * @param types The type or type whose mapping to get
+    */
+  case class `/_all/_mapping/$types`(types: String*)
+    extends SimpleReadable
+      with EsResource
+  {
+    //TODO parent
+  }
+
+  // 3.3 Field mappings
+
+  //TODO etc
 }
