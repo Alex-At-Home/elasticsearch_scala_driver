@@ -4,3 +4,4 @@
 /elasticsearch_scala_java_client/target/
 /elasticsearch_scala_js_client/target/
 /.idea/
+/project/target/
