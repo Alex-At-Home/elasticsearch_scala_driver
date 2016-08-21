@@ -43,6 +43,45 @@ object OperationGroups {
     override def read() = FullyModifiableReadDriverOp(self, GET, None, List())
   }
 
+  /**
+    * A readable for a search shards query
+    */
+  trait QuerySearchShardsReadable extends EsReadable[QuerySearchShardsDriverOp] { self: EsResource =>
+    override def read() = QuerySearchShardsDriverOp(self, GET, None, List())
+  }
+
+  /**
+    * A readable for "URI-like" queries
+    */
+  trait QueryUriReadable extends EsReadable[QueryUriDriverOp] { self: EsResource =>
+    override def read() = QueryUriDriverOp(self, GET, None, List())
+  }
+
+  /**
+    * A readable for "URI-like" counting queries
+    */
+  trait QueryCountUriReadable extends EsReadable[QueryCountDriverOp] { self: EsResource =>
+    override def read() = QueryCountDriverOp(self, GET, None, List())
+  }
+  /**
+    * A readable for "URI-like" other query types
+    */
+  trait QueryMiscUriReadable extends EsReadable[QueryMiscDriverOp] { self: EsResource =>
+    override def read() = QueryMiscDriverOp(self, GET, None, List())
+  }
+  /**
+    * A readable for explain "URI-like" queries
+    */
+  trait QueryExplainUriReadable extends EsReadable[QueryExplainDriverOp] { self: EsResource =>
+    override def read() = QueryExplainDriverOp(self, GET, None, List())
+  }
+  /**
+    * A readable for search field stats ("URI-like")
+    */
+  trait SearchFieldStatsReadable extends EsReadable[SearchFieldStatsDriverOp] { self: EsResource =>
+    override def read() = SearchFieldStatsDriverOp(self, GET, None, List())
+  }
+
   // Readable with data
 
   /**
@@ -68,6 +107,36 @@ object OperationGroups {
     */
   trait FullyModifiableWithDataReadable extends WithDataEsReadable[FullyModifiableReadDriverOp] { self: EsResource =>
     override def read(body: String) = FullyModifiableReadDriverOp(self, GET, Some(body), List())
+  }
+  /**
+    * A readable for standard "with data" queries
+    */
+  trait QueryWithDataReadable extends WithDataEsReadable[QueryDriverOp] { self: EsResource =>
+    override def read(body: String) = QueryDriverOp(self, GET, Some(body), List())
+  }
+  /**
+    * A readable for standard "with data" counting queries
+    */
+  trait QueryCountWithDataReadable extends WithDataEsReadable[QueryCountDriverOp] { self: EsResource =>
+    override def read(body: String) = QueryCountDriverOp(self, GET, Some(body), List())
+  }
+  /**
+    * A readable for standard "with data", other query types
+    */
+  trait QueryMiscWithDataReadable extends WithDataEsReadable[QueryMiscDriverOp] { self: EsResource =>
+    override def read(body: String) = QueryMiscDriverOp(self, GET, Some(body), List())
+  }
+  /**
+    * A readable for standard "with data", explain query type
+    */
+  trait QueryExplainWithDataReadable extends WithDataEsReadable[QueryExplainDriverOp] { self: EsResource =>
+    override def read(body: String) = QueryExplainDriverOp(self, GET, Some(body), List())
+  }
+  /**
+    * A readable for search field stats (send the fields in the JSON body)
+    */
+  trait SearchFieldStatsWithDataReadable extends WithDataEsReadable[SearchFieldStatsDriverOp] { self: EsResource =>
+    override def read(body: String) = SearchFieldStatsDriverOp(self, GET, Some(body), List())
   }
 
   // Writable

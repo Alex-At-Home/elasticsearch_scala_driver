@@ -65,6 +65,30 @@ object ApiModel_common {
     def _search = `/_search`()
 
     /**
+      * The multi search resource
+      * @return The multi search resource
+      */
+    def _msearch = `/_msearch`()
+
+    /**
+      * The search-and-count resource
+      * @return The search and count resource
+      */
+    def _count = `/_count`()
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _validate = `/_validate`()
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _explain = `/_explain`()
+
+    /**
       * The search template rendering resource
       * @return The search template rendering resource
       */
@@ -108,6 +132,31 @@ object ApiModel_common {
     def _search = `/$indexes/_search`(Seq(index) ++ otherIndexes:_*)
 
     /**
+      * The multi search resource
+      * @return The multi search resource
+      */
+    def _msearch = `/$indexes/_msearch`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * The search-and-count resource
+      * @return The search and count resource
+      */
+    def _count = `/$indexes/_count`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _validate = `/$indexes/_validate`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _explain = `/$indexes/_explain`(Seq(index) ++ otherIndexes:_*)
+
+
+    /**
       * Identifies the shard to be searched over the specified indexes
       * @return The node/shard information
       */
@@ -131,6 +180,30 @@ object ApiModel_common {
       * @return The search resource
       */
     def _search = `/$indexes/$types/_search`(indexes, types)
+
+    /**
+      * The multi search resource
+      * @return The multi search resource
+      */
+    def _msearch = `/$indexes/$types/_msearch`(indexes, types)
+
+    /**
+      * The search-and-count resource
+      * @return The search and count resource
+      */
+    def _count = `/$indexes/$types/_count`(indexes, types)
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _validate = `/$indexes/$types/_validate`(indexes, types)
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _explain = `/$indexes/$types/_explain`(indexes, types)
 
     /**
       * Suggests search terms over the specified indexes and types
@@ -162,6 +235,30 @@ object ApiModel_common {
       * @return The search resource
       */
     def _search = `/_all/$types/_search`(types)
+
+    /**
+      * The multi search resource
+      * @return The multi search resource
+      */
+    def _msearch = `/_all/$types/_msearch`(types)
+
+    /**
+      * The search-and-count resource
+      * @return The search and count resource
+      */
+    def _count = `/_all/$types/_count`(types)
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _validate = `/_all/$types/_validate`(types)
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _explain = `/_all/$types/_explain`(types)
 
     /**
       * Suggests search terms over the specified types
@@ -211,6 +308,30 @@ object ApiModel_common {
       * @return The search resource
       */
     def _search = `/$indexes/_search`(index)
+
+    /**
+      * The multi search resource
+      * @return The multi search resource
+      */
+    def _msearch = `/$indexes/_msearch`(index)
+
+    /**
+      * The search-and-count resource
+      * @return The search and count resource
+      */
+    def _count = `/$indexes/_count`(index)
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _validate = `/$indexes/_count`(index)
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _explain = `/$indexes/_explain`(index)
 
     /**
       * The _all index wildcard of the search resource
@@ -294,6 +415,29 @@ object ApiModel_common {
       */
     def _search = `/$indexes/$types/_search`(List(index), List(`type`))
 
+    /**
+      * The multi search resource
+      * @return The multi search resource
+      */
+    def _msearch = `/$indexes/$types/_msearch`(List(index), List(`type`))
+
+    /**
+      * The search-and-count resource
+      * @return The search and count resource
+      */
+    def _count = `/$indexes/$types/_count`(List(index), List(`type`))
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _validate = `/$indexes/$types/_validate`(List(index), List(`type`))
+
+    /**
+      * The query validation resource
+      * @return The query validation resource
+      */
+    def _explain = `/$indexes/$types/_explain`(List(index), List(`type`))
     /**
       * The search suggest resource
       * @return The search suggest resource
@@ -534,11 +678,13 @@ object ApiModel_common {
     * resource
     */
   case class `/_search`()
-    extends SimpleWithDataReadable
+    extends QueryUriReadable with QueryWithDataReadable
       with EsResource
   {
-    //TODO modifiers, list here: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html
-
+    /**
+      * An intermediate result to use templates to search
+      * @return Templated search resource
+      */
     def template = `/_search/template`()
   }
 
@@ -548,10 +694,9 @@ object ApiModel_common {
     * @param types The types over which to search
     */
   case class `/_all/$types/_search`(types: String*)
-    extends SimpleWithDataReadable
+    extends QueryUriReadable with QueryWithDataReadable
       with EsResource
   {
-    //TODO modifiers, list here: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html
   }
 
   /**
@@ -560,25 +705,21 @@ object ApiModel_common {
     * @param indexes The indexes over which to search
     */
   case class `/$indexes/_search`(indexes: String*)
-    extends SimpleWithDataReadable
+    extends QueryUriReadable with QueryWithDataReadable
       with EsResource
   {
-    //TODO modifiers, list here: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html
   }
 
   /**
-    * Search the specified indexes and =types, based on the query object written to the
+    * Search the specified indexes and types, based on the query object written to the
     * resource
     * @param indexes The indexes over which to search
     * @param types The types over which to search
     */
   case class `/$indexes/$types/_search`(indexes: Seq[String], types: Seq[String])
-    extends SimpleWithDataReadable
+    extends QueryUriReadable with QueryWithDataReadable
       with EsResource
   {
-    //TODO modifiers:
-    // no data version: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html
-    // with data version: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#_parameters_4
   }
 
   // 2.2] Search Templates
@@ -624,10 +765,9 @@ object ApiModel_common {
     * @param indexes The index or indexes to query
     */
   case class `/$indexes/_search_shards`(indexes: String*)
-    extends SimpleReadable
+    extends QuerySearchShardsReadable
     with EsResource
   {
-    //TODO modifiers
   }
 
   // 2.4 Suggesters
@@ -638,7 +778,7 @@ object ApiModel_common {
     * provided text by using a suggester.
     */
   case class `/_suggest`()
-    extends SimpleWithDataReadable
+    extends QueryMiscUriReadable with QueryMiscWithDataReadable
       with EsResource
   {
   }
@@ -649,7 +789,7 @@ object ApiModel_common {
     * @param indexes The indexes over which to query
     */
   case class `/$indexes/_suggest`(indexes: String*)
-    extends SimpleWithDataReadable
+    extends QueryMiscUriReadable with QueryMiscWithDataReadable
       with EsResource
   {
   }
@@ -660,7 +800,7 @@ object ApiModel_common {
     * @param types The types over which to query
     */
   case class `/_all/$types/_suggest`(types: String*)
-    extends SimpleWithDataReadable
+    extends QueryMiscUriReadable with QueryMiscWithDataReadable
       with EsResource
   {
   }
@@ -672,7 +812,7 @@ object ApiModel_common {
     * @param types The types over which to query
     */
   case class `/$indexes/$types/_suggest`(indexes: Seq[String], types: Seq[String])
-    extends SimpleWithDataReadable
+    extends QueryMiscUriReadable with QueryMiscWithDataReadable
       with EsResource
   {
   }
@@ -699,27 +839,187 @@ object ApiModel_common {
   // 2.5 Multi search
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html
 
-  //TODO: for each _search element also have an _msearch
-  //TODO: this should have a nice typed API
+  /**
+    * Search all indexes and all types, based on the query objects written to the
+    * resource
+    */
+  case class `/_msearch`()
+    extends SimpleWithDataReadable
+      with EsResource
+  {
+    //TODO: typed API for this
+  }
+
+  /**
+    * Search all indexes and the specified types, based on the query objects written to the
+    * resource
+    * @param types The types over which to search
+    */
+  case class `/_all/$types/_msearch`(types: String*)
+    extends SimpleWithDataReadable
+      with EsResource
+  {
+    //TODO: typed API for this
+  }
+
+  /**
+    * Search the specified indexes and all types, based on the query objects written to the
+    * resource
+    * @param indexes The indexes over which to search
+    */
+  case class `/$indexes/_msearch`(indexes: String*)
+    extends SimpleWithDataReadable
+      with EsResource
+  {
+    //TODO: typed API for this
+  }
+
+  /**
+    * Search the specified indexes and types, based on the query objects written to the
+    * resource
+    * @param indexes The indexes over which to search
+    * @param types The types over which to search
+    */
+  case class `/$indexes/$types/_msearch`(indexes: Seq[String], types: Seq[String])
+    extends SimpleWithDataReadable
+      with EsResource
+  {
+    //TODO: typed API for this
+  }
 
   // 2.6 Count API
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-count.html
 
-  //TODO for each _search element also have a _count
-  //has (mostly?) the same modifiers as the URI version of _search
+  /**
+    * Count all indexes and all types, based on the query object written to the
+    * resource
+    */
+  case class `/_count`()
+    extends QueryCountUriReadable with QueryCountWithDataReadable
+      with EsResource
+  {
+  }
+
+  /**
+    * Count all indexes and the specified types, based on the query object written to the
+    * resource
+    * @param types The types over which to search
+    */
+  case class `/_all/$types/_count`(types: String*)
+    extends QueryCountUriReadable with QueryCountWithDataReadable
+      with EsResource
+  {
+  }
+
+  /**
+    * Count the specified indexes and all types, based on the query object written to the
+    * resource
+    * @param indexes The indexes over which to search
+    */
+  case class `/$indexes/_count`(indexes: String*)
+    extends QueryCountUriReadable with QueryCountWithDataReadable
+      with EsResource
+  {
+  }
+
+  /**
+    * Count the specified indexes and types, based on the query object written to the
+    * resource
+    * @param indexes The indexes over which to search
+    * @param types The types over which to search
+    */
+  case class `/$indexes/$types/_count`(indexes: Seq[String], types: Seq[String])
+    extends QueryCountUriReadable with QueryCountWithDataReadable
+      with EsResource
+  {
+  }
 
   // 2.7 Validate API
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-validate.html
 
-  //TODO for each _search element also have a _validate
-  //has (mostly?) the same modifiers as the URI version of _search
-  // (with data version no params)
+  /**
+    * Validate the query over the specified indexes and types
+    */
+  case class `/_validate`()
+    extends QueryMiscUriReadable with QueryCountWithDataReadable
+      with EsResource
+  {
+  }
+
+  /**
+    * Validate the query over the specified indexes and types
+    * @param types The types over which to search
+    */
+  case class `/_all/$types/_validate`(types: String*)
+    extends QueryMiscUriReadable with QueryCountWithDataReadable
+      with EsResource
+  {
+  }
+
+  /**
+    * Validate the query over the specified indexes and types
+    * @param indexes The indexes over which to search
+    */
+  case class `/$indexes/_validate`(indexes: String*)
+    extends QueryMiscUriReadable with QueryCountWithDataReadable
+      with EsResource
+  {
+  }
+
+  /**
+    * Validate the query over the specified indexes and types
+    * @param indexes The indexes over which to search
+    * @param types The types over which to search
+    */
+  case class `/$indexes/$types/_validate`(indexes: Seq[String], types: Seq[String])
+    extends QueryMiscUriReadable with QueryCountWithDataReadable
+      with EsResource
+  {
+  }
 
   // 2.8 Explain API
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-explain.html
 
-  //TODO for each _search element also have a _explain
-  //TODO modifiers
+
+  /**
+    * Explain the query over the specified indexes and types
+    */
+  case class `/_explain`()
+    extends QueryExplainUriReadable with QueryExplainWithDataReadable
+      with EsResource
+  {
+  }
+
+  /**
+    * Explain the query over the specified indexes and types
+    * @param types The types over which to search
+    */
+  case class `/_all/$types/_explain`(types: String*)
+    extends QueryExplainUriReadable with QueryExplainWithDataReadable
+      with EsResource
+  {
+  }
+
+  /**
+    * Explain the query over the specified indexes and types
+    * @param indexes The indexes over which to search
+    */
+  case class `/$indexes/_explain`(indexes: String*)
+    extends QueryExplainUriReadable with QueryExplainWithDataReadable
+      with EsResource
+  {
+  }
+
+  /**
+    * Explain the query over the specified indexes and types
+    * @param indexes The indexes over which to search
+    * @param types The types over which to search
+    */
+  case class `/$indexes/$types/_explain`(indexes: Seq[String], types: Seq[String])
+    extends QueryExplainUriReadable with QueryExplainWithDataReadable
+      with EsResource
+  {
+  }
 
   // 2.9 Percolation API
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-percolate.html
@@ -730,17 +1030,5 @@ object ApiModel_common {
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-field-stats.html
 
   //TODO
-
-  ///////////////////////
-
-  // Resource operations
-  //TODO: typed reads
-//  trait TypedReadable[T] extends Readable { self =>
-//    override def read() = new TypedDriverOperation(None, op, self)
-//  }
-//  trait Readable { self =>
-//    val op: String = GET
-//    def read() = new DriverOperation(None, op, self)
-//  }
 
 }

@@ -140,4 +140,17 @@ object ElasticsearchBase {
       */
     def location: String = "" //TODO
   }
+
+
+  // Resource operations
+  //TODO: typed reads
+  //  trait TypedReadable[T] extends Readable { self =>
+  //    override def read() = new TypedDriverOperation(None, op, self)
+  //  }
+  //  trait Readable { self =>
+  //    val op: String = GET
+  //    def read() = new DriverOperation(None, op, self)
+  //  }
+
+
 }
