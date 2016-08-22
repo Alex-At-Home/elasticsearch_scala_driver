@@ -99,6 +99,12 @@ object ApiModel_common {
       * @return The search suggest resource
       */
     def _suggest = `/_suggest`()
+
+    /**
+      * A resource to configure a mapping across all indexes that contain it
+      * @return A resource to configure a mapping across all indexes that contain it
+      */
+    def _mapping = `/_mapping`()
   }
 
   /**
@@ -167,6 +173,24 @@ object ApiModel_common {
       * @return The suggest resource
       */
     def _suggest = `/$indexes/_suggest`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * A resource to open these indexes
+      * @return A resource to open this index
+      */
+    def _open = `/$indexes/_open`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * A resource to close these indexes
+      * @return A resource to close this index
+      */
+    def _close = `/$indexes/_close`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * A resource to get the mappings for these indexes
+      * @return A resource to get the mappings for these indexes
+      */
+    def _mapping = `/$indexes/_mapping`(Seq(index) ++ otherIndexes:_*)
   }
 
   /**
@@ -283,6 +307,24 @@ object ApiModel_common {
       * @return The suggest resource
       */
     def _suggest = `/_all/$types/_suggest`(types)
+
+    /**
+      * A resource to open all indexes in the cluster
+      * @return A resource to open all indexes in the cluster
+      */
+    def _open = `/_all/_open`()
+
+    /**
+      * A resource to close all open indexes in the cluster
+      * @return A resource to close all open indexes in the cluster
+      */
+    def _close = `/_all/_close`()
+
+    /**
+      * A resource to configure a mapping across all indexes that contain it
+      * @return A resource to configure a mapping across all indexes that contain it
+      */
+    def _mapping = `/_all/_mapping`()
   }
 
   /**
@@ -291,11 +333,9 @@ object ApiModel_common {
     * @param index The index
     */
   case class `/$index`(index: String)
-    extends SimpleReadable with SimpleDeletable with SimpleWritable
+    extends SimpleReadable with SimpleDeletable with SimpleWritable with SimpleCheckable
       with EsResource
   {
-    //TODO: use HEAD to check existence
-
     /**
       * Sub-resources that require the type
       * @param `type` The type
@@ -374,6 +414,24 @@ object ApiModel_common {
       * @return The search suggest resource
       */
     def _suggest = `/$indexes/_suggest`(index)
+
+    /**
+      * A resource to open this index
+      * @return A resource to open this index
+      */
+    def _open = `/$indexes/_open`(index)
+
+    /**
+      * A resource to close this index
+      * @return A resource to close this index
+      */
+    def _close = `/$indexes/_close`(index)
+
+    /**
+      * A resource to configure the mappings for this index
+      * @return A resource to configure the mappings for this index
+      */
+    def _mapping = `/$indexes/_mapping`(index)
   }
 
   /**
@@ -479,13 +537,11 @@ object ApiModel_common {
     * @param id The id
     */
   case class `/$index/$type/$id`(index: String, `type`: String, id: String)
-    extends FullyModifiableReadable
+    extends FullyModifiableReadable with SimpleCheckable
       with FullyModifiableWritable
       with FullyModifiableDeletable
       with EsResource
   {
-    //TODO: HEAD to confirm existence
-
     /**
       * The _update resource
       * @return The _update resource
@@ -1047,7 +1103,7 @@ object ApiModel_common {
   // 2.9 Percolation API
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-percolate.html
 
-  //TODO
+  //TODO add this set of operations later on
 
   // 3 Index operations
 
@@ -1059,23 +1115,18 @@ object ApiModel_common {
     * @param indexes The index or indexes to open
     */
   case class `/$indexes/_open`(indexes: String*)
-    extends SimpleWritable
+    extends OpenCloseIndexesNoDataWritable
       with EsResource
   {
-    //TODO parent
-    //TODO modifier
-    //TODO need POST without data
   }
 
   /**
     * Open all the indexes
     */
   case class `/_all/_open`()
-    extends SimpleWritable
+    extends SimpleNoDataWritable
       with EsResource
   {
-    //TODO parent
-    //TODO need POST without data
   }
 
   /**
@@ -1083,40 +1134,38 @@ object ApiModel_common {
     * @param indexes The index or indexes to open
     */
   case class `/$indexes/_close`(indexes: String*)
-    extends SimpleWritable
+    extends OpenCloseIndexesNoDataWritable
       with EsResource
   {
-    //TODO parent
-    //TODO modifier
-    //TODO need POST without data
   }
 
   /**
     * Close all the indexes
     */
   case class `/_all/_close`()
-    extends SimpleWritable
+    extends SimpleNoDataWritable
       with EsResource
   {
-    //TODO parent
-    //TODO need POST without data
   }
 
   // 3.2 Mappings
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html
 
   /**
-    * Get, Update or create the mapping for 1+ indexes and 1 type
-    * @param indexes The index or indexes whose mapping to update
-    * @param type The type whose mapping to update
+    * Get the mapping for 1+ indexes and all types
+    * @param indexes The index or indexes whose mapping to get
     */
-  case class `/$indexes/_mapping/$type`(indexes: Seq[String], `type`: String)
-    extends SimpleReadable with SimpleWritable
+  case class `/$indexes/_mapping`(indexes: String*)
+    extends SimpleReadable
       with EsResource
   {
-    //TODO parent
+    /**
+      * Returns the mapping control resource for specified indexes and types
+      * @param types The types over which to restrict the mapping operations
+      * @return Returns the mapping control resource for specified indexes and types
+      */
+    def $(types: String*) = `/$indexes/_mapping/$types`(indexes, types)
   }
-  //TODO: object version with nicer constructor
 
   /**
     * Gets the mapping for 1+ indexes and 1+ types
@@ -1127,10 +1176,50 @@ object ApiModel_common {
     extends SimpleReadable
       with EsResource
   {
-    //TODO parent
   }
-  //TODO: object version with nicer constructor (> 1 type)
+  /**
+    * A nicer constructor for the mapping resource with indexes and types
+    */
+  object `/$indexes/_mapping/$types` {
+    /**
+      * Specify the indexes for the _mapping  resource
+      * @param indexes The indexes for the _mapping resource
+      * @return An intermediate object which is converted to a _mapping resource via types
+      */
+    def apply(indexes: String*) = new Object {
+      /**
+        * Specify the types for the _mapping resource
+        * @param types The types for the _mapping resource
+        * @return The _mapping resource
+        */
+      def apply(types: String*) = `/$indexes/_mapping/$types`(indexes, types)
+    }
+  }
 
+  /**
+    * Gets the mapping for all indexes and all types
+    */
+  case class `/_mapping`()
+    extends SimpleReadable
+      with EsResource
+  {
+    /**
+      * Returns the mapping control resource for all indexes and specified types
+      * @param types The types over which to restrict the mapping operations
+      * @return Returns the mapping control resource for all indexes and specified types
+      */
+    def $(types: String*) = `/_mapping/$types`(types)
+  }
+
+  /**
+    * Gets the mapping for all indexes and 1+ types
+    * @param types The type or type whose mapping to get
+    */
+  case class `/_mapping/$types`(types: String*)
+    extends SimpleReadable
+      with EsResource
+  {
+  }
   /**
     * Gets the mapping for all indexes and all types
     */
@@ -1138,7 +1227,12 @@ object ApiModel_common {
     extends SimpleReadable
       with EsResource
   {
-    //TODO parent
+    /**
+      * Returns the mapping control resource for all indexes and specified types
+      * @param types The types over which to restrict the mapping operations
+      * @return Returns the mapping control resource for all indexes and specified types
+      */
+    def $(types: String*) = `/_all/_mapping/$types`(types)
   }
 
   /**
@@ -1149,7 +1243,6 @@ object ApiModel_common {
     extends SimpleReadable
       with EsResource
   {
-    //TODO parent
   }
 
   // 3.3 Field mappings

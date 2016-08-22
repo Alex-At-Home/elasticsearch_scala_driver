@@ -15,12 +15,6 @@ object OperationGroups {
   /**
     * A readable that only allows the `?pretty` modifier
     */
-  trait RawReadable extends EsReadable[RawDriverOp] { self: EsResource =>
-    override def read() = RawDriverOp(self, GET, None, List())
-  }
-  /**
-    * A readable that only allows the `?pretty` modifier
-    */
   trait SimpleReadable extends EsReadable[PrettyDriverOp] { self: EsResource =>
     override def read() = PrettyDriverOp(self, GET, None, List())
   }
@@ -85,12 +79,6 @@ object OperationGroups {
   // Readable with data
 
   /**
-    * A readable with data that only allows raw modifiers
-    */
-  trait RawWithDataReadable extends WithDataEsReadable[RawDriverOp] { self: EsResource =>
-    override def read(body: String) = RawDriverOp(self, GET, Some(body), List())
-  }
-  /**
     * A readable with data that only allows the `?pretty` modifier
     */
   trait SimpleWithDataReadable extends WithDataEsReadable[PrettyDriverOp] { self: EsResource =>
@@ -142,12 +130,6 @@ object OperationGroups {
   // Writable
 
   /**
-    * A writable that only allows generic modifiers
-    */
-  trait RawWritable extends EsWritable[RawDriverOp] { self: EsResource =>
-    override def write(body: String) = RawDriverOp(self, PUT, Some(body), List())
-  }
-  /**
     * A writable that only allows the `?pretty` modifier
     */
   trait SimpleWritable extends EsWritable[PrettyDriverOp] { self: EsResource =>
@@ -166,18 +148,24 @@ object OperationGroups {
     override def write(body: String) = FullyModifiableReadDriverOp(self, PUT, Some(body), List())
   }
 
-  // Deletable
+  // Writable with no data
 
   /**
-    * A deletable that only allows raw modifiers
+    * A writable with no data and only the ?pretty modifiers
     */
-  trait RawDeletable extends EsDeletable[RawDriverOp] { self: EsResource =>
-    /**
-      * Creates a driver operation
-      * @return The driver opertion
-      */
-    override def delete() = RawDriverOp(self, DELETE, None, List())
+  trait SimpleNoDataWritable { self: EsResource =>
+    def write() = PrettyDriverOp(self, POST, None, List())
   }
+
+  /**
+    * A writable with no data and only the ?pretty modifiers
+    */
+  trait OpenCloseIndexesNoDataWritable { self: EsResource =>
+    def write() = OpenCloseIndexesDriverOp(self, POST, None, List())
+  }
+
+  // Deletable
+
   /**
     * A deletable that only allows the `?pretty` modifier
     */
@@ -198,12 +186,6 @@ object OperationGroups {
   // Deletable with data
 
   /**
-    * A deletable with data that only allows generic modifiers
-    */
-  trait RawWithDataDeletable extends WithDataEsDeletable[RawDriverOp] { self: EsResource =>
-    override def delete(body: String) = RawDriverOp(self, DELETE, Some(body), List())
-  }
-  /**
     * A deletable with data that only allows the `?pretty` modifier
     */
   trait SimpleWithDataDeletable extends WithDataEsDeletable[PrettyDriverOp] { self: EsResource =>
@@ -223,11 +205,17 @@ object OperationGroups {
     * @param rawResource The URL (minus the leading /)
     */
   class RawOperatableResource(rawResource: String)
-    extends RawReadable with RawWithDataReadable
-      with RawWritable
-      with RawDeletable with RawWithDataDeletable
-  with EsResource {
+    extends SimpleReadable with SimpleWithDataReadable
+      with SimpleWritable with SimpleNoDataWritable
+      with SimpleDeletable with SimpleWithDataDeletable
+    with EsResource {
     override def location = rawResource
   }
 
+  /**
+    * Allows a simple check (HEAD) on a resource
+    */
+  trait SimpleCheckable { self: EsResource =>
+    def write() = PrettyDriverOp(self, HEAD, None, List())
+  }
 }

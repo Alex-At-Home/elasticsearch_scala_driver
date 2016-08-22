@@ -9,21 +9,7 @@ import org.elastic.elasticsearch.driver.scala.Modifiers._
 object ModifierGroups {
 
   /**
-    * A driver op with no typed modifiers
-    * @param resource The ES resource
-    * @param op The operation to apply
-    * @param body The body to apply, for operations with data
-    * @param mods The current list of modifiers to apply to the operation
-    */
-  case class RawDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String])
-    extends BaseDriverOp
-  {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
-  }
-
-  /**
-    * TODO
+    * A driver op with no typed modifiers other than `?pretty` (which applies to all JSON calls)
     * @param resource
     * @param op
     * @param body
@@ -239,4 +225,21 @@ object ModifierGroups {
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
+
+  /**
+    * TODO
+    * @param resource
+    * @param op
+    * @param body
+    * @param mods
+    */
+  case class OpenCloseIndexesDriverOp
+  (resource: EsResource, op: String, body: Option[String], mods: List[String])
+    extends BaseDriverOp
+      with IgnoreUnavailable
+  {
+    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+  }
+
+
 }

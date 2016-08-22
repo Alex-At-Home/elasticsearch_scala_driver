@@ -177,12 +177,14 @@ object Modifiers {
   }
 
   /**
-    * If set to true will cause format based failures (like providing text to a numeric field) to be ignored. Defaults to false.
+    * If set to true will cause format based failures (like providing text to a numeric field) to be ignored.
+    * Defaults to false.
     */
   trait Lenient extends Modifier { self: BaseDriverOp =>
     /**
-      * If set to true will cause format based failures (like providing text to a numeric field) to be ignored. Defaults to false.
-      * @param b If set to true will cause format based failures (like providing text to a numeric field) to be ignored. Defaults to false.
+      * If set to true will cause format based failures (like providing text to a numeric field) to be ignored.
+      * Defaults to false.
+      * @param b If set to true will cause format based failures (like providing text to a numeric field) to be ignored.
       */
     def `?lenient=`(b: Boolean) = self.withModifier(s"?lenient=$b")
   }
@@ -298,9 +300,9 @@ object Modifiers {
     */
   trait TerminateAfter extends Modifier { self: BaseDriverOp =>
     /**
-      * The maximum number of documents to collect for each shard, upon reaching which the query execution will terminate
-      * early. If set, the response will have a boolean field terminated_early to indicate whether the query execution
-      * has actually `terminated_early`. Defaults to no terminate_after.
+      * The maximum number of documents to collect for each shard, upon reaching which the query execution will
+      * terminate early. If set, the response will have a boolean field terminated_early to indicate whether the query
+      * execution has actually `terminated_early`. Defaults to no terminate_after.
       * @param n The maximum number of documents to collect for each shard
       */
     def `?terminate_after=`(n: Integer) = self.withModifier(s"?terminate_after=$n")
@@ -350,6 +352,17 @@ object Modifiers {
       * @param b Whether the cluster state is read locally
       */
     def `?local=`(b: Boolean) = self.withModifier(s"?local=$b")
+  }
+
+  /**
+    * TODO
+    */
+  trait IgnoreUnavailable extends Modifier { self: BaseDriverOp =>
+    /**
+      * TODO
+      * @param b Whether to error if any of the specified clusters are not available
+      */
+    def `?ignore_unavailable=`(b: Boolean) = self.withModifier(s"?ignore_unavailable=$b")
   }
 
 }
