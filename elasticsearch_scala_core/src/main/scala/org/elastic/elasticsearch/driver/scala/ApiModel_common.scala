@@ -8,7 +8,9 @@ import org.elastic.elasticsearch.driver.scala.ElasticsearchBase._
   */
 object ApiModel_common {
 
-  // 0] Intermediate steps
+  // 0 Intermediate steps
+
+  // 0.0 Root, indexes, and types (common across much of the resource set)
 
   /**
     * The root node of the Elasticsearch resource tree
@@ -16,11 +18,12 @@ object ApiModel_common {
     * is also a starting point for navigating the hierarchy
     */
   case class `/`()
-    extends SimpleWritable
+    extends SimpleReadable
     with EsResource
   {
     /**
       * Sub-resources that require the index
+      *
       * @param `index` The index
       * @return An intermediate or final step of the API model
       */
@@ -28,6 +31,7 @@ object ApiModel_common {
 
     /**
       * Sub-resources that support multiple (>1) indexes
+      *
       * @param index The first index
       * @param otherIndexes Subsequent indexes
       * @return An intermediate or final step of the API model
@@ -35,73 +39,92 @@ object ApiModel_common {
     def $(index: String, otherIndexes: String) = `/$indexes`(index, otherIndexes)
 
     /**
+      * The _all index wildcard of the search resource
+      *
+      * @return The search resource
+      */
+    def _all = `/_all`()
+
+    /**
       * The multi-get resource
+      *
       * @return The multi-get resource
       */
     def _mget = `/_mget`()
 
     /**
       * The bulk resource
+      *
       * @return The bulk resource
       */
     def _bulk = `/_bulk`()
 
     /**
       * The reindex resource
+      *
       * @return The reindex resource
       */
     def _reindex = `/_reindex`()
 
     /**
       * The multi term vectors resource
+      *
       * @return The multi term vectors resource
       */
     def _mtermvectors = `/_mtermvectors`()
 
     /**
       * The search resource
+      *
       * @return The search resource
       */
     def _search = `/_search`()
 
     /**
       * The multi search resource
+      *
       * @return The multi search resource
       */
     def _msearch = `/_msearch`()
 
     /**
       * The search-and-count resource
+      *
       * @return The search and count resource
       */
     def _count = `/_count`()
 
     /**
       * The query validation resource
+      *
       * @return The query validation resource
       */
     def _validate = `/_validate`()
 
     /**
       * The query validation resource
+      *
       * @return The query validation resource
       */
     def _explain = `/_explain`()
 
     /**
       * The search template rendering resource
+      *
       * @return The search template rendering resource
       */
     def _render = `/_render`()
 
     /**
       * The search suggest resource
+      *
       * @return The search suggest resource
       */
     def _suggest = `/_suggest`()
 
     /**
       * A resource to configure a mapping across all indexes that contain it
+      *
       * @return A resource to configure a mapping across all indexes that contain it
       */
     def _mapping = `/_mapping`()
@@ -113,6 +136,7 @@ object ApiModel_common {
   object `/` {
     /**
       * Builds
+      *
       * @param resource The resource on which to operate (minus the leading /)
       * @return The operatable resource
       */
@@ -121,6 +145,7 @@ object ApiModel_common {
 
   /**
     * An intermediate step to resources that support multiple (>1) indexes
+    *
     * @param index The first index
     * @param otherIndexes Subsequent indexes
     */
@@ -128,6 +153,7 @@ object ApiModel_common {
 
     /**
       * An intermediate step to resources that support multiple (>1) indexes and (>0) types
+      *
       * @param types The types
       */
     def $(types: String*) = `/$indexes/$types`(Seq(index) ++ otherIndexes, types)
@@ -139,98 +165,268 @@ object ApiModel_common {
 
     /**
       * The multi search resource
+      *
       * @return The multi search resource
       */
     def _msearch = `/$indexes/_msearch`(Seq(index) ++ otherIndexes:_*)
 
     /**
       * The search-and-count resource
+      *
       * @return The search and count resource
       */
     def _count = `/$indexes/_count`(Seq(index) ++ otherIndexes:_*)
 
     /**
       * The query validation resource
+      *
       * @return The query validation resource
       */
     def _validate = `/$indexes/_validate`(Seq(index) ++ otherIndexes:_*)
 
     /**
-      * The query validation resource
-      * @return The query validation resource
+      * The query explanation resource
+      *
+      * @return The query explanation resource
       */
     def _explain = `/$indexes/_explain`(Seq(index) ++ otherIndexes:_*)
 
 
     /**
       * Identifies the shard to be searched over the specified indexes
+      *
       * @return The node/shard information
       */
     def _search_shards = `/$indexes/_search_shards`(Seq(index) ++ otherIndexes:_*)
 
     /**
       * Suggests search terms over the specified indexes
+      *
       * @return The suggest resource
       */
     def _suggest = `/$indexes/_suggest`(Seq(index) ++ otherIndexes:_*)
 
     /**
       * A resource to open these indexes
+      *
       * @return A resource to open this index
       */
     def _open = `/$indexes/_open`(Seq(index) ++ otherIndexes:_*)
 
     /**
       * A resource to close these indexes
+      *
       * @return A resource to close this index
       */
     def _close = `/$indexes/_close`(Seq(index) ++ otherIndexes:_*)
 
     /**
       * A resource to get the mappings for these indexes
+      *
       * @return A resource to get the mappings for these indexes
       */
     def _mapping = `/$indexes/_mapping`(Seq(index) ++ otherIndexes:_*)
   }
 
   /**
+    * Create/configure/delete an entire index
+    * Also an intermediate step that can be used to get to other parts of the API mode
+    *
+    * @param index The index
+    */
+  case class `/$index`(index: String)
+    extends SimpleReadable with SimpleDeletable with SimpleWritable with SimpleCheckable
+      with EsResource
+  {
+    /**
+      * Sub-resources that require the type
+      *
+      * @param `type` The type
+      * @return An intermediate or final step of the API model
+      */
+    def $(`type`: String) = `/$index/$type`(index, `type`)
+
+    /**
+      * The multi-get resource
+      *
+      * @return The multi-get resource
+      */
+    def _mget = `/$index/_mget`(index)
+
+    /**
+      * The bulk resource
+      *
+      * @return The bulk resource
+      */
+    def _bulk = `/$index/_bulk`(index)
+
+    /**
+      * The _update_by_query resource
+      *
+      * @return The bulk resource
+      */
+    def _update_by_query = `/$index/_update_by_query`(index)
+
+    /**
+      * The multi term vectors resource
+      *
+      * @return The multi term vectors resource
+      */
+    def _mtermvectors = `/$index/_mtermvectors`(index)
+
+    /**
+      * The search resource
+      *
+      * @return The search resource
+      */
+    def _search = `/$indexes/_search`(index)
+
+    /**
+      * The multi search resource
+      *
+      * @return The multi search resource
+      */
+    def _msearch = `/$indexes/_msearch`(index)
+
+    /**
+      * The search-and-count resource
+      *
+      * @return The search and count resource
+      */
+    def _count = `/$indexes/_count`(index)
+
+    /**
+      * The query validation resource
+      *
+      * @return The query validation resource
+      */
+    def _validate = `/$indexes/_validate`(index)
+
+    /**
+      * The query explanation resource
+      *
+      * @return The query explanation resource
+      */
+    def _explain = `/$indexes/_explain`(index)
+
+    /**
+      * Identifies the shard to be searched over the specified index
+      *
+      * @return The node/shard information
+      */
+    def _search_shards = `/$indexes/_search_shards`(index)
+
+    /**
+      * The search suggest resource
+      *
+      * @return The search suggest resource
+      */
+    def _suggest = `/$indexes/_suggest`(index)
+
+    /**
+      * A resource to open this index
+      *
+      * @return A resource to open this index
+      */
+    def _open = `/$indexes/_open`(index)
+
+    /**
+      * A resource to close this index
+      *
+      * @return A resource to close this index
+      */
+    def _close = `/$indexes/_close`(index)
+
+    /**
+      * A resource to configure the mappings for this index
+      *
+      * @return A resource to configure the mappings for this index
+      */
+    def _mapping = `/$indexes/_mapping`(index)
+  }
+
+  /**
+    * An intermediate step to search all indexes
+    */
+  case class `/_all`() {
+    /**
+      * Restricts the search to a list of types
+      *
+      * @param types The list of types
+      * @return An intermediate search step
+      */
+    def $(types: String*) = `/_all/$types`(types:_*)
+
+    /**
+      * A resource to open all indexes in the cluster
+      *
+      * @return A resource to open all indexes in the cluster
+      */
+    def _open = `/_all/_open`()
+
+    /**
+      * A resource to close all open indexes in the cluster
+      *
+      * @return A resource to close all open indexes in the cluster
+      */
+    def _close = `/_all/_close`()
+
+    /**
+      * A resource to configure a mapping across all indexes that contain it
+      *
+      * @return A resource to configure a mapping across all indexes that contain it
+      */
+    def _mapping = `/_all/_mapping`()
+  }
+
+  /**
     * An intermediate step to resources that support multiple (>1) indexes and (>0) types
+    * Can also be checked to see if the indexes/indexes and type/types exist
+    *
     * @param indexes The indexes
     * @param types The types
     */
-  case class `/$indexes/$types`(indexes: Seq[String], types: Seq[String]) {
+  case class `/$indexes/$types`(indexes: Seq[String], types: Seq[String])
+  extends SimpleCheckable with EsResource
+  {
     /**
       * A search over specified indexes and types
+      *
       * @return The search resource
       */
     def _search = `/$indexes/$types/_search`(indexes, types)
 
     /**
       * The multi search resource
+      *
       * @return The multi search resource
       */
     def _msearch = `/$indexes/$types/_msearch`(indexes, types)
 
     /**
       * The search-and-count resource
+      *
       * @return The search and count resource
       */
     def _count = `/$indexes/$types/_count`(indexes, types)
 
     /**
       * The query validation resource
+      *
       * @return The query validation resource
       */
     def _validate = `/$indexes/$types/_validate`(indexes, types)
 
     /**
-      * The query validation resource
-      * @return The query validation resource
+      * The query explanation resource
+      *
+      * @return The query explanation resource
       */
     def _explain = `/$indexes/$types/_explain`(indexes, types)
 
     /**
       * Suggests search terms over the specified indexes and types
+      *
       * @return The suggest resource
       */
     def _suggest = `/$indexes/$types/_suggest`(indexes, types)
@@ -242,12 +438,14 @@ object ApiModel_common {
   object `/$indexes/$types` {
     /**
       * Specify the indexes for the index resource
+      *
       * @param indexes The indexes for the index resource
       * @return An intermediate object which is converted to a index resource via types
       */
     def apply(indexes: String*) = new Object {
       /**
         * Specify the types for the index resource
+        *
         * @param types The types for the index resource
         * @return The index resource
         */
@@ -255,16 +453,89 @@ object ApiModel_common {
     }
   }
 
+
   /**
-    * An intermediate step to search all indexes
+    * Performs activities on the specified index, type, and automatically generated id:
+    * - `write`: adds the written object to the index/type
+    * Also acts as an intermediate step to navigate to other resources
+    *
+    * @param index The index
+    * @param `type` The type
     */
-  case class `/_all`() {
+  case class `/$index/$type`(index: String, `type`: String)
+    extends FullyModifiableWritable with SimpleCheckable
+      with EsResource
+  {
+    // Navigation
+
     /**
-      * Restricts the search to a list of types
-      * @param types The list of types
-      * @return An intermediate search step
+      * The multi-get resource
+      *
+      * @return The multi-get resource
       */
-    def $(types: String*) = `/_all/$types`(types:_*)
+    def _mget = `/$index/$type/_mget`(index, `type`)
+
+    /**
+      * The bulk resource
+      *
+      * @return The bulk resource
+      */
+    def _bulk = `/$index/$type/_bulk`(index, `type`)
+
+    /**
+      * The term vectors resource
+      *
+      * @return The term vectors resource
+      */
+    def _termvectors = `/$index/$type/_termvectors`(index, `type`)
+
+    /**
+      * The multi term vectors resource
+      *
+      * @return The multi term vectors resource
+      */
+    def _mtermvectors = `/$index/$type/_mtermvectors`(index, `type`)
+
+    /**
+      * The search resource
+      *
+      * @return The search resource
+      */
+    def _search = `/$indexes/$types/_search`(List(index), List(`type`))
+
+    /**
+      * The multi search resource
+      *
+      * @return The multi search resource
+      */
+    def _msearch = `/$indexes/$types/_msearch`(List(index), List(`type`))
+
+    /**
+      * The search-and-count resource
+      *
+      * @return The search and count resource
+      */
+    def _count = `/$indexes/$types/_count`(List(index), List(`type`))
+
+    /**
+      * The query validation resource
+      *
+      * @return The query validation resource
+      */
+    def _validate = `/$indexes/$types/_validate`(List(index), List(`type`))
+
+    /**
+      * The query explanation resource
+      *
+      * @return The query explanation resource
+      */
+    def _explain = `/$indexes/$types/_explain`(List(index), List(`type`))
+    /**
+      * The search suggest resource
+      *
+      * @return The search suggest resource
+      */
+    def _suggest = `/$indexes/$types/_suggest`(List(index), List(`type`))
   }
 
   /**
@@ -274,171 +545,140 @@ object ApiModel_common {
   case class `/_all/$types`(types: String*) {
     /**
       * A search over specified types
+      *
       * @return The search resource
       */
     def _search = `/_all/$types/_search`(types)
 
     /**
       * The multi search resource
+      *
       * @return The multi search resource
       */
     def _msearch = `/_all/$types/_msearch`(types)
 
     /**
       * The search-and-count resource
+      *
       * @return The search and count resource
       */
     def _count = `/_all/$types/_count`(types)
 
     /**
       * The query validation resource
+      *
       * @return The query validation resource
       */
     def _validate = `/_all/$types/_validate`(types)
 
     /**
-      * The query validation resource
-      * @return The query validation resource
+      * The query explanation resource
+      *
+      * @return The query explanation resource
       */
     def _explain = `/_all/$types/_explain`(types)
 
     /**
       * Suggests search terms over the specified types
+      *
       * @return The suggest resource
       */
     def _suggest = `/_all/$types/_suggest`(types)
-
-    /**
-      * A resource to open all indexes in the cluster
-      * @return A resource to open all indexes in the cluster
-      */
-    def _open = `/_all/_open`()
-
-    /**
-      * A resource to close all open indexes in the cluster
-      * @return A resource to close all open indexes in the cluster
-      */
-    def _close = `/_all/_close`()
-
-    /**
-      * A resource to configure a mapping across all indexes that contain it
-      * @return A resource to configure a mapping across all indexes that contain it
-      */
-    def _mapping = `/_all/_mapping`()
   }
 
-  /**
-    * Create/configure/delete an entire index
-    * Also an intermediate step that can be used to get to other parts of the API mode
-    * @param index The index
-    */
-  case class `/$index`(index: String)
-    extends SimpleReadable with SimpleDeletable with SimpleWritable with SimpleCheckable
-      with EsResource
-  {
-    /**
-      * Sub-resources that require the type
-      * @param `type` The type
-      * @return An intermediate or final step of the API model
-      */
-    def $(`type`: String) = `/$index/$type`(index, `type`)
-
-    /**
-      * The multi-get resource
-      * @return The multi-get resource
-      */
-    def _mget = `/$index/_mget`(index)
-
-    /**
-      * The bulk resource
-      * @return The bulk resource
-      */
-    def _bulk = `/$index/_bulk`(index)
-
-    /**
-      * The _update_by_query resource
-      * @return The bulk resource
-      */
-    def _update_by_query = `/$index/_update_by_query`(index)
-
-    /**
-      * The multi term vectors resource
-      * @return The multi term vectors resource
-      */
-    def _mtermvectors = `/$index/_mtermvectors`(index)
-
-    /**
-      * The search resource
-      * @return The search resource
-      */
-    def _search = `/$indexes/_search`(index)
-
-    /**
-      * The multi search resource
-      * @return The multi search resource
-      */
-    def _msearch = `/$indexes/_msearch`(index)
-
-    /**
-      * The search-and-count resource
-      * @return The search and count resource
-      */
-    def _count = `/$indexes/_count`(index)
-
-    /**
-      * The query validation resource
-      * @return The query validation resource
-      */
-    def _validate = `/$indexes/_count`(index)
-
-    /**
-      * The query validation resource
-      * @return The query validation resource
-      */
-    def _explain = `/$indexes/_explain`(index)
-
-    /**
-      * The _all index wildcard of the search resource
-      * @return The search resource
-      */
-    def _all = `/_all`()
-
-    /**
-      * Identifies the shard to be searched over the specified index
-      * @return The node/shard information
-      */
-    def _search_shards = `/$indexes/_search_shards`(index)
-
-    /**
-      * The search suggest resource
-      * @return The search suggest resource
-      */
-    def _suggest = `/$indexes/_suggest`(index)
-
-    /**
-      * A resource to open this index
-      * @return A resource to open this index
-      */
-    def _open = `/$indexes/_open`(index)
-
-    /**
-      * A resource to close this index
-      * @return A resource to close this index
-      */
-    def _close = `/$indexes/_close`(index)
-
-    /**
-      * A resource to configure the mappings for this index
-      * @return A resource to configure the mappings for this index
-      */
-    def _mapping = `/$indexes/_mapping`(index)
-  }
+  // 0.2 Search Templates
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template.html
 
   /**
     * Intermediate class to render search templates
     */
   case class `/_render`() {
     def template = `/_render/template`()
+  }
+
+  // 0.3 Field mapping intermediate steps
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html
+
+  /**
+    * an intermediate step leading to the get field mapping resources
+    *
+    * @param indexes The indexes over which the field mappings are retrieved
+    */
+  case class `/$indexes/_mapping/field`(indexes: String*) {
+    /**
+      * Returns the get field mapping for these fields (+parent restrictions)
+      *
+      * @param fields The set of fields for which to retrieve the mapping
+      * @return The get field mapping resource
+      */
+    def $(fields: String*) = `/$indexes/_mapping/field/$fields`(indexes, fields)
+  }
+  /**
+    * an intermediate step leading to the get field mapping resources
+    *
+    * @param indexes The indexes over which the field mappings are retrieved
+    * @param types The types over which the field mappings are retrieved
+    */
+  case class `/$indexes/_mapping/$types/field`(indexes: Seq[String], types: Seq[String]) {
+    /**
+      * Returns the get field mapping for these fields (+parent restrictions)
+      *
+      * @param fields The set of fields for which to retrieve the mapping
+      * @return The get field mapping resource
+      */
+    def $(fields: String*) = `/$indexes/_mapping/$types/field/$fields`(indexes, types, fields)
+  }
+  /**
+    * an intermediate step leading to the get field mapping resources
+    */
+  case class `/_mapping/field`() {
+    /**
+      * Returns the get field mapping for these fields (+parent restrictions)
+      *
+      * @param fields The set of fields for which to retrieve the mapping
+      * @return The get field mapping resource
+      */
+    def $(fields: String*) = `/_mapping/field/$fields`(fields)
+  }
+  /**
+    * an intermediate step leading to the get field mapping resources
+    *
+    * @param types The types over which the field mappings are retrieved
+    */
+  case class `/_mapping/$types/field`(types: String*) {
+    /**
+      * Returns the get field mapping for these fields (+parent restrictions)
+      *
+      * @param fields The set of fields for which to retrieve the mapping
+      * @return The get field mapping resource
+      */
+    def $(fields: String*) = `/_mapping/$types/field/$fields`(types, fields)
+  }
+  /**
+    * an intermediate step leading to the get field mapping resources
+    */
+  case class `/_all/_mapping/field`() {
+    /**
+      * Returns the get field mapping for these fields (+parent restrictions)
+      *
+      * @param fields The set of fields for which to retrieve the mapping
+      * @return The get field mapping resource
+      */
+    def $(fields: String*) = `/_all/_mapping/field/$fields`(fields)
+  }
+  /**
+    * an intermediate step leading to the get field mapping resources
+    *
+    * @param types The types over which the field mappings are retrieved
+    */
+  case class `/_all/_mapping/$types/field`(types: String*) {
+    /**
+      * Returns the get field mapping for these fields (+parent restrictions)
+      *
+      * @param fields The set of fields for which to retrieve the mapping
+      * @return The get field mapping resource
+      */
+    def $(fields: String*) = `/_all/_mapping/$types/field/$fields`(types, fields)
   }
 
   // 1] Document APIs
@@ -455,83 +695,11 @@ object ApiModel_common {
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html
 
   /**
-    * Performs activities on the specified index, type, and automaticcally generated id:
-    * - `write`: adds the written object to the index/type
-    * Also acts as an intermediate step to navigate to other resources
-    * @param index The index
-    * @param `type` The type
-    */
-  case class `/$index/$type`(index: String, `type`: String)
-    extends FullyModifiableWritable
-      with EsResource
-  {
-    // Navigation
-
-    /**
-      * The multi-get resource
-      * @return The multi-get resource
-      */
-    def _mget = `/$index/$type/_mget`(index, `type`)
-
-    /**
-      * The bulk resource
-      * @return The bulk resource
-      */
-    def _bulk = `/$index/$type/_bulk`(index, `type`)
-
-    /**
-      * The term vectors resource
-      * @return The term vectors resource
-      */
-    def _termvectors = `/$index/$type/_termvectors`(index, `type`)
-
-    /**
-      * The multi term vectors resource
-      * @return The multi term vectors resource
-      */
-    def _mtermvectors = `/$index/$type/_mtermvectors`(index, `type`)
-
-    /**
-      * The search resource
-      * @return The search resource
-      */
-    def _search = `/$indexes/$types/_search`(List(index), List(`type`))
-
-    /**
-      * The multi search resource
-      * @return The multi search resource
-      */
-    def _msearch = `/$indexes/$types/_msearch`(List(index), List(`type`))
-
-    /**
-      * The search-and-count resource
-      * @return The search and count resource
-      */
-    def _count = `/$indexes/$types/_count`(List(index), List(`type`))
-
-    /**
-      * The query validation resource
-      * @return The query validation resource
-      */
-    def _validate = `/$indexes/$types/_validate`(List(index), List(`type`))
-
-    /**
-      * The query validation resource
-      * @return The query validation resource
-      */
-    def _explain = `/$indexes/$types/_explain`(List(index), List(`type`))
-    /**
-      * The search suggest resource
-      * @return The search suggest resource
-      */
-    def _suggest = `/$indexes/$types/_suggest`(List(index), List(`type`))
-  }
-
-  /**
     * Performs activities on the specified index, type, and id:
     * - `write`: adds the written object to the index/type with the id
     * - `read`: returns the object in the index with that type/id, if it exists
     * - `delete`: returns the object in the index with that type/id, if it exists
+    *
     * @param index The index
     * @param `type` The type
     * @param id The id
@@ -544,18 +712,21 @@ object ApiModel_common {
   {
     /**
       * The _update resource
+      *
       * @return The _update resource
       */
     def _update = `/$index/$type/$id/_update`(index, `type`, id)
 
     /**
       * The _update resource
+      *
       * @return The _update resource
       */
     def _source = `/$index/$type/$id/_source`(index, `type`, id)
 
     /**
       * The term vectors resource
+      *
       * @return The term vectors resource
       */
     def _termvectors = `/$index/$type/$id/_termvectors`(index, `type`, id)
@@ -564,6 +735,7 @@ object ApiModel_common {
   /**
     * Performs activities on the specified index, type, and id:
     * - `read`: returns only the source of the object in the index with that type/id, if it exists
+    *
     * @param index The index
     * @param `type` The type
     * @param id The id
@@ -580,6 +752,7 @@ object ApiModel_common {
   /**
     * Performs update activities on the specified index, type, and id:
     * - `read`: returns only the source of the object in the index with that type/id, if it exists
+    *
     * @param index The index
     * @param `type` The type
     * @param id The id
@@ -595,6 +768,7 @@ object ApiModel_common {
 
   /**
     * Updates objects in the specified index based on a query body
+    *
     * @param index The index
     */
   case class `/$index/_update_by_query`(index: String)
@@ -616,6 +790,7 @@ object ApiModel_common {
 
   /**
     * Multi gets from the specified index based on the object written to the resource
+    *
     * @param index The index
     */
   case class `/$index/_mget`(index: String)
@@ -626,6 +801,7 @@ object ApiModel_common {
 
   /**
     * Multi gets from the specified index and type based on the object written to the resource
+    *
     * @param index The index
     * @param `type` The type
     */
@@ -652,6 +828,7 @@ object ApiModel_common {
   /**
     * Executes a bulk request of index/create/update/delete, based on the
     * object written to the resource
+    *
     * @param index The index - sub-requests missing an index will use this as default
     */
   case class `/$index/_bulk`(index: String)
@@ -664,6 +841,7 @@ object ApiModel_common {
   /**
     * Executes a bulk request of index/create/update/delete, based on the
     * object written to the resource
+    *
     * @param index The index - sub-requests missing an index will use this as default
     * @param `type` The type - sub-requests missing an index will use this as default
     */
@@ -689,6 +867,7 @@ object ApiModel_common {
   /**
     * Gets the term vectors from the specified index, type, and id:
     * - `read`: returns only the source of the object in the index with that type/id, if it exists
+    *
     * @param index The index
     * @param `type` The type
     */
@@ -701,6 +880,7 @@ object ApiModel_common {
   /**
     * Gets the term vectors from the specified index, type, and id:
     * - `read`: returns only the source of the object in the index with that type/id, if it exists
+    *
     * @param index The index
     * @param `type` The type
     * @param id The id
@@ -727,6 +907,7 @@ object ApiModel_common {
   /**
     * Allows to get multiple term vectors at once, depending on the object
     * written to the endpoint, restricted to an index
+    *
     * @param index The index
     */
   case class `/$index/_mtermvectors`(index: String)
@@ -738,6 +919,7 @@ object ApiModel_common {
   /**
     * Allows to get multiple term vectors at once, depending on the object
     * written to the endpoint, restricted to an index
+    *
     * @param index The index
     * @param `type` The type
     */
@@ -763,6 +945,7 @@ object ApiModel_common {
   {
     /**
       * An intermediate result to use templates to search
+      *
       * @return Templated search resource
       */
     def template = `/_search/template`()
@@ -771,6 +954,7 @@ object ApiModel_common {
   /**
     * Search all indexes and the specified types, based on the query object written to the
     * resource
+    *
     * @param types The types over which to search
     */
   case class `/_all/$types/_search`(types: String*)
@@ -782,6 +966,7 @@ object ApiModel_common {
   /**
     * Search the specified indexes and all types, based on the query object written to the
     * resource
+    *
     * @param indexes The indexes over which to search
     */
   case class `/$indexes/_search`(indexes: String*)
@@ -793,6 +978,7 @@ object ApiModel_common {
   /**
     * Search the specified indexes and types, based on the query object written to the
     * resource
+    *
     * @param indexes The indexes over which to search
     * @param types The types over which to search
     */
@@ -842,6 +1028,7 @@ object ApiModel_common {
     * The search shards api returns the indices and shards that a search request
     * would be executed against. This can give useful feedback for working out issues
     * or planning optimizations with routing and shard preferences.
+    *
     * @param indexes The index or indexes to query
     */
   case class `/$indexes/_search_shards`(indexes: String*)
@@ -866,6 +1053,7 @@ object ApiModel_common {
   /**
     * The suggest feature suggests similar looking terms based on a
     * provided text by using a suggester.
+    *
     * @param indexes The indexes over which to query
     */
   case class `/$indexes/_suggest`(indexes: String*)
@@ -877,6 +1065,7 @@ object ApiModel_common {
   /**
     * The suggest feature suggests similar looking terms based on a
     * provided text by using a suggester.
+    *
     * @param types The types over which to query
     */
   case class `/_all/$types/_suggest`(types: String*)
@@ -888,6 +1077,7 @@ object ApiModel_common {
   /**
     * The suggest feature suggests similar looking terms based on a
     * provided text by using a suggester.
+    *
     * @param indexes The indexes over which to query
     * @param types The types over which to query
     */
@@ -903,12 +1093,14 @@ object ApiModel_common {
   object `/$indexes/$types/_suggest` {
     /**
       * Specify the indexes for the _suggest resource
+      *
       * @param indexes The indexes for the _suggest resource
       * @return An intermediate object which is converted to a _suggest resource via types
       */
     def apply(indexes: String*) = new Object {
       /**
         * Specify the types for the _suggest resource
+        *
         * @param types The types for the _suggest resource
         * @return The _suggest resource
         */
@@ -933,6 +1125,7 @@ object ApiModel_common {
   /**
     * Search all indexes and the specified types, based on the query objects written to the
     * resource
+    *
     * @param types The types over which to search
     */
   case class `/_all/$types/_msearch`(types: String*)
@@ -945,6 +1138,7 @@ object ApiModel_common {
   /**
     * Search the specified indexes and all types, based on the query objects written to the
     * resource
+    *
     * @param indexes The indexes over which to search
     */
   case class `/$indexes/_msearch`(indexes: String*)
@@ -957,6 +1151,7 @@ object ApiModel_common {
   /**
     * Search the specified indexes and types, based on the query objects written to the
     * resource
+    *
     * @param indexes The indexes over which to search
     * @param types The types over which to search
     */
@@ -983,6 +1178,7 @@ object ApiModel_common {
   /**
     * Count all indexes and the specified types, based on the query object written to the
     * resource
+    *
     * @param types The types over which to search
     */
   case class `/_all/$types/_count`(types: String*)
@@ -994,6 +1190,7 @@ object ApiModel_common {
   /**
     * Count the specified indexes and all types, based on the query object written to the
     * resource
+    *
     * @param indexes The indexes over which to search
     */
   case class `/$indexes/_count`(indexes: String*)
@@ -1005,6 +1202,7 @@ object ApiModel_common {
   /**
     * Count the specified indexes and types, based on the query object written to the
     * resource
+    *
     * @param indexes The indexes over which to search
     * @param types The types over which to search
     */
@@ -1028,6 +1226,7 @@ object ApiModel_common {
 
   /**
     * Validate the query over the specified indexes and types
+    *
     * @param types The types over which to search
     */
   case class `/_all/$types/_validate`(types: String*)
@@ -1038,6 +1237,7 @@ object ApiModel_common {
 
   /**
     * Validate the query over the specified indexes and types
+    *
     * @param indexes The indexes over which to search
     */
   case class `/$indexes/_validate`(indexes: String*)
@@ -1048,6 +1248,7 @@ object ApiModel_common {
 
   /**
     * Validate the query over the specified indexes and types
+    *
     * @param indexes The indexes over which to search
     * @param types The types over which to search
     */
@@ -1071,6 +1272,7 @@ object ApiModel_common {
 
   /**
     * Explain the query over the specified indexes and types
+    *
     * @param types The types over which to search
     */
   case class `/_all/$types/_explain`(types: String*)
@@ -1081,6 +1283,7 @@ object ApiModel_common {
 
   /**
     * Explain the query over the specified indexes and types
+    *
     * @param indexes The indexes over which to search
     */
   case class `/$indexes/_explain`(indexes: String*)
@@ -1091,6 +1294,7 @@ object ApiModel_common {
 
   /**
     * Explain the query over the specified indexes and types
+    *
     * @param indexes The indexes over which to search
     * @param types The types over which to search
     */
@@ -1112,6 +1316,7 @@ object ApiModel_common {
 
   /**
     * Open one or more indexes
+    *
     * @param indexes The index or indexes to open
     */
   case class `/$indexes/_open`(indexes: String*)
@@ -1131,6 +1336,7 @@ object ApiModel_common {
 
   /**
     * Close one or more indexes
+    *
     * @param indexes The index or indexes to open
     */
   case class `/$indexes/_close`(indexes: String*)
@@ -1153,6 +1359,7 @@ object ApiModel_common {
 
   /**
     * Get the mapping for 1+ indexes and all types
+    *
     * @param indexes The index or indexes whose mapping to get
     */
   case class `/$indexes/_mapping`(indexes: String*)
@@ -1161,14 +1368,23 @@ object ApiModel_common {
   {
     /**
       * Returns the mapping control resource for specified indexes and types
+      *
       * @param types The types over which to restrict the mapping operations
       * @return Returns the mapping control resource for specified indexes and types
       */
     def $(types: String*) = `/$indexes/_mapping/$types`(indexes, types)
+
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `/$indexes/_mapping/field`(indexes)
   }
 
   /**
     * Gets the mapping for 1+ indexes and 1+ types
+    *
     * @param indexes The index or indexes whose mapping to get
     * @param types The type or type whose mapping to get
     */
@@ -1176,6 +1392,12 @@ object ApiModel_common {
     extends SimpleReadable
       with EsResource
   {
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `/$indexes/_mapping/$types/field`(indexes, types)
   }
   /**
     * A nicer constructor for the mapping resource with indexes and types
@@ -1183,12 +1405,14 @@ object ApiModel_common {
   object `/$indexes/_mapping/$types` {
     /**
       * Specify the indexes for the _mapping  resource
+      *
       * @param indexes The indexes for the _mapping resource
       * @return An intermediate object which is converted to a _mapping resource via types
       */
     def apply(indexes: String*) = new Object {
       /**
         * Specify the types for the _mapping resource
+        *
         * @param types The types for the _mapping resource
         * @return The _mapping resource
         */
@@ -1205,20 +1429,35 @@ object ApiModel_common {
   {
     /**
       * Returns the mapping control resource for all indexes and specified types
+      *
       * @param types The types over which to restrict the mapping operations
       * @return Returns the mapping control resource for all indexes and specified types
       */
     def $(types: String*) = `/_mapping/$types`(types)
+
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `/_mapping/field`()
   }
 
   /**
     * Gets the mapping for all indexes and 1+ types
+    *
     * @param types The type or type whose mapping to get
     */
   case class `/_mapping/$types`(types: String*)
     extends SimpleReadable
       with EsResource
   {
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `/_mapping/$types/field`(types)
   }
   /**
     * Gets the mapping for all indexes and all types
@@ -1229,23 +1468,187 @@ object ApiModel_common {
   {
     /**
       * Returns the mapping control resource for all indexes and specified types
+      *
       * @param types The types over which to restrict the mapping operations
       * @return Returns the mapping control resource for all indexes and specified types
       */
     def $(types: String*) = `/_all/_mapping/$types`(types)
+
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `/_all/_mapping/field`()
   }
 
   /**
     * Gets the mapping for all indexes and 1+ types
+    *
     * @param types The type or type whose mapping to get
     */
   case class `/_all/_mapping/$types`(types: String*)
     extends SimpleReadable
       with EsResource
   {
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `/_all/_mapping/$types/field`(types)
   }
 
   // 3.3 Field mappings
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html
+
+  /**
+    * A resource to retrieve
+    *
+    * @param indexes The indexes over which the field mappings are retrieved
+    */
+  case class `/$indexes/_mapping/field/$fields`(indexes: Seq[String], fields: Seq[String])
+    extends SimpleReadable
+      with EsResource
+
+  /**
+    * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+    */
+  object `/$indexes/_mapping/field/$fields` {
+    /**
+      * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+      *
+      * @param indexes The set of indexes over which to restrict this resource
+      * @return An intermediate object leading to the get field mapping resource
+      */
+    def apply(indexes: String*) = new Object {
+      /**
+        * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+        *
+        * @param fields The set of fields for which to get the mapping
+        * @return The get field mapping resource
+        */
+      def apply(fields: String*) = `/$indexes/_mapping/field/$fields`(indexes, fields)
+    }
+  }
+
+  /**
+    * an intermediate step leading to the get field mapping resources
+    *
+    * @param indexes The indexes over which the field mappings are retrieved
+    * @param types The types over which the field mappings are retrieved
+    */
+  case class `/$indexes/_mapping/$types/field/$fields`(indexes: Seq[String], types: Seq[String], fields: Seq[String])
+    extends SimpleReadable
+      with EsResource
+
+  /**
+    * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+    */
+  object `/$indexes/_mapping/$types/field/$fields` {
+    /**
+      * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+      *
+      * @param indexes The set of indexes over which to restrict this resource
+      * @return An intermediate object leading to the get field mapping resource
+      */
+    def apply(indexes: String*) = new Object {
+      /**
+        * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+        *
+        * @param types The set of types over which to restrict this resource
+        * @return An intermediate object leading to the get field mapping resource
+        */
+      def apply(types: String*) = new Object {
+        /**
+          * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+          *
+          * @param fields The set of fields for which to get the mapping
+          * @return The get field mapping resource
+          */
+        def apply(fields: String*) = `/$indexes/_mapping/$types/field/$fields`(indexes, types, fields)
+      }
+    }
+  }
+
+  /**
+    * an intermediate step leading to the get field mapping resources
+    */
+  case class `/_mapping/field/$fields`(fields: String*)
+    extends SimpleReadable
+      with EsResource
+
+  /**
+    * an intermediate step leading to the get field mapping resources
+    *
+    * @param types The types over which the field mappings are retrieved
+    */
+  case class `/_mapping/$types/field/$fields`(types: Seq[String], fields: Seq[String])
+    extends SimpleReadable
+      with EsResource
+
+  /**
+    * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+    */
+  object `/_mapping/$types/field/$fields` {
+    /**
+      * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+      *
+      * @param types The set of types over which to restrict this resource
+      * @return An intermediate object leading to the get field mapping resource
+      */
+    def apply(types: String*) = new Object {
+      /**
+        * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+        *
+        * @param fields The set of fields for which to get the mapping
+        * @return The get field mapping resource
+        */
+      def apply(fields: String*) = `/_mapping/$types/field/$fields`(types, fields)
+    }
+  }
+
+  /**
+    * an intermediate step leading to the get field mapping resources
+    */
+  case class `/_all/_mapping/field/$fields`(fields: String*)
+    extends SimpleReadable
+      with EsResource
+
+  /**
+    * an intermediate step leading to the get field mapping resources
+    *
+    * @param types The types over which the field mappings are retrieved
+    */
+  case class `/_all/_mapping/$types/field/$fields`(types: Seq[String], fields: Seq[String])
+    extends SimpleReadable
+      with EsResource
+
+  /**
+    * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+    */
+  object `/_all/_mapping/$types/field/$fields` {
+    /**
+      * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+      *
+      * @param types The set of types over which to restrict this resource
+      * @return An intermediate object leading to the get field mapping resource
+      */
+    def apply(types: String*) = new Object {
+      /**
+        * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
+        *
+        * @param fields The set of fields for which to get the mapping
+        * @return The get field mapping resource
+        */
+      def apply(fields: String*) = `/_all/_mapping/$types/field/$fields`(types, fields)
+    }
+  }
+  
+  // TODO Index aliases, Update indices, Get settings, index
+
+  //TODO cluster API
 
   //TODO etc
+
 }
