@@ -128,6 +128,18 @@ object ApiModel_common {
       * @return A resource to configure a mapping across all indexes that contain it
       */
     def _mapping = `/_mapping`()
+
+    /**
+      * An intermediate resource to configure aliases
+      * @return An intermediate resource to configure aliases
+      */
+    def _alias = `/_alias`()
+
+    /**
+      * A resource to perform complex configuration on aliases
+      * @return A resource to perform complex configuration on aliases
+      */
+    def _aliases = `/_aliases`()
   }
 
   /**
@@ -226,6 +238,14 @@ object ApiModel_common {
       * @return A resource to get the mappings for these indexes
       */
     def _mapping = `/$indexes/_mapping`(Seq(index) ++ otherIndexes:_*)
+
+
+    /**
+      * An intermediate resource to configure aliases
+      * @return An intermediate resource to configure aliases
+      */
+    def _alias = `/$indexes/_alias`(Seq(index) ++ otherIndexes:_*)
+
   }
 
   /**
@@ -343,6 +363,12 @@ object ApiModel_common {
       * @return A resource to configure the mappings for this index
       */
     def _mapping = `/$indexes/_mapping`(index)
+
+    /**
+      * An intermediate resource to configure aliases
+      * @return An intermediate resource to configure aliases
+      */
+    def _alias = `/$indexes/_alias`(index)
   }
 
   /**
@@ -377,6 +403,12 @@ object ApiModel_common {
       * @return A resource to configure a mapping across all indexes that contain it
       */
     def _mapping = `/_all/_mapping`()
+
+    /**
+      * An intermediate resource to configure aliases
+      * @return An intermediate resource to configure aliases
+      */
+    def _alias = `/_all/_alias`()
   }
 
   /**
@@ -680,6 +712,83 @@ object ApiModel_common {
       */
     def $(fields: String*) = `/_all/_mapping/$types/field/$fields`(types, fields)
   }
+
+  // 0.3.4 Index aliases
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html
+
+  /**
+    * An intermediate object for navigating to alias related resources
+    */
+  case class `/_alias`() {
+    /**
+      * Returns the check/retrieve _alias resource for the specified aliases
+      * @param aliases The specified alias names
+      * @return The check/retrieve _alias resource for the specified aliases
+      */
+    def $(aliases: String) = `/_alias/$aliases`(aliases)
+    /**
+      * Returns the check/retrieve _alias resource for all aliases
+      * @return The check/retrieve _alias resource for all aliases
+      */
+    def * =`/_alias/*`()
+  }
+
+  /**
+    * An intermediate object for navigating to alias related resources
+    * @param indexes The indexes over which to restrict these alias operations
+    */
+  case class `/$indexes/_alias`(indexes: String*) {
+    /**
+      * Returns the check/retrieve/delete/write _alias resource for the specified aliases
+      * @param alias The specified single alias name
+      * @return The check/retrieve/delete/write _alias resource for the specified aliases
+      */
+    def $(alias: String) = `/$indexes/_alias/$alias`(indexes, alias)
+    /**
+      * Returns the check/retrieve _alias resource for the specified aliases
+      * @param firstAlias The first specified alias name (must have >=1, ie 2+ in total)
+      * @param secondAlias The first specified alias name (must have >=1, ie 2+ in total)
+      * @param otherAliases Subsequent specified aliases names (must have >0)
+      * @return
+      */
+    def $(firstAlias: String, secondAlias: String, otherAliases: String*) =
+      `/$indexes/_alias/$aliases`(indexes, Seq(firstAlias, secondAlias) ++ otherAliases)
+
+    /**
+      * Returns the check/retrieve _alias resource for all aliases
+      * @return The check/retrieve _alias resource for all aliases
+      */
+    def * =`/$indexes/_alias/*`(indexes)
+  }
+
+  /**
+    * An intermediate object for navigating to alias related resources
+    */
+  case class `/_all/_alias`() {
+    /**
+      * Returns the check/retrieve/delete/write _alias resource for the specified aliases
+      * @param alias The specified single alias name
+      * @return The check/retrieve/delete/write _alias resource for the specified aliases
+      */
+    def $(alias: String) = `/_all/_alias/$alias`(alias)
+    /**
+      * Returns the check/retrieve _alias resource for the specified aliases
+      * @param firstAlias The first specified alias name (must have >=1, ie 2+ in total)
+      * @param secondAlias The first specified alias name (must have >=1, ie 2+ in total)
+      * @param otherAliases Subsequent specified aliases names (must have >0)
+      * @return
+      */
+    def $(firstAlias: String, secondAlias: String, otherAliases: String*) =
+      `/_all/_alias/$aliases`(Seq(firstAlias, secondAlias) ++ otherAliases)
+
+    /**
+      * Returns the check/retrieve _alias resource for all aliases
+      * @return The check/retrieve _alias resource for all aliases
+      */
+    def * =`/_all/_alias/*`()
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////
 
   // 1] Document APIs
 
@@ -1644,11 +1753,144 @@ object ApiModel_common {
       def apply(fields: String*) = `/_all/_mapping/$types/field/$fields`(types, fields)
     }
   }
-  
-  // TODO Index aliases, Update indices, Get settings, index
+
+  // 3.4 Index aliases
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html
+
+  /**
+    * Create one or more aliases based on the posted content
+    */
+  case class `/_aliases`()
+    extends SimpleWritable
+      with EsResource
+
+  /**
+    * Retrieve/check the aliases across all aliases
+    * @param aliases The names of the aliases (including globs)
+    */
+  case class `/_alias/$aliases`(aliases: String)
+    extends SimpleReadable
+      with SimpleCheckable
+      with EsResource
+
+  /**
+    * Retrieve/check all aliases across all aliases
+    */
+  case class `/_alias/*`()
+    extends SimpleReadable
+      with SimpleCheckable
+      with EsResource
+
+  /**
+    * Create/delete/retrieve a mapping from a single alias to the specified index(es)
+    * @param indexes The list of indexes (including globs)
+    * @param alias The specific alias
+    */
+  case class `/$indexes/_alias/$alias`(indexes: Seq[String], alias: String)
+    extends SimpleReadable
+      with SimpleCheckable
+      with SimpleNoDataWritable
+      with SimpleDeletable
+      with EsResource
+
+  /**
+    * A nicer constructor for the _alias resource
+    */
+  object `/$indexes/_alias/$alias` {
+    /**
+      * Specify the indexes for the _alias resource
+      *
+      * @param indexes The indexes for the _alias resource
+      * @return An intermediate object which is converted to a _alias resource via alias
+      */
+    def apply(indexes: String*) = new Object {
+      /**
+        * Specify the types for the index resource
+        *
+        * @param alias The specific alias
+        * @return The _alias resource
+        */
+      def apply(alias: String) = `/$indexes/_alias/$alias`(indexes, alias)
+    }
+  }
+
+  /**
+    * Delete/retrieve mappings from a multiple aliases to the specified index(es)
+    * @param indexes The list of indexes (including globs)
+    * @param aliases The names of the aliases (including globs)
+    */
+  case class `/$indexes/_alias/$aliases`(indexes: Seq[String], aliases: Seq[String])
+    extends SimpleReadable
+      with SimpleCheckable
+      with SimpleDeletable
+      with EsResource
+
+  /**
+    * A nicer constructor for the _alias resource
+    */
+  object `/$indexes/_alias/$aliases` {
+    /**
+      * Specify the indexes for the _alias resource
+      *
+      * @param indexes The indexes for the _alias resource
+      * @return An intermediate object which is converted to a _alias resource via aliases
+      */
+    def apply(indexes: String*) = new Object {
+      /**
+        * Specify the types for the index resource
+        *
+        * @param aliases The specific aliases
+        * @return The _alias resource
+        */
+      def apply(aliases: String*) = `/$indexes/_alias/$aliases`(indexes, aliases)
+    }
+  }
+
+  /**
+    * Delete/retrieve mappings from a multiple aliases to the specified index(es)
+    * @param indexes The list of indexes (including globs)
+    */
+  case class `/$indexes/_alias/*`(indexes: String*)
+    extends SimpleReadable
+      with SimpleCheckable
+      with SimpleDeletable
+      with EsResource
+
+  /**
+    * Create/delete/retrieve a mapping from single alias to all the indexes
+    * @param alias The specific alias
+    */
+  case class `/_all/_alias/$alias`(alias: String)
+    extends SimpleReadable
+      with SimpleCheckable
+      with SimpleNoDataWritable
+      with SimpleDeletable
+      with EsResource
+
+  /**
+    * Ddelete/retrieve a mapping from multiple aliases to all the indexes
+    * @param aliases The names of the aliases (including globs)
+    */
+  case class `/_all/_alias/$aliases`(aliases: String*)
+    extends SimpleReadable
+      with SimpleCheckable
+      with SimpleDeletable
+      with EsResource
+
+  /**
+    * Delete/retrieve a mapping from all the aliases to all the indexes
+    */
+  case class `/_all/_alias/*`()
+    extends SimpleReadable
+      with SimpleCheckable
+      with SimpleDeletable
+      with EsResource
+
+  // TODO Update indices, Get settings, index
 
   //TODO cluster API
 
   //TODO etc
+
 
 }
