@@ -308,6 +308,22 @@ object Modifiers {
     def `?terminate_after=`(n: Integer) = self.withModifier(s"?terminate_after=$n")
   }
 
+  // Index stats modifiers
+
+  /**
+    * TODO
+    */
+  trait Groups extends Modifier { self: BaseDriverOp =>
+    def `?groups=`(groups: String*) = self.withModifier(s"?groups=${groups.mkString(",")}")
+  }
+
+  /**
+    * TODO
+    */
+  trait Types extends Modifier { self: BaseDriverOp =>
+    def `?types=`(types: String*) = self.withModifier(s"?types=${types.mkString(",")}")
+  }
+
   // Misc other modifiers
 
   /**

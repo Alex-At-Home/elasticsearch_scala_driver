@@ -131,15 +131,45 @@ object ApiModel_common {
 
     /**
       * An intermediate resource to configure aliases
+      *
       * @return An intermediate resource to configure aliases
       */
     def _alias = `/_alias`()
 
     /**
       * A resource to perform complex configuration on aliases
+      *
       * @return A resource to perform complex configuration on aliases
       */
     def _aliases = `/_aliases`()
+
+    /**
+      * A resource to update the index settings
+      *
+      * @return A resource to update the index settings
+      */
+    def _settings = `/_settings`()
+
+    /**
+      * A resource to test the installed analyzers
+      *
+      * @return A resource to tests the installed analyzers
+      */
+    def _analyze = `/_analyze`()
+
+    /**
+      * A resource to manipulate index templates
+      *
+      * @return A resource to manipulate index templates
+      */
+    def _template = `/_template`()
+
+    /**
+      * A resource to retrieve cluster statistics
+      *
+      * @return A resource to retrieve cluster statistics
+      */
+    def _stats = `/_stats`()
   }
 
   /**
@@ -242,10 +272,24 @@ object ApiModel_common {
 
     /**
       * An intermediate resource to configure aliases
+      *
       * @return An intermediate resource to configure aliases
       */
     def _alias = `/$indexes/_alias`(Seq(index) ++ otherIndexes:_*)
 
+    /**
+      * A resource to update the index settings
+      *
+      * @return A resource to update the index settings
+      */
+    def _settings = `/$indexes/_settings`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * A resource to retrieve cluster statistics
+      *
+      * @return A resource to retrieve cluster statistics
+      */
+    def _stats = `/$indexes/_stats`(Seq(index) ++ otherIndexes:_*)
   }
 
   /**
@@ -366,9 +410,31 @@ object ApiModel_common {
 
     /**
       * An intermediate resource to configure aliases
+      *
       * @return An intermediate resource to configure aliases
       */
     def _alias = `/$indexes/_alias`(index)
+
+    /**
+      * A resource to update the index settings
+      *
+      * @return A resource to update the index settings
+      */
+    def _settings = `/$indexes/_settings`(index)
+
+    /**
+      * A resource to test the installed analyzers
+      *
+      * @return A resource to tests the installed analyzers
+      */
+    def _analyze = `/$index/_analyze`(index)
+
+    /**
+      * A resource to retrieve cluster statistics
+      *
+      * @return A resource to retrieve cluster statistics
+      */
+    def _stats = `/$indexes/_stats`(index)
   }
 
   /**
@@ -406,9 +472,17 @@ object ApiModel_common {
 
     /**
       * An intermediate resource to configure aliases
+      *
       * @return An intermediate resource to configure aliases
       */
     def _alias = `/_all/_alias`()
+
+    /**
+      * A resource to update the index settings
+      *
+      * @return A resource to update the index settings
+      */
+    def _settings = `/_all/_settings`()
   }
 
   /**
@@ -618,7 +692,7 @@ object ApiModel_common {
     def _suggest = `/_all/$types/_suggest`(types)
   }
 
-  // 0.2 Search Templates
+  // 0.3.2 Search Templates
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template.html
 
   /**
@@ -628,7 +702,7 @@ object ApiModel_common {
     def template = `/_render/template`()
   }
 
-  // 0.3 Field mapping intermediate steps
+  // 0.3.3 Field mapping intermediate steps
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html
 
   /**
@@ -722,12 +796,14 @@ object ApiModel_common {
   case class `/_alias`() {
     /**
       * Returns the check/retrieve _alias resource for the specified aliases
+      *
       * @param aliases The specified alias names
       * @return The check/retrieve _alias resource for the specified aliases
       */
     def $(aliases: String) = `/_alias/$aliases`(aliases)
     /**
       * Returns the check/retrieve _alias resource for all aliases
+      *
       * @return The check/retrieve _alias resource for all aliases
       */
     def * =`/_alias/*`()
@@ -735,17 +811,20 @@ object ApiModel_common {
 
   /**
     * An intermediate object for navigating to alias related resources
+    *
     * @param indexes The indexes over which to restrict these alias operations
     */
   case class `/$indexes/_alias`(indexes: String*) {
     /**
       * Returns the check/retrieve/delete/write _alias resource for the specified aliases
+      *
       * @param alias The specified single alias name
       * @return The check/retrieve/delete/write _alias resource for the specified aliases
       */
     def $(alias: String) = `/$indexes/_alias/$alias`(indexes, alias)
     /**
       * Returns the check/retrieve _alias resource for the specified aliases
+      *
       * @param firstAlias The first specified alias name (must have >=1, ie 2+ in total)
       * @param secondAlias The first specified alias name (must have >=1, ie 2+ in total)
       * @param otherAliases Subsequent specified aliases names (must have >0)
@@ -756,6 +835,7 @@ object ApiModel_common {
 
     /**
       * Returns the check/retrieve _alias resource for all aliases
+      *
       * @return The check/retrieve _alias resource for all aliases
       */
     def * =`/$indexes/_alias/*`(indexes)
@@ -767,12 +847,14 @@ object ApiModel_common {
   case class `/_all/_alias`() {
     /**
       * Returns the check/retrieve/delete/write _alias resource for the specified aliases
+      *
       * @param alias The specified single alias name
       * @return The check/retrieve/delete/write _alias resource for the specified aliases
       */
     def $(alias: String) = `/_all/_alias/$alias`(alias)
     /**
       * Returns the check/retrieve _alias resource for the specified aliases
+      *
       * @param firstAlias The first specified alias name (must have >=1, ie 2+ in total)
       * @param secondAlias The first specified alias name (must have >=1, ie 2+ in total)
       * @param otherAliases Subsequent specified aliases names (must have >0)
@@ -783,9 +865,55 @@ object ApiModel_common {
 
     /**
       * Returns the check/retrieve _alias resource for all aliases
+      *
       * @return The check/retrieve _alias resource for all aliases
       */
     def * =`/_all/_alias/*`()
+  }
+
+  // 0.3.5 Index settings
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-settings.html
+
+  /**
+    * An intermediate class that provides navigation to the filter index settings resource
+    */
+  case class `/_settings/name=`() {
+    /**
+      * Returns the filtered resource for getting the index settings
+      *
+      * @param name The filter glob string vs index names
+      * @return The filtered resource for getting the index settings
+      */
+    def $(name: String) = `/_settings/name=$name`(name)
+  }
+
+  /**
+    * An intermediate class that provides navigation to the filter index settings resource
+    */
+  case class `/_all/_settings/name=`() {
+    /**
+      * Returns the filtered resource for getting the index settings
+      *
+      * @param name The filter glob string vs index names
+      * @return The filtered resource for getting the index settings
+      */
+    def $(name: String) = `/_all/_settings/name=$name`(name)
+  }
+
+  /**
+    * An intermediate class that provides navigation to the filter index settings resource
+    *
+    * @param indexes The indexes to read
+    */
+  case class `/$indexes/_settings/name=`(indexes: String*) {
+    /**
+      * Returns the filtered resource for getting the index settings
+      *
+      * @param name The filter glob string vs index names
+      * @return The filtered resource for getting the index settings
+      */
+    def $(name: String) = `/$indexes/_settings/name=$name`(indexes, name)
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
@@ -1766,6 +1894,7 @@ object ApiModel_common {
 
   /**
     * Retrieve/check the aliases across all aliases
+    *
     * @param aliases The names of the aliases (including globs)
     */
   case class `/_alias/$aliases`(aliases: String)
@@ -1783,6 +1912,7 @@ object ApiModel_common {
 
   /**
     * Create/delete/retrieve a mapping from a single alias to the specified index(es)
+    *
     * @param indexes The list of indexes (including globs)
     * @param alias The specific alias
     */
@@ -1816,6 +1946,7 @@ object ApiModel_common {
 
   /**
     * Delete/retrieve mappings from a multiple aliases to the specified index(es)
+    *
     * @param indexes The list of indexes (including globs)
     * @param aliases The names of the aliases (including globs)
     */
@@ -1848,6 +1979,7 @@ object ApiModel_common {
 
   /**
     * Delete/retrieve mappings from a multiple aliases to the specified index(es)
+    *
     * @param indexes The list of indexes (including globs)
     */
   case class `/$indexes/_alias/*`(indexes: String*)
@@ -1858,6 +1990,7 @@ object ApiModel_common {
 
   /**
     * Create/delete/retrieve a mapping from single alias to all the indexes
+    *
     * @param alias The specific alias
     */
   case class `/_all/_alias/$alias`(alias: String)
@@ -1869,6 +2002,7 @@ object ApiModel_common {
 
   /**
     * Ddelete/retrieve a mapping from multiple aliases to all the indexes
+    *
     * @param aliases The names of the aliases (including globs)
     */
   case class `/_all/_alias/$aliases`(aliases: String*)
@@ -1886,11 +2020,359 @@ object ApiModel_common {
       with SimpleDeletable
       with EsResource
 
-  // TODO Update indices, Get settings, index
+  // 3.5 Get and Update index settings
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-settings.html
 
-  //TODO cluster API
+  /**
+    * Read or Update the settings for the entire cluster
+    */
+  case class `/_settings`()
+    extends SimpleReadable
+      with SimpleWritable
+      with EsResource
+  {
+    /**
+      * Returns an intermediate class that provides navigation to the filter index settings resource
+      *
+      * @return An intermediate class that provides navigation to the filter index settings resource
+      */
+    def name =  `/_settings/name=`()
+  }
 
-  //TODO etc
+  /**
+    * Read the filtered settings for the entire cluster
+    *
+    * @param name The filter glob string vs index names
+    */
+  case class `/_settings/name=$name`(name: String)
+    extends SimpleReadable
+      with EsResource
 
+  /**
+    * Read or Update the settings for the entire cluster
+    */
+  case class `/_all/_settings`()
+    extends SimpleReadable
+      with SimpleWritable
+      with EsResource
+  {
+    /**
+      * Returns an intermediate class that provides navigation to the filter index settings resource
+      *
+      * @return An intermediate class that provides navigation to the filter index settings resource
+      */
+    def name =  `/_all/_settings/name=`()
+  }
 
+  /**
+    * Read the filtered settings for the entire cluster
+    *
+    * @param name The filter glob string vs index names
+    */
+  case class `/_all/_settings/name=$name`(name: String)
+    extends SimpleReadable
+      with EsResource
+
+  /**
+    * Read or Update the settings for one or more clusters
+    *
+    * @param indexes The indexes to read/update
+    */
+  case class `/$indexes/_settings`(indexes: String*)
+    extends SimpleReadable
+      with SimpleWritable
+      with EsResource
+  {
+    /**
+      * Returns an intermediate class that provides navigation to the filter index settings resource
+      *
+      * @return An intermediate class that provides navigation to the filter index settings resource
+      */
+    def name =  `/$indexes/_settings/name=`(indexes)
+  }
+  /**
+    * Read the filtered settings for the entire cluster
+    *
+    * @param indexes The indexes to read
+    * @param name The filter glob string vs index names
+    */
+  case class `/$indexes/_settings/name=$name`(indexes: Seq[String], name: String)
+    extends SimpleReadable
+      with EsResource
+
+  /**
+    * A nicer constructor for the update index settings
+    */
+  object `/$indexes/_settings/name=$name` {
+    /**
+      * Specify the indexes for the index settings get resource
+      *
+      * @param indexes The indexes for the index resource
+      * @return An intermediate object which is converted to a get index settings resource via `name`
+      */
+    def apply(indexes: String*) = new Object {
+      /**
+        * Specify the types for the index settings get resource
+        *
+        * @param name The filter glob string vs index names
+        * @return The get index settings resource
+        */
+      def apply(name: String) = `/$indexes/_settings/name=$name`(indexes, name)
+    }
+  }
+
+  // 3.6 Analyze
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-analyze.html
+
+  /**
+    * Analyze some text against any of the analyzers registered vs the cluster
+    */
+  case class `/_analyze`()
+    extends SimpleWithDataReadable
+      with EsResource
+
+  /**
+    * Analyze some text against any of the analyzers registered vs the index
+    *
+    * @param index The index against which to run the analysis
+    */
+  case class `/$index/_analyze`(index: String)
+    extends SimpleWithDataReadable
+      with EsResource
+
+  // 3.7 Templates
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html
+
+  /**
+    * An intermediate class to get to the index templates resource
+    * Also lists all of the index templates
+    */
+  case class `/_template`()
+    extends SimpleReadable
+      with EsResource
+  {
+    /**
+      * Returns the index template resource for this template
+      *
+      * @param template The template name
+      * @return The index template resource for this template
+      */
+    def $(template: String) = `/_template/$template`(template: String)
+
+    /**
+      * Returns the read index template resource for multiple indexes
+      *
+      * @param firstTemplate The 1st template name (must be 2+ across all params)
+      * @param secondTemplate The 2nd template name (must be 2+ across all params)
+      * @param otherTemplates The other templates name (must be 2+ across all params, ie 0+ here)
+      * @return The index template resource for this template
+      */
+    def $(firstTemplate: String, secondTemplate: String, otherTemplates: String*) =
+      `/_template/$templates`(Seq(firstTemplate, secondTemplate) ++ otherTemplates)
+  }
+
+  /**
+    * The create/read/update/delete resource for this template
+    *
+    * @param template The template name
+    */
+  case class `/_template/$template`(template: String)
+    extends SimpleReadable
+      with SimpleWritable
+      with SimpleDeletable
+      with SimpleCheckable
+      with EsResource
+
+  /**
+    * The read resource for multuple templates
+    *
+    * @param templates The template names
+    */
+  case class `/_template/$templates`(templates: String*)
+    extends SimpleReadable
+      with EsResource
+
+  // 3.8 Indices stats
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html
+
+  /**
+    * Returns high level aggregation and index level stats for all indices
+    */
+  case class `/_stats`()
+    extends IndexStatsReadable
+    with EsResource
+  {
+    /**
+      * Restricts the list to the specified statistics
+      *
+      * @param statsGroups The list of statistics groups
+      * @return The resource restricted to the set of specified stats groups
+      */
+    def $(statsGroups: String*) = `/_stats/$statsGroups`(statsGroups)
+  }
+
+  /**
+    * Returns high level aggregation and index level stats for all indices and specific stats groups
+    *
+    * @param statsGroups The list of statistics groups
+    */
+  case class `/_stats/$statsGroups`(statsGroups: String*)
+    extends IndexStatsReadable
+      with EsResource
+  {
+    /**
+      * Restricts the list to the specified fields
+      *
+      * @param fieldGroups The list of fields for these statistics groups
+      * @return The resource restricted to the set of specified stats groups
+      */
+    def $(fieldGroups: String*) = `/_stats/$statsGroups/$fieldGroups`(statsGroups, fieldGroups)
+  }
+
+  /**
+    * Returns high level aggregation and index level stats for all indices and specific stats groups
+    * and with filtered fields
+    *
+    * @param statsGroups The list of statistics groups
+    * @param fieldGroups The list of fields for these statistics groups
+    */
+  case class `/_stats/$statsGroups/$fieldGroups`(statsGroups: Seq[String], fieldGroups: Seq[String])
+    extends IndexStatsReadable
+      with EsResource
+
+  /**
+    * A nicer constructor for the index statistics retrieval
+    */
+  object `/_stats/$statsGroups/$fieldGroups` {
+    /**
+      * Specify the statistics groups for which to retrieve the stats
+      *
+      * @param statsGroups The list of statistics groups
+      * @return An intermediate object which is converted to a get index statistics resource via `fieldGroups`
+      */
+    def apply(statsGroups: String*) = new Object {
+      /**
+        * Specify the field groups for which to retrieve the stats
+        *
+        * @param fieldGroups The list of fields for these statistics groups
+        * @return A get index statistics resource
+        */
+      def apply(fieldGroups: String*) = `/_stats/$statsGroups/$fieldGroups`(statsGroups, fieldGroups)
+    }
+  }
+
+  /**
+    * Returns high level aggregation and index level stats for specified indices
+    *
+    * @param indexes The indexes over which to restrict the stats
+    */
+  case class `/$indexes/_stats`(indexes: String*)
+    extends IndexStatsReadable
+      with EsResource
+  {
+    /**
+      * Restricts the list to the specified statistics
+      *
+      * @param statsGroups The list of statistics groups
+      * @return The resource restricted to the set of specified stats groups
+      */
+    def $(statsGroups: String*) = `/$indexes/_stats/$statsGroups`(indexes, statsGroups)
+  }
+
+  /**
+    * Returns high level aggregation and index level stats for specified indices and specific stats groups
+    *
+    * @param indexes The indexes over which to restrict the stats
+    * @param statsGroups The list of statistics groups
+    */
+  case class `/$indexes/_stats/$statsGroups`(indexes: Seq[String], statsGroups: Seq[String])
+    extends IndexStatsReadable
+      with EsResource
+  {
+    /**
+      * Restricts the list to the specified fields
+      *
+      * @param fieldGroups The list of fields for these statistics groups
+      * @return The resource restricted to the set of specified stats groups
+      */
+    def $(fieldGroups: String*) = `/$indexes/_stats/$statsGroups/$fieldGroups`(indexes, statsGroups, fieldGroups)
+  }
+  /**
+    * A nicer constructor for the index statistics retrieval
+    */
+  object `/$indexes/_stats/$statsGroups` {
+    /**
+      * Specify the statistics groups for which to retrieve the stats
+      *
+      * @param indexes The indexes for the get index statistics resource
+      * @return An intermediate object which is converted to a get index statistics resource via `fieldGroups`
+      */
+    def apply(indexes: String*) = new Object {
+      /**
+        * Specify the field groups for which to retrieve the stats
+        *
+        * @param fieldGroups The list of fields for these statistics groups
+        * @return A get index statistics resource
+        */
+      def apply(fieldGroups: String*) = `/$indexes/_stats/$statsGroups`(indexes, fieldGroups)
+    }
+  }
+
+  /**
+    * Returns high level aggregation and index level stats for specified indices and specific stats groups
+    * and with filtered fields
+    *
+    * @param indexes The indexes over which to restrict the stats
+    * @param statsGroups The list of statistics groups
+    * @param fieldGroups The list of fields for these statistics groups
+    */
+  case class `/$indexes/_stats/$statsGroups/$fieldGroups`
+    (indexes: Seq[String], statsGroups: Seq[String], fieldGroups: Seq[String])
+    extends IndexStatsReadable
+      with EsResource
+  /**
+    * A nicer constructor for the index statistics retrieval
+    */
+  object `/$indexes/_stats/$statsGroups/$fieldGroups` {
+    /**
+      * Specify the statistics groups for which to retrieve the stats
+      *
+      * @param indexes The indexes for the get index statistics resource
+      * @return An intermediate object which is converted to a get index statistics resource via `fieldGroups`
+      */
+    def apply(indexes: String*) = new Object {
+      /**
+        * Specify the statistics groups for which to retrieve the stats
+        *
+        * @param statsGroups The list of statistics groups
+        * @return An intermediate object which is converted to a get index statistics resource via `fieldGroups`
+        */
+      def apply(statsGroups: String*) = new Object {
+        /**
+          * Specify the field groups for which to retrieve the stats
+          *
+          * @param fieldGroups The list of fields for these statistics groups
+          * @return A get index statistics resource
+          */
+        def apply(fieldGroups: String*) = `/$indexes/_stats/$statsGroups`(indexes, fieldGroups)
+      }
+    }
+  }
+
+  // 3.9
+
+  //TODO segments recovery shard_stores clear_cache _flush refresh force_merge upgrade
+
+  //TODO 4] cluster API
+
+  //TODO others - eg common plugins like graph?
+
+  //TODO: refactor into different classes and then have a "full object" that inherits from the different versions
+  // elasticsearch.scala.driver.common ApiModelCommon, ApiModelSearch, ApiModelIndices, ApiModelCluster
+  // elasticsearch.scala.driver.latest etc
+  // elasticsearch.scala.driver.v2.3 etc
+  // elasticsearch.scala.plugins.driver (for graph)
+
+  //TODO: enforce >0 params anywhere there's an (eg) (index: String*) type call, currently can call with () which will fail
 }

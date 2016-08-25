@@ -241,5 +241,19 @@ object ModifierGroups {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
 
+  /**
+    * TODO
+    * @param resource
+    * @param op
+    * @param body
+    * @param mods
+    */
+  case class IndexStatsDriverOp
+  (resource: EsResource, op: String, body: Option[String], mods: List[String])
+    extends BaseDriverOp
+      with Level with Groups with Types
+  {
+    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+  }
 
 }

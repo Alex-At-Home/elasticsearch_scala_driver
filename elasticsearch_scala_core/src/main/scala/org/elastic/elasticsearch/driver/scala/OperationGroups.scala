@@ -75,6 +75,12 @@ object OperationGroups {
   trait SearchFieldStatsReadable extends EsReadable[SearchFieldStatsDriverOp] { self: EsResource =>
     override def read() = SearchFieldStatsDriverOp(self, GET, None, List())
   }
+  /**
+    * A readable for index statistics
+    */
+  trait IndexStatsReadable extends EsReadable[IndexStatsDriverOp] { self: EsResource =>
+    override def read() = IndexStatsDriverOp(self, GET, None, List())
+  }
 
   // Readable with data
 
