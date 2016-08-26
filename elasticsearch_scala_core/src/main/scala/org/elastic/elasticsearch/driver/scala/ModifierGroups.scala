@@ -9,7 +9,7 @@ import org.elastic.elasticsearch.driver.scala.Modifiers._
 object ModifierGroups {
 
   /**
-    * A driver op with no typed modifiers other than `?pretty` (which applies to all JSON calls)
+    * A driver op with no typed modifiers other than the standard `?pretty` ahd `?human`
     * @param resource
     * @param op
     * @param body
@@ -18,7 +18,7 @@ object ModifierGroups {
   case class PrettyDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
-      with Pretty
+      with Pretty with Human
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
@@ -32,7 +32,7 @@ object ModifierGroups {
   case class PrettyAndRoutingDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
-      with Pretty with Routing
+      with Pretty with Human with Routing
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
@@ -46,7 +46,7 @@ object ModifierGroups {
   case class PrettyAndFieldsDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
-      with Pretty with Fields
+      with Pretty with Human with Fields
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
@@ -60,7 +60,21 @@ object ModifierGroups {
   case class PrettyAndConflictDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
-      with Pretty with Conflict
+      with Pretty with Human with Conflict
+  {
+    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+  }
+  /**
+    * A driver op with no typed modifiers other than standard and `?verbose`
+    * @param resource
+    * @param op
+    * @param body
+    * @param mods
+    */
+  case class PrettyAndVerboseDriverOp
+  (resource: EsResource, op: String, body: Option[String], mods: List[String])
+    extends BaseDriverOp
+      with Pretty with Human with Verbose
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
@@ -74,7 +88,7 @@ object ModifierGroups {
   case class FullyModifiableReadDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
-      with Pretty with SourceBase with SourceInclude with SourceExclude with Fields
+      with Pretty with Human with SourceBase with SourceInclude with SourceExclude with Fields
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
@@ -89,7 +103,7 @@ object ModifierGroups {
   case class FullyModifiableWriteDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
-      with Pretty with Version with OpType with Routing with Parent with Timeout
+      with Pretty with Human with Version with OpType with Routing with Parent with Timeout
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
@@ -104,7 +118,7 @@ object ModifierGroups {
   case class FullyModifiableDeleteDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
-      with Pretty with Routing with Parent with Refresh with Timeout
+      with Pretty with Human with Routing with Parent with Refresh with Timeout
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
@@ -119,6 +133,7 @@ object ModifierGroups {
   case class QueryUriDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
+      with Pretty with Human
       with Query with DefaultField with Analyzer with LowercaseExpandedTerms
       with AnalyzeWildcard with DefaultOperator with Lenient with Explain
       with SourceQuery with SourceInclude with SourceExclude
@@ -138,6 +153,7 @@ object ModifierGroups {
   case class QueryDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
+      with Pretty with Human
       with Timeout with RequestCache with TerminateAfter
       with From with Size with SearchType
   {
@@ -154,7 +170,7 @@ object ModifierGroups {
   case class QuerySearchShardsDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
-      with Routing with Preference with Local
+      with Pretty with Human with Routing with Preference with Local
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
@@ -169,6 +185,7 @@ object ModifierGroups {
   case class QueryCountDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
+      with Pretty with Human
       with Query with DefaultField with Analyzer with LowercaseExpandedTerms
       with AnalyzeWildcard with DefaultOperator with Lenient
       with TerminateAfter
@@ -186,6 +203,7 @@ object ModifierGroups {
   case class QueryMiscDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
+      with Pretty with Human
       with Query with DefaultField with Analyzer with LowercaseExpandedTerms
       with AnalyzeWildcard with DefaultOperator with Lenient
   {
@@ -202,6 +220,7 @@ object ModifierGroups {
   case class QueryExplainDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
+      with Pretty with Human
       with Query with DefaultField with Analyzer with LowercaseExpandedTerms
       with AnalyzeWildcard with DefaultOperator with Lenient
       with SourceQuery with SourceInclude with SourceExclude
@@ -221,7 +240,7 @@ object ModifierGroups {
   case class SearchFieldStatsDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
-      with Level with Fields
+      with Pretty with Human with Level with Fields
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
@@ -236,7 +255,7 @@ object ModifierGroups {
   case class OpenCloseIndexesDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
-      with IgnoreUnavailable
+      with Pretty with Human with IgnoreUnavailable
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
@@ -251,7 +270,22 @@ object ModifierGroups {
   case class IndexStatsDriverOp
   (resource: EsResource, op: String, body: Option[String], mods: List[String])
     extends BaseDriverOp
-      with Level with Groups with Types
+      with Pretty with Human with Level with Groups with Types
+  {
+    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+  }
+
+  /**
+    * TODO
+    * @param resource
+    * @param op
+    * @param body
+    * @param mods
+    */
+  case class IndexRecoveryDriverOp
+  (resource: EsResource, op: String, body: Option[String], mods: List[String])
+    extends BaseDriverOp
+      with Pretty with Human with Detailed with ActiveOnly
   {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }

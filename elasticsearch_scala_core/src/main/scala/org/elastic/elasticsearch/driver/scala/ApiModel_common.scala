@@ -170,6 +170,20 @@ object ApiModel_common {
       * @return A resource to retrieve cluster statistics
       */
     def _stats = `/_stats`()
+
+    /**
+      * A resource to retrieve index segment information
+      *
+      * @return A resource to retrieve index segment information
+      */
+    def _segments = `/_segments`()
+
+    /**
+      * A resource to retrieve index recovery information
+      *
+      * @return A resource to retrieve index recovery information
+      */
+    def _recovery = `/_recovery`()
   }
 
   /**
@@ -290,6 +304,20 @@ object ApiModel_common {
       * @return A resource to retrieve cluster statistics
       */
     def _stats = `/$indexes/_stats`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * A resource to retrieve index segment information
+      *
+      * @return A resource to retrieve index segment information
+      */
+    def _segments = `/$indexes/_segments`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * A resource to retrieve index recovery information
+      *
+      * @return A resource to retrieve index recovery information
+      */
+    def _recovery = `/$indexes/_recovery`(Seq(index) ++ otherIndexes:_*)
   }
 
   /**
@@ -435,6 +463,20 @@ object ApiModel_common {
       * @return A resource to retrieve cluster statistics
       */
     def _stats = `/$indexes/_stats`(index)
+
+    /**
+      * A resource to retrieve index segment information
+      *
+      * @return A resource to retrieve index segment information
+      */
+    def _segments = `/$indexes/_segments`(index)
+
+    /**
+      * A resource to retrieve index recovery information
+      *
+      * @return A resource to retrieve index recovery information
+      */
+    def _recovery = `/$indexes/_recovery`(index)
   }
 
   /**
@@ -483,6 +525,22 @@ object ApiModel_common {
       * @return A resource to update the index settings
       */
     def _settings = `/_all/_settings`()
+
+    //TODO: think everything that's in indexes needs to ne here also
+
+    /**
+      * A resource to retrieve index segment information
+      *
+      * @return A resource to retrieve index segment information
+      */
+    def _segments = `/_all/_segments`()
+
+    /**
+      * A resource to retrieve index recovery information
+      *
+      * @return A resource to retrieve index recovery information
+      */
+    def _recovery = `/_all/_recovery`()
   }
 
   /**
@@ -2360,9 +2418,66 @@ object ApiModel_common {
     }
   }
 
-  // 3.9
+  // 3.9 Segments
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html
 
-  //TODO segments recovery shard_stores clear_cache _flush refresh force_merge upgrade
+  /**
+    * Provide low level segments information that a Lucene index (shard level) is built with.
+    * Allows to be used to provide more information on the state of a shard and an index, possibly optimization
+    * information, data "wasted" on deletes, and so on.
+    */
+  case class `/_segments`()
+    extends VerboseSimpleReadable
+      with EsResource
+
+  /**
+    * Provide low level segments information that a Lucene index (shard level) is built with.
+    * Allows to be used to provide more information on the state of a shard and an index, possibly optimization
+    * information, data "wasted" on deletes, and so on.
+    */
+  case class `/_all/_segments`()
+    extends VerboseSimpleReadable
+      with EsResource
+
+  /**
+    * Provide low level segments information that a Lucene index (shard level) is built with.
+    * Allows to be used to provide more information on the state of a shard and an index, possibly optimization
+    * information, data "wasted" on deletes, and so on.
+    * @param indexes The indexes over which to check the segment information
+    */
+  case class `/$indexes/_segments`(indexes: String*)
+    extends VerboseSimpleReadable
+      with EsResource
+
+  // 3.10 Indices recovery
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html
+
+  /**
+    * The indices recovery API provides insight into on-going index shard recoveries.
+    * Recovery status may be reported for specific indices, or cluster-wide.
+    */
+  case class `/_recovery`()
+    extends IndexRecoveryReadable
+      with EsResource
+
+  /**
+    * The indices recovery API provides insight into on-going index shard recoveries.
+    * Recovery status may be reported for specific indices, or cluster-wide.
+    */
+  case class `/_all/_recovery`()
+    extends IndexRecoveryReadable
+      with EsResource
+
+  /**
+    * The indices recovery API provides insight into on-going index shard recoveries.
+    * Recovery status may be reported for specific indices, or cluster-wide.
+    * @param indexes The indexes over which to check the segment information
+    */
+  case class `/$indexes/_recovery`(indexes: String*)
+    extends IndexRecoveryReadable
+      with EsResource
+
+  //TODO shard_stores clear_cache _flush refresh force_merge upgrade
 
   //TODO 4] cluster API
 

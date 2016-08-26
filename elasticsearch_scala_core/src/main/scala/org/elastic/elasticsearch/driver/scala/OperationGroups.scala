@@ -13,19 +13,25 @@ object OperationGroups {
   // Readable
 
   /**
-    * A readable that only allows the `?pretty` modifier
+    * A readable that only allows the standard `?pretty` and `?human` modifiers
     */
   trait SimpleReadable extends EsReadable[PrettyDriverOp] { self: EsResource =>
     override def read() = PrettyDriverOp(self, GET, None, List())
   }
   /**
-    * A readable that allows the `?pretty` and `?routing` modifier
+    * A readable that allows the standard and `?verbose` modifiers
+    */
+  trait VerboseSimpleReadable extends EsReadable[PrettyAndVerboseDriverOp] { self: EsResource =>
+    override def read() = PrettyAndVerboseDriverOp(self, GET, None, List())
+  }
+  /**
+    * A readable that allows the standard and `?routing` modifiers
     */
   trait RoutableSimpleReadable extends EsReadable[PrettyAndRoutingDriverOp] { self: EsResource =>
     override def read() = PrettyAndRoutingDriverOp(self, GET, None, List())
   }
   /**
-    * A readable that allows the `?pretty` and `?routing` modifier
+    * A readable that allows the standard and `?routing` modifiers
     */
   trait FieldsSimpleReadable extends EsReadable[PrettyAndFieldsDriverOp] { self: EsResource =>
     override def read() = PrettyAndFieldsDriverOp(self, GET, None, List())
@@ -81,17 +87,23 @@ object OperationGroups {
   trait IndexStatsReadable extends EsReadable[IndexStatsDriverOp] { self: EsResource =>
     override def read() = IndexStatsDriverOp(self, GET, None, List())
   }
+  /**
+    * A readable for index recovery resources
+    */
+  trait IndexRecoveryReadable extends EsReadable[IndexRecoveryDriverOp] { self: EsResource =>
+    override def read() = IndexRecoveryDriverOp(self, GET, None, List())
+  }
 
   // Readable with data
 
   /**
-    * A readable with data that only allows the `?pretty` modifier
+    * A readable with data that only allows the standard `?pretty` and `?human` modifiers
     */
   trait SimpleWithDataReadable extends WithDataEsReadable[PrettyDriverOp] { self: EsResource =>
     override def read(body: String) = PrettyDriverOp(self, GET, Some(body), List())
   }
   /**
-    * A readable that allows the `?pretty` and `?routing` modifier
+    * A readable that allows the standard and `?routing` modifiers
     */
   trait RoutableSimpleWithDataReadable extends WithDataEsReadable[PrettyAndRoutingDriverOp] { self: EsResource =>
     override def read(body: String) = PrettyAndRoutingDriverOp(self, GET, Some(body), List())
@@ -136,13 +148,13 @@ object OperationGroups {
   // Writable
 
   /**
-    * A writable that only allows the `?pretty` modifier
+    * A writable that only allows the standard `?pretty` and `?human` modifiers
     */
   trait SimpleWritable extends EsWritable[PrettyDriverOp] { self: EsResource =>
     override def write(body: String) = PrettyDriverOp(self, PUT, Some(body), List())
   }
   /**
-    * A writable that allows the `?pretty` modifier and `?conflict` modifier
+    * A writable that allows the standard and `?conflict` modifiers
     */
   trait ConflictSimpleWritable extends EsWritable[PrettyAndConflictDriverOp] { self: EsResource =>
     override def write(body: String) = PrettyAndConflictDriverOp(self, PUT, Some(body), List())
@@ -157,14 +169,14 @@ object OperationGroups {
   // Writable with no data
 
   /**
-    * A writable with no data and only the ?pretty modifiers
+    * A writable with no data and only the standard `?pretty` and `?human` modifiers
     */
   trait SimpleNoDataWritable { self: EsResource =>
     def write() = PrettyDriverOp(self, POST, None, List())
   }
 
   /**
-    * A writable with no data and only the ?pretty modifiers
+    * A writable with no data and only the standard modifiers
     */
   trait OpenCloseIndexesNoDataWritable { self: EsResource =>
     def write() = OpenCloseIndexesDriverOp(self, POST, None, List())
@@ -173,7 +185,7 @@ object OperationGroups {
   // Deletable
 
   /**
-    * A deletable that only allows the `?pretty` modifier
+    * A deletable that only allows the standard `?pretty` and `?human` modifiers
     */
   trait SimpleDeletable extends EsDeletable[PrettyDriverOp] { self: EsResource =>
     /**
@@ -192,7 +204,7 @@ object OperationGroups {
   // Deletable with data
 
   /**
-    * A deletable with data that only allows the `?pretty` modifier
+    * A deletable with data that only allows the standard `?pretty` and `?human` modifiers
     */
   trait SimpleWithDataDeletable extends WithDataEsDeletable[PrettyDriverOp] { self: EsResource =>
     override def delete(body: String) = PrettyDriverOp(self, DELETE, Some(body), List())

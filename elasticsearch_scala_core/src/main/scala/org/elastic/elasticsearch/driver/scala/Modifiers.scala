@@ -7,9 +7,13 @@ import org.elastic.elasticsearch.driver.scala.ElasticsearchBase._
   */
 object Modifiers {
 
+  /**
+    * Parent type for Modifiers to resources (representing URL parameters)
+    */
+  sealed trait Modifier
+
   // Generic modifiers, used in lots of places
 
-  sealed trait Modifier
   /**
     * Represents a resource that can have the modifier ?pretty
     * (Controls the format of the response if returned as a string, else ignored)
@@ -24,12 +28,31 @@ object Modifiers {
     def `?pretty=`(b: Boolean) = self.withModifier(s"?pretty=$b")
 
     /**
-      * Returns a resource with modifier ?pretty
+      * Returns a resource with modifier ?pretty=true
       * (Controls the format of the response if returned as a string, else ignored)
       * @return The updated driver operation
       */
     def `?pretty` = `?pretty=`(true)
   }
+  /**
+    * TODO
+    */
+  trait Human extends Modifier { self: BaseDriverOp =>
+    /**
+      * Returns a resource with modifier ?human
+      * @param b Whether to format the data in a way that makes it easier for humans to read
+      *          (vs computers to consume), eg returns times as string numbers-with-units
+      * @return The updated driver operation
+      */
+    def `?human=`(b: Boolean) = self.withModifier(s"?human=$b")
+
+    /**
+      * Returns a resource with modifier ?human=true
+      * @return The updated driver operation
+      */
+    def `?human` = `?human=`(true)
+  }
+
   /**
     * Represents a resource that can have the modifier ?routing
     * (Forces the request to go to a specific node in the cluster)
@@ -308,7 +331,7 @@ object Modifiers {
     def `?terminate_after=`(n: Integer) = self.withModifier(s"?terminate_after=$n")
   }
 
-  // Index stats modifiers
+  // Index and field stats modifiers
 
   /**
     * TODO
@@ -322,6 +345,43 @@ object Modifiers {
     */
   trait Types extends Modifier { self: BaseDriverOp =>
     def `?types=`(types: String*) = self.withModifier(s"?types=${types.mkString(",")}")
+  }
+
+  /**
+    * Defines if (field or index) stats should be returned on a per index level or on a cluster wide level.
+    * Valid values are indices and cluster (default).
+    */
+  trait Level extends Modifier { self: BaseDriverOp =>
+    /**
+      * Defines if field stats should be returned on a per index level or on a cluster wide level.
+      * Valid values are indices and cluster (default).
+      * @param level indices or cluster
+      */
+    def `?level=`(level: String) = self.withModifier(s"?level=$level")
+  }
+
+  // Recovery Modifiers
+
+  /**
+    * TODO
+    */
+  trait Detailed extends Modifier { self: BaseDriverOp =>
+    /**
+      * TODO
+      * @param b Whether the reply should add extra detail (default: false)
+      */
+    def `?detailed=`(b: Boolean) = self.withModifier(s"?detailed=$b")
+  }
+
+  /**
+    * TODO
+    */
+  trait ActiveOnly extends Modifier { self: BaseDriverOp =>
+    /**
+      * TODO
+      * @param b Whether the only ongoing recoveries are displayed (default: false)
+      */
+    def `?active_only=`(b: Boolean) = self.withModifier(s"?active_only=$b")
   }
 
   // Misc other modifiers
@@ -342,19 +402,6 @@ object Modifiers {
       * @param preference Controls on which shard the explain is executed.
       */
     def `?preference=`(preference: String) = self.withModifier(s"?preference=$preference")
-  }
-
-  /**
-    * Defines if field stats should be returned on a per index level or on a cluster wide level.
-    * Valid values are indices and cluster (default).
-    */
-  trait Level extends Modifier { self: BaseDriverOp =>
-    /**
-      * Defines if field stats should be returned on a per index level or on a cluster wide level.
-      * Valid values are indices and cluster (default).
-      * @param level indices or cluster
-      */
-    def `?level=`(level: String) = self.withModifier(s"?level=$level")
   }
 
   /**
@@ -380,5 +427,17 @@ object Modifiers {
       */
     def `?ignore_unavailable=`(b: Boolean) = self.withModifier(s"?ignore_unavailable=$b")
   }
+
+  /**
+    * TODO
+    */
+  trait Verbose extends Modifier { self: BaseDriverOp =>
+    /**
+      * TODO
+      * @param b Whether the response should be verbose
+      */
+    def `?verbose=`(b: Boolean) = self.withModifier(s"?verbose=$b")
+  }
+
 
 }
