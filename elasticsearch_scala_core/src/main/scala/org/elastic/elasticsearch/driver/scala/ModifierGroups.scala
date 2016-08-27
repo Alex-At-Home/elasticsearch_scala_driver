@@ -290,4 +290,63 @@ object ModifierGroups {
     override def withModifier(m: String): this.type = copy(mods = m :: mods)
   }
 
+  /**
+    * TODO
+    * @param resource
+    * @param op
+    * @param body
+    * @param mods
+    */
+  case class ShardStoreDriverOp
+  (resource: EsResource, op: String, body: Option[String], mods: List[String])
+    extends BaseDriverOp
+      with Pretty with Human with Status
+  {
+    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+  }
+
+  /**
+    * TODO
+    * @param resource
+    * @param op
+    * @param body
+    * @param mods
+    */
+  case class FlushDriverOp
+  (resource: EsResource, op: String, body: Option[String], mods: List[String])
+    extends BaseDriverOp
+      with Pretty with Human with WaitIfOngoing with Force
+  {
+    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+  }
+
+  /**
+    * TODO
+    * @param resource
+    * @param op
+    * @param body
+    * @param mods
+    */
+  case class ForceMergeDriverOp
+  (resource: EsResource, op: String, body: Option[String], mods: List[String])
+    extends BaseDriverOp
+      with Pretty with Human with MaxNumSegments with OnlyExpungeDeletes with Flush
+  {
+    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+  }
+
+  /**
+    * TODO
+    * @param resource
+    * @param op
+    * @param body
+    * @param mods
+    */
+  case class UpgradeDriverOp
+  (resource: EsResource, op: String, body: Option[String], mods: List[String])
+    extends BaseDriverOp
+      with Pretty with Human with OnlyAncientSegments
+  {
+    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+  }
 }

@@ -184,6 +184,41 @@ object ApiModel_common {
       * @return A resource to retrieve index recovery information
       */
     def _recovery = `/_recovery`()
+
+    /**
+      * A resource to retrieve shard information
+      *
+      * @return A resource to retrieve shard information
+      */
+    def _shard_stores = `/_shard_stores`()
+
+    /**
+      * An intermediate step to retrieve cache resources
+      *
+      * @return An intermediate step to retrieve cache resources
+      */
+    def _cache = `/_cache`()
+
+    /**
+      * A resource to flush one or more indices
+      *
+      * @return An intermediate step to retrieve cache resources
+      */
+    def _flush = `/_flush`()
+
+    /**
+      * A resource to force the merging of segments within indexes
+      *
+      * @return A resource to force the merging of segments within indexes
+      */
+    def _forcemerge = `/_forcemerge`()
+
+    /**
+      * A resource to upgrade indices to higher versions of Lucene
+      *
+      * @return A resource to upgrade indices to higher versions of Lucene
+      */
+    def _upgrade = `/_upgrade`()
   }
 
   /**
@@ -246,7 +281,6 @@ object ApiModel_common {
       * @return The query explanation resource
       */
     def _explain = `/$indexes/_explain`(Seq(index) ++ otherIndexes:_*)
-
 
     /**
       * Identifies the shard to be searched over the specified indexes
@@ -318,6 +352,41 @@ object ApiModel_common {
       * @return A resource to retrieve index recovery information
       */
     def _recovery = `/$indexes/_recovery`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * A resource to retrieve shard information
+      *
+      * @return A resource to retrieve shard information
+      */
+    def _shard_stores = `/$indexes/_shard_stores`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * An intermediate step to retrieve cache resources
+      *
+      * @return An intermediate step to retrieve cache resources
+      */
+    def _cache = `/$indexes/_cache`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * A resource to flush one or more indices
+      *
+      * @return An intermediate step to retrieve cache resources
+      */
+    def _flush = `/$indexes/_flush`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * A resource to force the merging of segments within indexes
+      *
+      * @return A resource to force the merging of segments within indexes
+      */
+    def _forcemerge = `/$indexes/_forcemerge`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * A resource to upgrade indices to higher versions of Lucene
+      *
+      * @return A resource to upgrade indices to higher versions of Lucene
+      */
+    def _upgrade = `/$indexes/_upgrade`(Seq(index) ++ otherIndexes:_*)
   }
 
   /**
@@ -477,6 +546,41 @@ object ApiModel_common {
       * @return A resource to retrieve index recovery information
       */
     def _recovery = `/$indexes/_recovery`(index)
+
+    /**
+      * A resource to retrieve shard information
+      *
+      * @return A resource to retrieve shard information
+      */
+    def _shard_stores = `/$indexes/_shard_stores`(index)
+
+    /**
+      * An intermediate step to retrieve cache resources
+      *
+      * @return An intermediate step to retrieve cache resources
+      */
+    def _cache = `/$indexes/_cache`(index)
+
+    /**
+      * A resource to flush one or more indices
+      *
+      * @return An intermediate step to retrieve cache resources
+      */
+    def _flush = `/$indexes/_flush`(index)
+
+    /**
+      * A resource to force the merging of segments within indexes
+      *
+      * @return A resource to force the merging of segments within indexes
+      */
+    def _forcemerge = `/$indexes/_forcemerge`(index)
+
+    /**
+      * A resource to upgrade indices to higher versions of Lucene
+      *
+      * @return A resource to upgrade indices to higher versions of Lucene
+      */
+    def _upgrade = `/$indexes/_upgrade`(index)
   }
 
   /**
@@ -541,6 +645,41 @@ object ApiModel_common {
       * @return A resource to retrieve index recovery information
       */
     def _recovery = `/_all/_recovery`()
+
+    /**
+      * A resource to retrieve shard information
+      *
+      * @return A resource to retrieve shard information
+      */
+    def _shard_stores = `/_all/_shard_stores`()
+
+    /**
+      * An intermediate step to retrieve cache resources
+      *
+      * @return An intermediate step to retrieve cache resources
+      */
+    def _cache = `/_all/_cache`()
+
+    /**
+      * A resource to flush one or more indices
+      *
+      * @return An intermediate step to retrieve cache resources
+      */
+    def _flush = `/_all/_flush`()
+
+    /**
+      * A resource to force the merging of segments within indexes
+      *
+      * @return A resource to force the merging of segments within indexes
+      */
+    def _forcemerge = `/_all/_forcemerge`()
+
+    /**
+      * A resource to upgrade indices to higher versions of Lucene
+      *
+      * @return A resource to upgrade indices to higher versions of Lucene
+      */
+    def _upgrade = `/_all/_upgrade`()
   }
 
   /**
@@ -972,6 +1111,45 @@ object ApiModel_common {
       * @return The filtered resource for getting the index settings
       */
     def $(name: String) = `/$indexes/_settings/name=$name`(indexes, name)
+  }
+
+  // 0.2.12 Clear cache
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html
+
+  /**
+    * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+    * (Intermediate step)
+    */
+  case class `/_cache`() {
+    /**
+      * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+      * @return The clear cache resource
+      */
+    def clear = `/_cache/clear`()
+  }
+
+  /**
+    * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+    * (Intermediate step)
+    */
+  case class `/_all/_cache`() {
+    /**
+      * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+      * @return The clear cache resource
+      */
+    def clear = `/_all/_cache/clear`()
+  }
+
+  /**
+    * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+    * (Intermediate step)
+    */
+  case class `/$indexes/_cache`(indexes: String*) {
+    /**
+      * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+      * @return The clear cache resource
+      */
+    def clear = `/$indexes/_cache/clear`(indexes)
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
@@ -2477,17 +2655,199 @@ object ApiModel_common {
     extends IndexRecoveryReadable
       with EsResource
 
-  //TODO shard_stores clear_cache _flush refresh force_merge upgrade
+  // 2.11 Shard stores
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-shards-stores.html
+
+  /**
+    * Provides store information for shard copies of indices. Store information reports on which nodes shard copies
+    * exist, the shard copy version, indicating how recent they are, and any exceptions encountered while opening
+    * the shard index or from earlier engine failure.
+    */
+  case class `/_shard_stores`()
+    extends ShardStoreReadable
+      with EsResource
+
+  /**
+    * Provides store information for shard copies of indices. Store information reports on which nodes shard copies
+    * exist, the shard copy version, indicating how recent they are, and any exceptions encountered while opening
+    * the shard index or from earlier engine failure.
+    */
+  case class `/_all/_shard_stores`()
+    extends ShardStoreReadable
+      with EsResource
+
+  /**
+    * Provides store information for shard copies of indices. Store information reports on which nodes shard copies
+    * exist, the shard copy version, indicating how recent they are, and any exceptions encountered while opening
+    * the shard index or from earlier engine failure.
+    * @param indexes The indexes over which to read the shards
+    */
+  case class `/$indexes/_shard_stores`(indexes: String*)
+    extends ShardStoreReadable
+      with EsResource
+
+  // 2.12 Clear cache
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html
+
+  /**
+    * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+    */
+  case class `/_cache/clear`()
+    extends ShardStoreReadable
+      with EsResource
+
+  /**
+    * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+    */
+  case class `/_all/_cache/clear`()
+    extends ShardStoreReadable
+      with EsResource
+
+  /**
+    * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+    * @param indexes The indexes over which to read the shards
+    */
+  case class `/$indexes/_cache/clear`(indexes: String*)
+    extends ShardStoreReadable
+      with EsResource
+
+  // 2.13 Flush
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-flush.html
+
+  /**
+    * The flush API allows to flush one or more indices through an API. The flush process of an index basically frees
+    * memory from the index by flushing data to the index storage and clearing the internal transaction log.
+    * By default, Elasticsearch uses memory heuristics in order to automatically trigger flush operations as required
+    * in order to clear memory.
+    */
+  case class `/_flush`()
+    extends FlushNoDataWritable
+      with EsResource
+
+  /**
+    * The flush API allows to flush one or more indices through an API. The flush process of an index basically frees
+    * memory from the index by flushing data to the index storage and clearing the internal transaction log.
+    * By default, Elasticsearch uses memory heuristics in order to automatically trigger flush operations as required
+    * in order to clear memory.
+    */
+  case class `/_all/_flush`()
+    extends FlushNoDataWritable
+      with EsResource
+
+  /**
+    * The flush API allows to flush one or more indices through an API. The flush process of an index basically frees
+    * memory from the index by flushing data to the index storage and clearing the internal transaction log.
+    * By default, Elasticsearch uses memory heuristics in order to automatically trigger flush operations as required
+    * in order to clear memory.
+    * @param indexes The indexes over which to read the shards
+    */
+  case class `/$indexes/_flush`(indexes: String*)
+    extends FlushNoDataWritable
+      with EsResource
+
+  // 2.14 Refresh
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-refresh.html
+
+  /**
+    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+    * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
+    * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    */
+  case class `/_refresh`()
+    extends SimpleNoDataWritable
+      with EsResource
+
+  /**
+    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+    * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
+    * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    */
+  case class `/_all/_refresh`()
+    extends SimpleNoDataWritable
+      with EsResource
+
+  /**
+    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+    * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
+    * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * @param indexes The indexes over which to read the shards
+    */
+  case class `/$indexes/_refresh`(indexes: String*)
+    extends SimpleNoDataWritable
+      with EsResource
+
+  // 2.15 Force Merge
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html
+
+  /**
+    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+    * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
+    * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    */
+  case class `/_forcemerge`()
+    extends ForceMergeNoDataWritable
+      with EsResource
+
+  /**
+    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+    * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
+    * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    */
+  case class `/_all/_forcemerge`()
+    extends ForceMergeNoDataWritable
+      with EsResource
+
+  /**
+    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+    * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
+    * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * @param indexes The indexes over which to read the shards
+    */
+  case class `/$indexes/_forcemerge`(indexes: String*)
+    extends ForceMergeNoDataWritable
+      with EsResource
+
+  // 2.16 Upgrade
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-upgrade.html
+
+  /**
+    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+    * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
+    * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    */
+  case class `/_upgrade`()
+    extends UpgradeNoDataWritable
+      with EsResource
+
+  /**
+    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+    * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
+    * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    */
+  case class `/_all/_upgrade`()
+    extends UpgradeNoDataWritable
+      with EsResource
+
+  /**
+    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+    * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
+    * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * @param indexes The indexes over which to read the shards
+    */
+  case class `/$indexes/_upgrade`(indexes: String*)
+    extends UpgradeNoDataWritable
+      with EsResource
 
   //TODO 4] cluster API
 
   //TODO others - eg common plugins like graph?
 
-  //TODO: refactor into different classes and then have a "full object" that inherits from the different versions
+  //TODO: refactor into different traits and then have a "full object" that inherits from the different versions
   // elasticsearch.scala.driver.common ApiModelCommon, ApiModelSearch, ApiModelIndices, ApiModelCluster
   // elasticsearch.scala.driver.latest etc
   // elasticsearch.scala.driver.v2.3 etc
   // elasticsearch.scala.plugins.driver (for graph)
+  // have a latest "pointer" somewhere eg Versions { latest = Common, 2_3_5 = V2_3_5 etc }
 
   //TODO: enforce >0 params anywhere there's an (eg) (index: String*) type call, currently can call with () which will fail
 }

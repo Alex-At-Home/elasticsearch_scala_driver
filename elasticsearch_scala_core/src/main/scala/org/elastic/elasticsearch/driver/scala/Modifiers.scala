@@ -384,6 +384,95 @@ object Modifiers {
     def `?active_only=`(b: Boolean) = self.withModifier(s"?active_only=$b")
   }
 
+  // Flush parameters
+
+  /**
+    * If set to true the flush operation will block until the flush can be executed if another flush operation is
+    * already executing. The default is false and will cause an exception to be thrown on the shard level if another
+    * flush operation is already running.
+    */
+  trait WaitIfOngoing extends Modifier { self: BaseDriverOp =>
+    /**
+      * If set to true the flush operation will block until the flush can be executed if another flush operation is
+      * already executing. The default is false and will cause an exception to be thrown on the shard level if another
+      * flush operation is already running.
+      * @param b If set to true the flush operation will block until the flush can be executed if another flush
+      *          operation is already executing.
+      */
+    def `?wait_if_ongoing=`(b: Boolean) = self.withModifier(s"?wait_if_ongoing=$b")
+  }
+
+  /**
+    * Whether a flush should be forced even if it is not necessarily needed ie. if no changes will be committed to the
+    * index. This is useful if transaction log IDs should be incremented even if no uncommitted changes are present.
+    * (This setting can be considered as internal)
+    */
+  trait Force extends Modifier { self: BaseDriverOp =>
+    /**
+      * Whether a flush should be forced even if it is not necessarily needed ie. if no changes will be committed to the
+      * index. This is useful if transaction log IDs should be incremented even if no uncommitted changes are present.
+      * (This setting can be considered as internal)
+      * @param b  Whether a flush should be forced
+      */
+    def `?force=`(b: Boolean) = self.withModifier(s"?force=$b")
+  }
+
+  // Force Merge Parameters
+
+  /**
+    * The number of segments to merge to. To fully merge the index, set it to 1.
+    * Defaults to simply checking if a merge needs to execute, and if so, executes it.
+    */
+  trait MaxNumSegments extends Modifier { self: BaseDriverOp =>
+    /**
+      * The number of segments to merge to. To fully merge the index, set it to 1.
+      * Defaults to simply checking if a merge needs to execute, and if so, executes it.
+      * @param b Whether the only ongoing recoveries are displayed (default: false)
+      */
+    def `?max_num_segments=`(b: Boolean) = self.withModifier(s"?max_num_segments=$b")
+  }
+
+  /**
+    * The number of segments to merge to. To fully merge the index, set it to 1.
+    * Defaults to simply checking if a merge needs to execute, and if so, executes it.
+    */
+  trait OnlyExpungeDeletes extends Modifier { self: BaseDriverOp =>
+    /**
+      * The number of segments to merge to. To fully merge the index, set it to 1.
+      * Defaults to simply checking if a merge needs to execute, and if so, executes it.
+      * @param b Whether the only ongoing recoveries are displayed (default: false)
+      */
+    def `?only_expunge_deletes=`(b: Boolean) = self.withModifier(s"?only_expunge_deletes=$b")
+  }
+
+  /**
+    * Should a flush be performed after the forced merge. Defaults to true.
+    */
+  trait Flush extends Modifier { self: BaseDriverOp =>
+    /**
+      * Should a flush be performed after the forced merge. Defaults to true.
+      * @param b Should a flush be performed after the forced merge. Defaults to true.
+      */
+    def `?flush=`(b: Boolean) = self.withModifier(s"?flush=$b")
+  }
+
+  // Force Merge modifiers
+
+  /**
+    * If true, only very old segments (from a previous Lucene major release) will be upgraded. While this will do the
+    * minimal work to ensure the next major release of Elasticsearch can read the segments, it’s dangerous because
+    * it can leave other very old segments in sub-optimal formats. Defaults to false.
+    */
+  trait OnlyAncientSegments extends Modifier { self: BaseDriverOp =>
+    /**
+      * If true, only very old segments (from a previous Lucene major release) will be upgraded. While this will do the
+      * minimal work to ensure the next major release of Elasticsearch can read the segments, it’s dangerous because
+      * it can leave other very old segments in sub-optimal formats. Defaults to false.
+      * @param b If true, only very old segments (from a previous Lucene major release) will be upgraded
+      */
+    def `?only_ancient_segments=`(b: Boolean) = self.withModifier(s"?only_ancient_segments=$b")
+  }
+
   // Misc other modifiers
 
   /**
@@ -439,5 +528,16 @@ object Modifiers {
     def `?verbose=`(b: Boolean) = self.withModifier(s"?verbose=$b")
   }
 
+  /**
+    * TODO
+    */
+  trait Status extends Modifier { self: BaseDriverOp =>
+    /**
+      * Only shards with this status are shown
+      * @param status Only shards with this status are shown
+      */
+    def `?status=`(status: String) = self.withModifier(s"?status=$status")
+
+  }
 
 }

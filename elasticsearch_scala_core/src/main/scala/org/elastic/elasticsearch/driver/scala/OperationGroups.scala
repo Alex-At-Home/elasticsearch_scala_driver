@@ -93,6 +93,12 @@ object OperationGroups {
   trait IndexRecoveryReadable extends EsReadable[IndexRecoveryDriverOp] { self: EsResource =>
     override def read() = IndexRecoveryDriverOp(self, GET, None, List())
   }
+  /**
+    * A readable for retrieving information about shards
+    */
+  trait ShardStoreReadable extends EsReadable[ShardStoreDriverOp] { self: EsResource =>
+    override def read() = ShardStoreDriverOp(self, GET, None, List())
+  }
 
   // Readable with data
 
@@ -180,6 +186,27 @@ object OperationGroups {
     */
   trait OpenCloseIndexesNoDataWritable { self: EsResource =>
     def write() = OpenCloseIndexesDriverOp(self, POST, None, List())
+  }
+
+  /**
+    * A writable with no data and only the standard modifiers
+    */
+  trait FlushNoDataWritable { self: EsResource =>
+    def write() = FlushDriverOp(self, POST, None, List())
+  }
+
+  /**
+    * A writable with no data and only the standard modifiers
+    */
+  trait ForceMergeNoDataWritable { self: EsResource =>
+    def write() = ForceMergeDriverOp(self, POST, None, List())
+  }
+
+  /**
+    * A writable with no data and only the standard modifiers
+    */
+  trait UpgradeNoDataWritable { self: EsResource =>
+    def write() = UpgradeDriverOp(self, POST, None, List())
   }
 
   // Deletable
