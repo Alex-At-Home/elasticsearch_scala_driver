@@ -25,14 +25,14 @@ object Modifiers {
       * @param b The prettiness
       * @return The updated driver operation
       */
-    def `?pretty=`(b: Boolean) = self.withModifier(s"?pretty=$b")
+    def `?pretty=`(b: Boolean): this.type = self.withModifier(s"?pretty=$b")
 
     /**
       * Returns a resource with modifier ?pretty=true
       * (Controls the format of the response if returned as a string, else ignored)
       * @return The updated driver operation
       */
-    def `?pretty` = `?pretty=`(true)
+    def `?pretty`: this.type = `?pretty=`(true)
   }
   /**
     * TODO
@@ -44,13 +44,13 @@ object Modifiers {
       *          (vs computers to consume), eg returns times as string numbers-with-units
       * @return The updated driver operation
       */
-    def `?human=`(b: Boolean) = self.withModifier(s"?human=$b")
+    def `?human=`(b: Boolean): this.type = self.withModifier(s"?human=$b")
 
     /**
       * Returns a resource with modifier ?human=true
       * @return The updated driver operation
       */
-    def `?human` = `?human=`(true)
+    def `?human`: this.type = `?human=`(true)
   }
 
   /**
@@ -64,26 +64,26 @@ object Modifiers {
       * @param node The node to which to restrict the request
       * @return The updated driver operation
       */
-    def `?routing=`(node: String) = self.withModifier(s"?routing=$node")
+    def `?routing=`(node: String): this.type = self.withModifier(s"?routing=$node")
   }
 
   /**
     * TODO
     */
   trait Version extends Modifier { self: BaseDriverOp =>
-    def `?version=`(v: Int) = self.withModifier(s"?version=$v")
+    def `?version=`(v: Int): this.type = self.withModifier(s"?version=$v")
   }
   /**
     * TODO
     */
   trait OpType extends Modifier { self: BaseDriverOp =>
-    def `?op_type=`(opType: String) = self.withModifier(s"?op_type=$opType")
+    def `?op_type=`(opType: String): this.type = self.withModifier(s"?op_type=$opType")
   }
   /**
     * TODO
     */
   trait Parent extends Modifier { self: BaseDriverOp =>
-    def `?parent=`(parent: String) = self.withModifier(s"?parent=$parent")
+    def `?parent=`(parent: String): this.type = self.withModifier(s"?parent=$parent")
   }
 
   /**
@@ -96,38 +96,38 @@ object Modifiers {
       * hits accumulated up to that point when expired. Defaults to no timeout.
       * @param timeout The timeout
       */
-    def `?timeout=`(timeout: String) = self.withModifier(s"?timeout=$timeout")
+    def `?timeout=`(timeout: String): this.type = self.withModifier(s"?timeout=$timeout")
   }
 
   /**
     * TODO
     */
   trait SourceBase extends Modifier { self: BaseDriverOp =>
-    def `?source=`(b: Boolean) = self.withModifier(s"?source=$b")
+    def `?source=`(b: Boolean): this.type = self.withModifier(s"?source=$b")
   }
   /**
     * TODO
     */
   trait SourceInclude extends Modifier { self: BaseDriverOp =>
-    def `?source_include=`(fields: String*) = self.withModifier(s"?source_include=${fields.mkString(",")}")
+    def `?source_include=`(fields: String*): this.type = self.withModifier(s"?source_include=${fields.mkString(",")}")
   }
   /**
     * TODO
     */
   trait SourceExclude extends Modifier { self: BaseDriverOp =>
-    def `?source_exclude=`(fields: String*) = self.withModifier(s"?source_exclude=${fields.mkString(",")}")
+    def `?source_exclude=`(fields: String*): this.type = self.withModifier(s"?source_exclude=${fields.mkString(",")}")
   }
   /**
     * TODO
     */
   trait Fields extends Modifier { self: BaseDriverOp =>
-    def `?fields=`(fields: String*) = self.withModifier(s"?fields=${fields.mkString(",")}")
+    def `?fields=`(fields: String*): this.type = self.withModifier(s"?fields=${fields.mkString(",")}")
   }
   /**
     * TODO
     */
   trait Refresh extends Modifier { self: BaseDriverOp =>
-    def `?refresh=`(b: Boolean) = self.withModifier(s"?refresh=$b")
+    def `?refresh=`(b: Boolean): this.type = self.withModifier(s"?refresh=$b")
     def `?refresh` = `?refresh=`(true)
   }
 
@@ -141,7 +141,7 @@ object Modifiers {
       * The query string (maps to the query_string query)
       * @param query The query string (maps to the query_string query)
       */
-    def `?q=`(query: String) = self.withModifier(s"?q=$query}")
+    def `?q=`(query: String): this.type = self.withModifier(s"?q=$query}")
   }
 
   /**
@@ -152,7 +152,7 @@ object Modifiers {
       * The default field to use when no field prefix is defined within the query.
       * @param defaultField The default field to use when no field prefix is defined within the query
       */
-    def `?df=`(defaultField: String) = self.withModifier(s"?df=$defaultField")
+    def `?df=`(defaultField: String): this.type = self.withModifier(s"?df=$defaultField")
   }
 
   /**
@@ -163,7 +163,7 @@ object Modifiers {
       * The analyzer name to be used when analyzing the query string.
       * @param analyzer The analyzer name to be used when analyzing the query string.
       */
-    def `?analyzer=`(analyzer: String) = self.withModifier(s"?analyzer=$analyzer")
+    def `?analyzer=`(analyzer: String): this.type = self.withModifier(s"?analyzer=$analyzer")
   }
 
   /**
@@ -174,7 +174,7 @@ object Modifiers {
       * Should terms be automatically lowercased or not. Defaults to `true`.
       * @param b Should terms be automatically lowercased or not. Defaults to `true`.
       */
-    def `?lowercase_expanded_terms=`(b: Boolean) = self.withModifier(s"?lowercase_expanded_terms=$b")
+    def `?lowercase_expanded_terms=`(b: Boolean): this.type = self.withModifier(s"?lowercase_expanded_terms=$b")
   }
 
   /**
@@ -185,7 +185,7 @@ object Modifiers {
       * Should wildcard and prefix queries be analyzed or not. Defaults to `false`.
       * @param b Should wildcard and prefix queries be analyzed or not. Defaults to `false`.
       */
-    def `?analyze_wildcard=`(b: Boolean) = self.withModifier(s"?analyze_wildcard=$b")
+    def `?analyze_wildcard=`(b: Boolean): this.type = self.withModifier(s"?analyze_wildcard=$b")
   }
 
   /**
@@ -196,7 +196,7 @@ object Modifiers {
       * The default operator to be used, can be AND or OR. Defaults to OR.
       * @param defaultOperator The default operator to be used, can be AND or OR. Defaults to OR.
       */
-    def `?default_operator=`(defaultOperator: String) = self.withModifier(s"?default_operator=$defaultOperator")
+    def `?default_operator=`(defaultOperator: String): this.type = self.withModifier(s"?default_operator=$defaultOperator")
   }
 
   /**
@@ -209,7 +209,7 @@ object Modifiers {
       * Defaults to false.
       * @param b If set to true will cause format based failures (like providing text to a numeric field) to be ignored.
       */
-    def `?lenient=`(b: Boolean) = self.withModifier(s"?lenient=$b")
+    def `?lenient=`(b: Boolean): this.type = self.withModifier(s"?lenient=$b")
   }
 
   /**
@@ -220,7 +220,7 @@ object Modifiers {
       * For each hit, contain an explanation of how scoring of the hits was computed.
       * @param b For each hit, contain an explanation of how scoring of the hits was computed.
       */
-    def `?explain=`(b: Boolean) = self.withModifier(s"?explain=$b")
+    def `?explain=`(b: Boolean): this.type = self.withModifier(s"?explain=$b")
   }
 
   /**
@@ -233,7 +233,7 @@ object Modifiers {
       * _source_include & _source_exclude (see the request body documentation for more details)
       * @param b Whether to include the matching objects source
       */
-    def `?_source=`(b: Boolean) = self.withModifier(s"?_source=$b")
+    def `?_source=`(b: Boolean): this.type = self.withModifier(s"?_source=$b")
   }
 
   /**
@@ -248,7 +248,7 @@ object Modifiers {
       * There can be several sort parameters (order is important).
       * @param sortFields List of fields to sort (fieldName, fieldName:asc, fieldName:desc)
       */
-    def `?sort=`(sortFields: String*) = self.withModifier(s"?sort=${sortFields.mkString(",")}")
+    def `?sort=`(sortFields: String*): this.type = self.withModifier(s"?sort=${sortFields.mkString(",")}")
   }
 
   /**
@@ -259,7 +259,7 @@ object Modifiers {
       * When sorting, set to true in order to still track scores and return them as part of each hit.
       * @param b When sorting, set to true in order to still track scores and return them as part of each hit.
       */
-    def `?track_scores=`(b: Boolean) = self.withModifier(s"?track_scores=$b")
+    def `?track_scores=`(b: Boolean): this.type = self.withModifier(s"?track_scores=$b")
   }
 
   // Search modifiers - "with data" version
@@ -274,7 +274,7 @@ object Modifiers {
       * ie aggregations and suggestions (no top hits returned). See Shard request cache.
       * @param b enable or disable the caching of search results for requests where size is 0
       */
-    def `?request_cache=`(b: Boolean) = self.withModifier(s"?request_cache=$b")
+    def `?request_cache=`(b: Boolean): this.type = self.withModifier(s"?request_cache=$b")
   }
 
   // Search modifiers - common
@@ -287,7 +287,7 @@ object Modifiers {
       * The starting from index of the hits to return. Defaults to 0.
       * @param n The starting from index of the hits to return. Defaults to 0.
       */
-    def `?from=`(n: Integer) = self.withModifier(s"?from=$n")
+    def `?from=`(n: Integer): this.type = self.withModifier(s"?from=$n")
   }
 
   /**
@@ -298,7 +298,7 @@ object Modifiers {
       * The number of hits to return. Defaults to 10.
       * @param n The number of hits to return. Defaults to 10.
       */
-    def `?size=`(n: Integer) = self.withModifier(s"?size=$n")
+    def `?size=`(n: Integer): this.type = self.withModifier(s"?size=$n")
   }
 
   /**
@@ -313,7 +313,7 @@ object Modifiers {
       * See Search Type for more details on the different types of search that can be performed.
       * @param searchType The search type: dfs_query_then_fetch, query_then_fetch
       */
-    def `?search_type=`(searchType: String) = self.withModifier(s"?search_type=$searchType")
+    def `?search_type=`(searchType: String): this.type = self.withModifier(s"?search_type=$searchType")
   }
 
   /**
@@ -328,7 +328,7 @@ object Modifiers {
       * execution has actually `terminated_early`. Defaults to no terminate_after.
       * @param n The maximum number of documents to collect for each shard
       */
-    def `?terminate_after=`(n: Integer) = self.withModifier(s"?terminate_after=$n")
+    def `?terminate_after=`(n: Integer): this.type = self.withModifier(s"?terminate_after=$n")
   }
 
   // Index and field stats modifiers
@@ -337,14 +337,14 @@ object Modifiers {
     * TODO
     */
   trait Groups extends Modifier { self: BaseDriverOp =>
-    def `?groups=`(groups: String*) = self.withModifier(s"?groups=${groups.mkString(",")}")
+    def `?groups=`(groups: String*): this.type = self.withModifier(s"?groups=${groups.mkString(",")}")
   }
 
   /**
     * TODO
     */
   trait Types extends Modifier { self: BaseDriverOp =>
-    def `?types=`(types: String*) = self.withModifier(s"?types=${types.mkString(",")}")
+    def `?types=`(types: String*): this.type = self.withModifier(s"?types=${types.mkString(",")}")
   }
 
   /**
@@ -357,7 +357,7 @@ object Modifiers {
       * Valid values are indices and cluster (default).
       * @param level indices or cluster
       */
-    def `?level=`(level: String) = self.withModifier(s"?level=$level")
+    def `?level=`(level: String): this.type = self.withModifier(s"?level=$level")
   }
 
   // Recovery Modifiers
@@ -370,7 +370,7 @@ object Modifiers {
       * TODO
       * @param b Whether the reply should add extra detail (default: false)
       */
-    def `?detailed=`(b: Boolean) = self.withModifier(s"?detailed=$b")
+    def `?detailed=`(b: Boolean): this.type = self.withModifier(s"?detailed=$b")
   }
 
   /**
@@ -381,7 +381,7 @@ object Modifiers {
       * TODO
       * @param b Whether the only ongoing recoveries are displayed (default: false)
       */
-    def `?active_only=`(b: Boolean) = self.withModifier(s"?active_only=$b")
+    def `?active_only=`(b: Boolean): this.type = self.withModifier(s"?active_only=$b")
   }
 
   // Flush parameters
@@ -399,7 +399,7 @@ object Modifiers {
       * @param b If set to true the flush operation will block until the flush can be executed if another flush
       *          operation is already executing.
       */
-    def `?wait_if_ongoing=`(b: Boolean) = self.withModifier(s"?wait_if_ongoing=$b")
+    def `?wait_if_ongoing=`(b: Boolean): this.type = self.withModifier(s"?wait_if_ongoing=$b")
   }
 
   /**
@@ -414,7 +414,7 @@ object Modifiers {
       * (This setting can be considered as internal)
       * @param b  Whether a flush should be forced
       */
-    def `?force=`(b: Boolean) = self.withModifier(s"?force=$b")
+    def `?force=`(b: Boolean): this.type = self.withModifier(s"?force=$b")
   }
 
   // Force Merge Parameters
@@ -429,7 +429,7 @@ object Modifiers {
       * Defaults to simply checking if a merge needs to execute, and if so, executes it.
       * @param b Whether the only ongoing recoveries are displayed (default: false)
       */
-    def `?max_num_segments=`(b: Boolean) = self.withModifier(s"?max_num_segments=$b")
+    def `?max_num_segments=`(b: Boolean): this.type = self.withModifier(s"?max_num_segments=$b")
   }
 
   /**
@@ -442,7 +442,7 @@ object Modifiers {
       * Defaults to simply checking if a merge needs to execute, and if so, executes it.
       * @param b Whether the only ongoing recoveries are displayed (default: false)
       */
-    def `?only_expunge_deletes=`(b: Boolean) = self.withModifier(s"?only_expunge_deletes=$b")
+    def `?only_expunge_deletes=`(b: Boolean): this.type = self.withModifier(s"?only_expunge_deletes=$b")
   }
 
   /**
@@ -453,7 +453,7 @@ object Modifiers {
       * Should a flush be performed after the forced merge. Defaults to true.
       * @param b Should a flush be performed after the forced merge. Defaults to true.
       */
-    def `?flush=`(b: Boolean) = self.withModifier(s"?flush=$b")
+    def `?flush=`(b: Boolean): this.type = self.withModifier(s"?flush=$b")
   }
 
   // Force Merge modifiers
@@ -470,7 +470,7 @@ object Modifiers {
       * it can leave other very old segments in sub-optimal formats. Defaults to false.
       * @param b If true, only very old segments (from a previous Lucene major release) will be upgraded
       */
-    def `?only_ancient_segments=`(b: Boolean) = self.withModifier(s"?only_ancient_segments=$b")
+    def `?only_ancient_segments=`(b: Boolean): this.type = self.withModifier(s"?only_ancient_segments=$b")
   }
 
   // Misc other modifiers
@@ -479,7 +479,7 @@ object Modifiers {
     * TODO
     */
   trait Conflict extends Modifier { self: BaseDriverOp =>
-    def `?conflict=`(op: String) = self.withModifier(s"?conflict=$op")
+    def `?conflict=`(op: String): this.type = self.withModifier(s"?conflict=$op")
   }
 
   /**
@@ -490,7 +490,7 @@ object Modifiers {
       * Controls on which shard the explain is executed.
       * @param preference Controls on which shard the explain is executed.
       */
-    def `?preference=`(preference: String) = self.withModifier(s"?preference=$preference")
+    def `?preference=`(preference: String): this.type = self.withModifier(s"?preference=$preference")
   }
 
   /**
@@ -503,7 +503,7 @@ object Modifiers {
       * instead of using the Master node’s cluster state.
       * @param b Whether the cluster state is read locally
       */
-    def `?local=`(b: Boolean) = self.withModifier(s"?local=$b")
+    def `?local=`(b: Boolean): this.type = self.withModifier(s"?local=$b")
   }
 
   /**
@@ -514,7 +514,7 @@ object Modifiers {
       * TODO
       * @param b Whether to error if any of the specified clusters are not available
       */
-    def `?ignore_unavailable=`(b: Boolean) = self.withModifier(s"?ignore_unavailable=$b")
+    def `?ignore_unavailable=`(b: Boolean): this.type = self.withModifier(s"?ignore_unavailable=$b")
   }
 
   /**
@@ -525,7 +525,7 @@ object Modifiers {
       * TODO
       * @param b Whether the response should be verbose
       */
-    def `?verbose=`(b: Boolean) = self.withModifier(s"?verbose=$b")
+    def `?verbose=`(b: Boolean): this.type = self.withModifier(s"?verbose=$b")
   }
 
   /**
@@ -536,7 +536,7 @@ object Modifiers {
       * Only shards with this status are shown
       * @param status Only shards with this status are shown
       */
-    def `?status=`(status: String) = self.withModifier(s"?status=$status")
+    def `?status=`(status: String): this.type = self.withModifier(s"?status=$status")
 
   }
 

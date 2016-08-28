@@ -247,7 +247,7 @@ object ApiModel_common {
       *
       * @param types The types
       */
-    def $(types: String*) = `/$indexes/$types`(Seq(index) ++ otherIndexes, types)
+    def $(types: String*) = `/$indexes/$types`(index)(types:_*)
 
     /**
       * A search over specified indexes (all types)
@@ -689,7 +689,7 @@ object ApiModel_common {
     * @param indexes The indexes
     * @param types The types
     */
-  case class `/$indexes/$types`(indexes: Seq[String], types: Seq[String])
+  case class `/$indexes/$types`(indexes: String*)(types: String*)
   extends SimpleCheckable with EsResource
   {
     /**
@@ -697,65 +697,43 @@ object ApiModel_common {
       *
       * @return The search resource
       */
-    def _search = `/$indexes/$types/_search`(indexes, types)
+    def _search = `/$indexes/$types/_search`(indexes:_*)(types:_*)
 
     /**
       * The multi search resource
       *
       * @return The multi search resource
       */
-    def _msearch = `/$indexes/$types/_msearch`(indexes, types)
+    def _msearch = `/$indexes/$types/_msearch`(indexes:_*)(types:_*)
 
     /**
       * The search-and-count resource
       *
       * @return The search and count resource
       */
-    def _count = `/$indexes/$types/_count`(indexes, types)
+    def _count = `/$indexes/$types/_count`(indexes:_*)(types:_*)
 
     /**
       * The query validation resource
       *
       * @return The query validation resource
       */
-    def _validate = `/$indexes/$types/_validate`(indexes, types)
+    def _validate = `/$indexes/$types/_validate`(indexes:_*)(types:_*)
 
     /**
       * The query explanation resource
       *
       * @return The query explanation resource
       */
-    def _explain = `/$indexes/$types/_explain`(indexes, types)
+    def _explain = `/$indexes/$types/_explain`(indexes:_*)(types:_*)
 
     /**
       * Suggests search terms over the specified indexes and types
       *
       * @return The suggest resource
       */
-    def _suggest = `/$indexes/$types/_suggest`(indexes, types)
+    def _suggest = `/$indexes/$types/_suggest`(indexes:_*)(types:_*)
   }
-
-  /**
-    * A nicer constructor for the index resource
-    */
-  object `/$indexes/$types` {
-    /**
-      * Specify the indexes for the index resource
-      *
-      * @param indexes The indexes for the index resource
-      * @return An intermediate object which is converted to a index resource via types
-      */
-    def apply(indexes: String*) = new Object {
-      /**
-        * Specify the types for the index resource
-        *
-        * @param types The types for the index resource
-        * @return The index resource
-        */
-      def apply(types: String*) = `/$indexes/$types`(indexes, types)
-    }
-  }
-
 
   /**
     * Performs activities on the specified index, type, and automatically generated id:
@@ -804,41 +782,41 @@ object ApiModel_common {
       *
       * @return The search resource
       */
-    def _search = `/$indexes/$types/_search`(List(index), List(`type`))
+    def _search = `/$indexes/$types/_search`(index)(`type`)
 
     /**
       * The multi search resource
       *
       * @return The multi search resource
       */
-    def _msearch = `/$indexes/$types/_msearch`(List(index), List(`type`))
+    def _msearch = `/$indexes/$types/_msearch`(index)(`type`)
 
     /**
       * The search-and-count resource
       *
       * @return The search and count resource
       */
-    def _count = `/$indexes/$types/_count`(List(index), List(`type`))
+    def _count = `/$indexes/$types/_count`(index)(`type`)
 
     /**
       * The query validation resource
       *
       * @return The query validation resource
       */
-    def _validate = `/$indexes/$types/_validate`(List(index), List(`type`))
+    def _validate = `/$indexes/$types/_validate`(index)(`type`)
 
     /**
       * The query explanation resource
       *
       * @return The query explanation resource
       */
-    def _explain = `/$indexes/$types/_explain`(List(index), List(`type`))
+    def _explain = `/$indexes/$types/_explain`(index)(`type`)
     /**
       * The search suggest resource
       *
       * @return The search suggest resource
       */
-    def _suggest = `/$indexes/$types/_suggest`(List(index), List(`type`))
+    def _suggest = `/$indexes/$types/_suggest`(index)(`type`)
   }
 
   /**
@@ -851,42 +829,42 @@ object ApiModel_common {
       *
       * @return The search resource
       */
-    def _search = `/_all/$types/_search`(types)
+    def _search = `/_all/$types/_search`(types:_*)
 
     /**
       * The multi search resource
       *
       * @return The multi search resource
       */
-    def _msearch = `/_all/$types/_msearch`(types)
+    def _msearch = `/_all/$types/_msearch`(types:_*)
 
     /**
       * The search-and-count resource
       *
       * @return The search and count resource
       */
-    def _count = `/_all/$types/_count`(types)
+    def _count = `/_all/$types/_count`(types:_*)
 
     /**
       * The query validation resource
       *
       * @return The query validation resource
       */
-    def _validate = `/_all/$types/_validate`(types)
+    def _validate = `/_all/$types/_validate`(types:_*)
 
     /**
       * The query explanation resource
       *
       * @return The query explanation resource
       */
-    def _explain = `/_all/$types/_explain`(types)
+    def _explain = `/_all/$types/_explain`(types:_*)
 
     /**
       * Suggests search terms over the specified types
       *
       * @return The suggest resource
       */
-    def _suggest = `/_all/$types/_suggest`(types)
+    def _suggest = `/_all/$types/_suggest`(types:_*)
   }
 
   // 0.3.2 Search Templates
@@ -914,7 +892,7 @@ object ApiModel_common {
       * @param fields The set of fields for which to retrieve the mapping
       * @return The get field mapping resource
       */
-    def $(fields: String*) = `/$indexes/_mapping/field/$fields`(indexes, fields)
+    def $(fields: String*) = `/$indexes/_mapping/field/$fields`(indexes:_*)(fields:_*)
   }
   /**
     * an intermediate step leading to the get field mapping resources
@@ -922,14 +900,14 @@ object ApiModel_common {
     * @param indexes The indexes over which the field mappings are retrieved
     * @param types The types over which the field mappings are retrieved
     */
-  case class `/$indexes/_mapping/$types/field`(indexes: Seq[String], types: Seq[String]) {
+  case class `/$indexes/_mapping/$types/field`(indexes: String*)(types: String*) {
     /**
       * Returns the get field mapping for these fields (+parent restrictions)
       *
       * @param fields The set of fields for which to retrieve the mapping
       * @return The get field mapping resource
       */
-    def $(fields: String*) = `/$indexes/_mapping/$types/field/$fields`(indexes, types, fields)
+    def $(fields: String*) = `/$indexes/_mapping/$types/field/$fields`(indexes:_*)(types:_*)(fields:_*)
   }
   /**
     * an intermediate step leading to the get field mapping resources
@@ -941,7 +919,7 @@ object ApiModel_common {
       * @param fields The set of fields for which to retrieve the mapping
       * @return The get field mapping resource
       */
-    def $(fields: String*) = `/_mapping/field/$fields`(fields)
+    def $(fields: String*) = `/_mapping/field/$fields`(fields: _*)
   }
   /**
     * an intermediate step leading to the get field mapping resources
@@ -955,7 +933,7 @@ object ApiModel_common {
       * @param fields The set of fields for which to retrieve the mapping
       * @return The get field mapping resource
       */
-    def $(fields: String*) = `/_mapping/$types/field/$fields`(types, fields)
+    def $(fields: String*) = `/_mapping/$types/field/$fields`(types:_*)(fields:_*)
   }
   /**
     * an intermediate step leading to the get field mapping resources
@@ -967,7 +945,7 @@ object ApiModel_common {
       * @param fields The set of fields for which to retrieve the mapping
       * @return The get field mapping resource
       */
-    def $(fields: String*) = `/_all/_mapping/field/$fields`(fields)
+    def $(fields: String*) = `/_all/_mapping/field/$fields`(fields:_*)
   }
   /**
     * an intermediate step leading to the get field mapping resources
@@ -981,7 +959,7 @@ object ApiModel_common {
       * @param fields The set of fields for which to retrieve the mapping
       * @return The get field mapping resource
       */
-    def $(fields: String*) = `/_all/_mapping/$types/field/$fields`(types, fields)
+    def $(fields: String*) = `/_all/_mapping/$types/field/$fields`(types:_*)(fields:_*)
   }
 
   // 0.3.4 Index aliases
@@ -1018,7 +996,7 @@ object ApiModel_common {
       * @param alias The specified single alias name
       * @return The check/retrieve/delete/write _alias resource for the specified aliases
       */
-    def $(alias: String) = `/$indexes/_alias/$alias`(indexes, alias)
+    def $(alias: String) = `/$indexes/_alias/$alias`(indexes:_*)(alias)
     /**
       * Returns the check/retrieve _alias resource for the specified aliases
       *
@@ -1028,14 +1006,14 @@ object ApiModel_common {
       * @return
       */
     def $(firstAlias: String, secondAlias: String, otherAliases: String*) =
-      `/$indexes/_alias/$aliases`(indexes, Seq(firstAlias, secondAlias) ++ otherAliases)
+      `/$indexes/_alias/$aliases`(indexes:_*)(Seq(firstAlias, secondAlias) ++ otherAliases:_*)
 
     /**
       * Returns the check/retrieve _alias resource for all aliases
       *
       * @return The check/retrieve _alias resource for all aliases
       */
-    def * =`/$indexes/_alias/*`(indexes)
+    def * =`/$indexes/_alias/*`(indexes:_*)
   }
 
   /**
@@ -1058,7 +1036,7 @@ object ApiModel_common {
       * @return
       */
     def $(firstAlias: String, secondAlias: String, otherAliases: String*) =
-      `/_all/_alias/$aliases`(Seq(firstAlias, secondAlias) ++ otherAliases)
+      `/_all/_alias/$aliases`(Seq(firstAlias, secondAlias) ++ otherAliases:_*)
 
     /**
       * Returns the check/retrieve _alias resource for all aliases
@@ -1110,7 +1088,7 @@ object ApiModel_common {
       * @param name The filter glob string vs index names
       * @return The filtered resource for getting the index settings
       */
-    def $(name: String) = `/$indexes/_settings/name=$name`(indexes, name)
+    def $(name: String) = `/$indexes/_settings/name=$name`(indexes:_*)(name)
   }
 
   // 0.2.12 Clear cache
@@ -1149,7 +1127,7 @@ object ApiModel_common {
       * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
       * @return The clear cache resource
       */
-    def clear = `/$indexes/_cache/clear`(indexes)
+    def clear = `/$indexes/_cache/clear`(indexes:_*)
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
@@ -1455,7 +1433,7 @@ object ApiModel_common {
     * @param indexes The indexes over which to search
     * @param types The types over which to search
     */
-  case class `/$indexes/$types/_search`(indexes: Seq[String], types: Seq[String])
+  case class `/$indexes/$types/_search`(indexes: String*)(types: String*)
     extends QueryUriReadable with QueryWithDataReadable
       with EsResource
   {
@@ -1554,31 +1532,10 @@ object ApiModel_common {
     * @param indexes The indexes over which to query
     * @param types The types over which to query
     */
-  case class `/$indexes/$types/_suggest`(indexes: Seq[String], types: Seq[String])
+  case class `/$indexes/$types/_suggest`(indexes: String*)(types: String*)
     extends QueryMiscUriReadable with QueryMiscWithDataReadable
       with EsResource
   {
-  }
-
-  /**
-    * A nicer constructor for the suggest resource
-    */
-  object `/$indexes/$types/_suggest` {
-    /**
-      * Specify the indexes for the _suggest resource
-      *
-      * @param indexes The indexes for the _suggest resource
-      * @return An intermediate object which is converted to a _suggest resource via types
-      */
-    def apply(indexes: String*) = new Object {
-      /**
-        * Specify the types for the _suggest resource
-        *
-        * @param types The types for the _suggest resource
-        * @return The _suggest resource
-        */
-      def apply(types: String*) = `/$indexes/$types/_suggest`(indexes, types)
-    }
   }
 
   // 2.5 Multi search
@@ -1628,7 +1585,7 @@ object ApiModel_common {
     * @param indexes The indexes over which to search
     * @param types The types over which to search
     */
-  case class `/$indexes/$types/_msearch`(indexes: Seq[String], types: Seq[String])
+  case class `/$indexes/$types/_msearch`(indexes: String*)(types: String*)
     extends SimpleWithDataReadable
       with EsResource
   {
@@ -1679,7 +1636,7 @@ object ApiModel_common {
     * @param indexes The indexes over which to search
     * @param types The types over which to search
     */
-  case class `/$indexes/$types/_count`(indexes: Seq[String], types: Seq[String])
+  case class `/$indexes/$types/_count`(indexes: String*)(types: String*)
     extends QueryCountUriReadable with QueryCountWithDataReadable
       with EsResource
   {
@@ -1725,7 +1682,7 @@ object ApiModel_common {
     * @param indexes The indexes over which to search
     * @param types The types over which to search
     */
-  case class `/$indexes/$types/_validate`(indexes: Seq[String], types: Seq[String])
+  case class `/$indexes/$types/_validate`(indexes: String*)(types: String*)
     extends QueryMiscUriReadable with QueryCountWithDataReadable
       with EsResource
   {
@@ -1771,7 +1728,7 @@ object ApiModel_common {
     * @param indexes The indexes over which to search
     * @param types The types over which to search
     */
-  case class `/$indexes/$types/_explain`(indexes: Seq[String], types: Seq[String])
+  case class `/$indexes/$types/_explain`(indexes: String*)(types: String*)
     extends QueryExplainUriReadable with QueryExplainWithDataReadable
       with EsResource
   {
@@ -1845,14 +1802,14 @@ object ApiModel_common {
       * @param types The types over which to restrict the mapping operations
       * @return Returns the mapping control resource for specified indexes and types
       */
-    def $(types: String*) = `/$indexes/_mapping/$types`(indexes, types)
+    def $(types: String*) = `/$indexes/_mapping/$types`(indexes:_*)(types:_*)
 
     /**
       * Returns an intermediate step leading to the get field mapping resources
       *
       * @return An intermediate step leading to the get field mapping resources
       */
-    def field  = `/$indexes/_mapping/field`(indexes)
+    def field  = `/$indexes/_mapping/field`(indexes:_*)
   }
 
   /**
@@ -1861,7 +1818,7 @@ object ApiModel_common {
     * @param indexes The index or indexes whose mapping to get
     * @param types The type or type whose mapping to get
     */
-  case class `/$indexes/_mapping/$types`(indexes: Seq[String], types: Seq[String])
+  case class `/$indexes/_mapping/$types`(indexes: String*)(types: String*)
     extends SimpleReadable
       with EsResource
   {
@@ -1870,27 +1827,7 @@ object ApiModel_common {
       *
       * @return An intermediate step leading to the get field mapping resources
       */
-    def field  = `/$indexes/_mapping/$types/field`(indexes, types)
-  }
-  /**
-    * A nicer constructor for the mapping resource with indexes and types
-    */
-  object `/$indexes/_mapping/$types` {
-    /**
-      * Specify the indexes for the _mapping  resource
-      *
-      * @param indexes The indexes for the _mapping resource
-      * @return An intermediate object which is converted to a _mapping resource via types
-      */
-    def apply(indexes: String*) = new Object {
-      /**
-        * Specify the types for the _mapping resource
-        *
-        * @param types The types for the _mapping resource
-        * @return The _mapping resource
-        */
-      def apply(types: String*) = `/$indexes/_mapping/$types`(indexes, types)
-    }
+    def field  = `/$indexes/_mapping/$types/field`(indexes:_*)(types:_*)
   }
 
   /**
@@ -1906,7 +1843,7 @@ object ApiModel_common {
       * @param types The types over which to restrict the mapping operations
       * @return Returns the mapping control resource for all indexes and specified types
       */
-    def $(types: String*) = `/_mapping/$types`(types)
+    def $(types: String*) = `/_mapping/$types`(types:_*)
 
     /**
       * Returns an intermediate step leading to the get field mapping resources
@@ -1930,7 +1867,7 @@ object ApiModel_common {
       *
       * @return An intermediate step leading to the get field mapping resources
       */
-    def field  = `/_mapping/$types/field`(types)
+    def field  = `/_mapping/$types/field`(types:_*)
   }
   /**
     * Gets the mapping for all indexes and all types
@@ -1945,7 +1882,7 @@ object ApiModel_common {
       * @param types The types over which to restrict the mapping operations
       * @return Returns the mapping control resource for all indexes and specified types
       */
-    def $(types: String*) = `/_all/_mapping/$types`(types)
+    def $(types: String*) = `/_all/_mapping/$types`(types:_*)
 
     /**
       * Returns an intermediate step leading to the get field mapping resources
@@ -1969,7 +1906,7 @@ object ApiModel_common {
       *
       * @return An intermediate step leading to the get field mapping resources
       */
-    def field  = `/_all/_mapping/$types/field`(types)
+    def field  = `/_all/_mapping/$types/field`(types:_*)
   }
 
   // 3.3 Field mappings
@@ -1980,30 +1917,9 @@ object ApiModel_common {
     *
     * @param indexes The indexes over which the field mappings are retrieved
     */
-  case class `/$indexes/_mapping/field/$fields`(indexes: Seq[String], fields: Seq[String])
+  case class `/$indexes/_mapping/field/$fields`(indexes: String*)(fields: String*)
     extends SimpleReadable
       with EsResource
-
-  /**
-    * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-    */
-  object `/$indexes/_mapping/field/$fields` {
-    /**
-      * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-      *
-      * @param indexes The set of indexes over which to restrict this resource
-      * @return An intermediate object leading to the get field mapping resource
-      */
-    def apply(indexes: String*) = new Object {
-      /**
-        * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-        *
-        * @param fields The set of fields for which to get the mapping
-        * @return The get field mapping resource
-        */
-      def apply(fields: String*) = `/$indexes/_mapping/field/$fields`(indexes, fields)
-    }
-  }
 
   /**
     * an intermediate step leading to the get field mapping resources
@@ -2011,38 +1927,9 @@ object ApiModel_common {
     * @param indexes The indexes over which the field mappings are retrieved
     * @param types The types over which the field mappings are retrieved
     */
-  case class `/$indexes/_mapping/$types/field/$fields`(indexes: Seq[String], types: Seq[String], fields: Seq[String])
+  case class `/$indexes/_mapping/$types/field/$fields`(indexes: String*)(types: String*)(fields: String*)
     extends SimpleReadable
       with EsResource
-
-  /**
-    * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-    */
-  object `/$indexes/_mapping/$types/field/$fields` {
-    /**
-      * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-      *
-      * @param indexes The set of indexes over which to restrict this resource
-      * @return An intermediate object leading to the get field mapping resource
-      */
-    def apply(indexes: String*) = new Object {
-      /**
-        * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-        *
-        * @param types The set of types over which to restrict this resource
-        * @return An intermediate object leading to the get field mapping resource
-        */
-      def apply(types: String*) = new Object {
-        /**
-          * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-          *
-          * @param fields The set of fields for which to get the mapping
-          * @return The get field mapping resource
-          */
-        def apply(fields: String*) = `/$indexes/_mapping/$types/field/$fields`(indexes, types, fields)
-      }
-    }
-  }
 
   /**
     * an intermediate step leading to the get field mapping resources
@@ -2056,30 +1943,9 @@ object ApiModel_common {
     *
     * @param types The types over which the field mappings are retrieved
     */
-  case class `/_mapping/$types/field/$fields`(types: Seq[String], fields: Seq[String])
+  case class `/_mapping/$types/field/$fields`(types: String*)(fields: String*)
     extends SimpleReadable
       with EsResource
-
-  /**
-    * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-    */
-  object `/_mapping/$types/field/$fields` {
-    /**
-      * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-      *
-      * @param types The set of types over which to restrict this resource
-      * @return An intermediate object leading to the get field mapping resource
-      */
-    def apply(types: String*) = new Object {
-      /**
-        * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-        *
-        * @param fields The set of fields for which to get the mapping
-        * @return The get field mapping resource
-        */
-      def apply(fields: String*) = `/_mapping/$types/field/$fields`(types, fields)
-    }
-  }
 
   /**
     * an intermediate step leading to the get field mapping resources
@@ -2093,30 +1959,9 @@ object ApiModel_common {
     *
     * @param types The types over which the field mappings are retrieved
     */
-  case class `/_all/_mapping/$types/field/$fields`(types: Seq[String], fields: Seq[String])
+  case class `/_all/_mapping/$types/field/$fields`(types: String*)(fields: String*)
     extends SimpleReadable
       with EsResource
-
-  /**
-    * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-    */
-  object `/_all/_mapping/$types/field/$fields` {
-    /**
-      * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-      *
-      * @param types The set of types over which to restrict this resource
-      * @return An intermediate object leading to the get field mapping resource
-      */
-    def apply(types: String*) = new Object {
-      /**
-        * Provides a nicer constructor for the get field mappings resource with multiple variable arguments
-        *
-        * @param fields The set of fields for which to get the mapping
-        * @return The get field mapping resource
-        */
-      def apply(fields: String*) = `/_all/_mapping/$types/field/$fields`(types, fields)
-    }
-  }
 
   // 3.4 Index aliases
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html
@@ -2152,7 +1997,7 @@ object ApiModel_common {
     * @param indexes The list of indexes (including globs)
     * @param alias The specific alias
     */
-  case class `/$indexes/_alias/$alias`(indexes: Seq[String], alias: String)
+  case class `/$indexes/_alias/$alias`(indexes: String*)(alias: String)
     extends SimpleReadable
       with SimpleCheckable
       with SimpleNoDataWritable
@@ -2160,58 +2005,16 @@ object ApiModel_common {
       with EsResource
 
   /**
-    * A nicer constructor for the _alias resource
-    */
-  object `/$indexes/_alias/$alias` {
-    /**
-      * Specify the indexes for the _alias resource
-      *
-      * @param indexes The indexes for the _alias resource
-      * @return An intermediate object which is converted to a _alias resource via alias
-      */
-    def apply(indexes: String*) = new Object {
-      /**
-        * Specify the types for the index resource
-        *
-        * @param alias The specific alias
-        * @return The _alias resource
-        */
-      def apply(alias: String) = `/$indexes/_alias/$alias`(indexes, alias)
-    }
-  }
-
-  /**
     * Delete/retrieve mappings from a multiple aliases to the specified index(es)
     *
     * @param indexes The list of indexes (including globs)
     * @param aliases The names of the aliases (including globs)
     */
-  case class `/$indexes/_alias/$aliases`(indexes: Seq[String], aliases: Seq[String])
+  case class `/$indexes/_alias/$aliases`(indexes: String*)(aliases: String*)
     extends SimpleReadable
       with SimpleCheckable
       with SimpleDeletable
       with EsResource
-
-  /**
-    * A nicer constructor for the _alias resource
-    */
-  object `/$indexes/_alias/$aliases` {
-    /**
-      * Specify the indexes for the _alias resource
-      *
-      * @param indexes The indexes for the _alias resource
-      * @return An intermediate object which is converted to a _alias resource via aliases
-      */
-    def apply(indexes: String*) = new Object {
-      /**
-        * Specify the types for the index resource
-        *
-        * @param aliases The specific aliases
-        * @return The _alias resource
-        */
-      def apply(aliases: String*) = `/$indexes/_alias/$aliases`(indexes, aliases)
-    }
-  }
 
   /**
     * Delete/retrieve mappings from a multiple aliases to the specified index(es)
@@ -2325,7 +2128,7 @@ object ApiModel_common {
       *
       * @return An intermediate class that provides navigation to the filter index settings resource
       */
-    def name =  `/$indexes/_settings/name=`(indexes)
+    def name =  `/$indexes/_settings/name=`(indexes:_*)
   }
   /**
     * Read the filtered settings for the entire cluster
@@ -2333,30 +2136,9 @@ object ApiModel_common {
     * @param indexes The indexes to read
     * @param name The filter glob string vs index names
     */
-  case class `/$indexes/_settings/name=$name`(indexes: Seq[String], name: String)
+  case class `/$indexes/_settings/name=$name`(indexes: String*)(name: String)
     extends SimpleReadable
       with EsResource
-
-  /**
-    * A nicer constructor for the update index settings
-    */
-  object `/$indexes/_settings/name=$name` {
-    /**
-      * Specify the indexes for the index settings get resource
-      *
-      * @param indexes The indexes for the index resource
-      * @return An intermediate object which is converted to a get index settings resource via `name`
-      */
-    def apply(indexes: String*) = new Object {
-      /**
-        * Specify the types for the index settings get resource
-        *
-        * @param name The filter glob string vs index names
-        * @return The get index settings resource
-        */
-      def apply(name: String) = `/$indexes/_settings/name=$name`(indexes, name)
-    }
-  }
 
   // 3.6 Analyze
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-analyze.html
@@ -2405,7 +2187,7 @@ object ApiModel_common {
       * @return The index template resource for this template
       */
     def $(firstTemplate: String, secondTemplate: String, otherTemplates: String*) =
-      `/_template/$templates`(Seq(firstTemplate, secondTemplate) ++ otherTemplates)
+      `/_template/$templates`(Seq(firstTemplate, secondTemplate) ++ otherTemplates:_*)
   }
 
   /**
@@ -2445,7 +2227,7 @@ object ApiModel_common {
       * @param statsGroups The list of statistics groups
       * @return The resource restricted to the set of specified stats groups
       */
-    def $(statsGroups: String*) = `/_stats/$statsGroups`(statsGroups)
+    def $(statsGroups: String*) = `/_stats/$statsGroups`(statsGroups:_*)
   }
 
   /**
@@ -2463,7 +2245,7 @@ object ApiModel_common {
       * @param fieldGroups The list of fields for these statistics groups
       * @return The resource restricted to the set of specified stats groups
       */
-    def $(fieldGroups: String*) = `/_stats/$statsGroups/$fieldGroups`(statsGroups, fieldGroups)
+    def $(fieldGroups: String*) = `/_stats/$statsGroups/$fieldGroups`(statsGroups:_*)(fieldGroups:_*)
   }
 
   /**
@@ -2473,30 +2255,9 @@ object ApiModel_common {
     * @param statsGroups The list of statistics groups
     * @param fieldGroups The list of fields for these statistics groups
     */
-  case class `/_stats/$statsGroups/$fieldGroups`(statsGroups: Seq[String], fieldGroups: Seq[String])
+  case class `/_stats/$statsGroups/$fieldGroups`(statsGroups: String*)(fieldGroups: String*)
     extends IndexStatsReadable
       with EsResource
-
-  /**
-    * A nicer constructor for the index statistics retrieval
-    */
-  object `/_stats/$statsGroups/$fieldGroups` {
-    /**
-      * Specify the statistics groups for which to retrieve the stats
-      *
-      * @param statsGroups The list of statistics groups
-      * @return An intermediate object which is converted to a get index statistics resource via `fieldGroups`
-      */
-    def apply(statsGroups: String*) = new Object {
-      /**
-        * Specify the field groups for which to retrieve the stats
-        *
-        * @param fieldGroups The list of fields for these statistics groups
-        * @return A get index statistics resource
-        */
-      def apply(fieldGroups: String*) = `/_stats/$statsGroups/$fieldGroups`(statsGroups, fieldGroups)
-    }
-  }
 
   /**
     * Returns high level aggregation and index level stats for specified indices
@@ -2513,7 +2274,7 @@ object ApiModel_common {
       * @param statsGroups The list of statistics groups
       * @return The resource restricted to the set of specified stats groups
       */
-    def $(statsGroups: String*) = `/$indexes/_stats/$statsGroups`(indexes, statsGroups)
+    def $(statsGroups: String*) = `/$indexes/_stats/$statsGroups`(indexes:_*)(statsGroups:_*)
   }
 
   /**
@@ -2522,7 +2283,7 @@ object ApiModel_common {
     * @param indexes The indexes over which to restrict the stats
     * @param statsGroups The list of statistics groups
     */
-  case class `/$indexes/_stats/$statsGroups`(indexes: Seq[String], statsGroups: Seq[String])
+  case class `/$indexes/_stats/$statsGroups`(indexes: String*)(statsGroups: String*)
     extends IndexStatsReadable
       with EsResource
   {
@@ -2532,27 +2293,8 @@ object ApiModel_common {
       * @param fieldGroups The list of fields for these statistics groups
       * @return The resource restricted to the set of specified stats groups
       */
-    def $(fieldGroups: String*) = `/$indexes/_stats/$statsGroups/$fieldGroups`(indexes, statsGroups, fieldGroups)
-  }
-  /**
-    * A nicer constructor for the index statistics retrieval
-    */
-  object `/$indexes/_stats/$statsGroups` {
-    /**
-      * Specify the statistics groups for which to retrieve the stats
-      *
-      * @param indexes The indexes for the get index statistics resource
-      * @return An intermediate object which is converted to a get index statistics resource via `fieldGroups`
-      */
-    def apply(indexes: String*) = new Object {
-      /**
-        * Specify the field groups for which to retrieve the stats
-        *
-        * @param fieldGroups The list of fields for these statistics groups
-        * @return A get index statistics resource
-        */
-      def apply(fieldGroups: String*) = `/$indexes/_stats/$statsGroups`(indexes, fieldGroups)
-    }
+    def $(fieldGroups: String*) =
+      `/$indexes/_stats/$statsGroups/$fieldGroups`(indexes:_*)(statsGroups:_*)(fieldGroups:_*)
   }
 
   /**
@@ -2564,37 +2306,9 @@ object ApiModel_common {
     * @param fieldGroups The list of fields for these statistics groups
     */
   case class `/$indexes/_stats/$statsGroups/$fieldGroups`
-    (indexes: Seq[String], statsGroups: Seq[String], fieldGroups: Seq[String])
+    (indexes: String*)(statsGroups: String*)(fieldGroups: String*)
     extends IndexStatsReadable
       with EsResource
-  /**
-    * A nicer constructor for the index statistics retrieval
-    */
-  object `/$indexes/_stats/$statsGroups/$fieldGroups` {
-    /**
-      * Specify the statistics groups for which to retrieve the stats
-      *
-      * @param indexes The indexes for the get index statistics resource
-      * @return An intermediate object which is converted to a get index statistics resource via `fieldGroups`
-      */
-    def apply(indexes: String*) = new Object {
-      /**
-        * Specify the statistics groups for which to retrieve the stats
-        *
-        * @param statsGroups The list of statistics groups
-        * @return An intermediate object which is converted to a get index statistics resource via `fieldGroups`
-        */
-      def apply(statsGroups: String*) = new Object {
-        /**
-          * Specify the field groups for which to retrieve the stats
-          *
-          * @param fieldGroups The list of fields for these statistics groups
-          * @return A get index statistics resource
-          */
-        def apply(fieldGroups: String*) = `/$indexes/_stats/$statsGroups`(indexes, fieldGroups)
-      }
-    }
-  }
 
   // 3.9 Segments
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html

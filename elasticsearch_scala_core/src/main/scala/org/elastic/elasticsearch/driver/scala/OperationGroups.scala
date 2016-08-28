@@ -1,7 +1,10 @@
 package org.elastic.elasticsearch.driver.scala
 
-import org.elastic.elasticsearch.driver.scala.ElasticsearchBase._
+import org.elastic.elasticsearch.driver.scala.ElasticsearchBase.{BaseDriverOp, EsResource, _}
 import org.elastic.elasticsearch.driver.scala.ModifierGroups._
+import org.elastic.elasticsearch.driver.scala.Modifiers.{Human, OnlyAncientSegments, Pretty, Verbose}
+
+import scala.reflect.ClassTag
 
 /**
   * The different read/write/delete operations mixed with the
@@ -209,6 +212,23 @@ object OperationGroups {
     def write() = UpgradeDriverOp(self, POST, None, List())
   }
 
+  /**/
+  //TODO: if you can get the ctor working here via reflection, can chop down most of the boilerplate...
+//  case class XXX[T]
+//  (resource: EsResource, op: String, body: Option[String], mods: List[String])
+//  (implicit ct: ClassTag[T])
+//    extends BaseDriverOp
+//  {
+//    override def withModifier(m: String): T =
+//      ct.runtimeClass.getConstructors()(0).newInstance(resource, op, body, mods)
+//        .asInstanceOf[T]
+//  }
+//  trait XxxNoDataWritable { self: EsResource =>
+//    def write() = new XXX(self, POST, None, List()) with Pretty with Human with Verbose
+//  }
+//  case class XXXX() extends XxxNoDataWritable with EsResource
+//  XXXX().write().`?human=`(true).`?pretty=`(true).`?verbose=`(true)
+
   // Deletable
 
   /**
@@ -261,6 +281,6 @@ object OperationGroups {
     * Allows a simple check (HEAD) on a resource
     */
   trait SimpleCheckable { self: EsResource =>
-    def write() = PrettyDriverOp(self, HEAD, None, List())
+    def check() = PrettyDriverOp(self, HEAD, None, List())
   }
 }

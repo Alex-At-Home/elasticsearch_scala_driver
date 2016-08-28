@@ -20,7 +20,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
   /**
     * TODO
@@ -34,7 +34,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with Routing
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
   /**
     * TODO
@@ -48,7 +48,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with Fields
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
   /**
     * TODO
@@ -62,7 +62,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with Conflict
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
   /**
     * A driver op with no typed modifiers other than standard and `?verbose`
@@ -76,7 +76,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with Verbose
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
   /**
     * TODO
@@ -90,7 +90,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with SourceBase with SourceInclude with SourceExclude with Fields
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -105,7 +105,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with Version with OpType with Routing with Parent with Timeout
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -120,7 +120,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with Routing with Parent with Refresh with Timeout
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -140,7 +140,7 @@ object ModifierGroups {
       with Fields with Sort with TrackScores with Timeout with TerminateAfter
       with From with Size with SearchType
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -157,7 +157,7 @@ object ModifierGroups {
       with Timeout with RequestCache with TerminateAfter
       with From with Size with SearchType
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -172,7 +172,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with Routing with Preference with Local
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -190,7 +190,7 @@ object ModifierGroups {
       with AnalyzeWildcard with DefaultOperator with Lenient
       with TerminateAfter
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -207,7 +207,7 @@ object ModifierGroups {
       with Query with DefaultField with Analyzer with LowercaseExpandedTerms
       with AnalyzeWildcard with DefaultOperator with Lenient
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -227,7 +227,7 @@ object ModifierGroups {
       with Fields with SourceBase
       with Routing with Parent with Preference
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -242,7 +242,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with Level with Fields
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -257,7 +257,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with IgnoreUnavailable
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -272,7 +272,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with Level with Groups with Types
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -287,7 +287,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with Detailed with ActiveOnly
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -302,7 +302,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with Status
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -317,7 +317,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with WaitIfOngoing with Force
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -332,7 +332,7 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with MaxNumSegments with OnlyExpungeDeletes with Flush
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 
   /**
@@ -347,6 +347,6 @@ object ModifierGroups {
     extends BaseDriverOp
       with Pretty with Human with OnlyAncientSegments
   {
-    override def withModifier(m: String): this.type = copy(mods = m :: mods)
+    override def withModifier(m: String): this.type = copy(mods = m :: mods).asInstanceOf[this.type]
   }
 }
