@@ -10,7 +10,7 @@ object Modifiers {
   /**
     * Parent type for Modifiers to resources (representing URL parameters)
     */
-  sealed trait Modifier
+  sealed trait Modifier { def test = "test" } //TODO
 
   // Generic modifiers, used in lots of places
 

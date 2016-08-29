@@ -32,6 +32,7 @@ object MyBuild extends Build {
       name := "Elasticsearch Scala Core",
       version := esScalaDriverVersion,
       libraryDependencies += "com.lihaoyi" %% "utest" % "0.4.3" % "test",
+      libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.11.2",
       testFrameworks += new TestFramework("utest.runner.Framework")
     )
   )
