@@ -14,8 +14,4 @@ object Versions {
       with ApiModel_v2_3.Cluster
       with ApiModel_v2_3.Search
       with ApiModel_v2_3.Indices
-
-  //TODO
-  latest.Test()
-  `2.3`.Test()
 }

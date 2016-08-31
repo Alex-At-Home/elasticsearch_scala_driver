@@ -1,7 +1,8 @@
 package org.elastic.elasticsearch.driver.scala
 
-import org.elastic.elasticsearch.driver.scala.ElasticsearchBase.{BaseDriverOp, EsResource}
 import org.elastic.elasticsearch.driver.scala.Modifiers._
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsResource}
 
 /**
   * Groups of modifiers used in the Elasticsearch DSL

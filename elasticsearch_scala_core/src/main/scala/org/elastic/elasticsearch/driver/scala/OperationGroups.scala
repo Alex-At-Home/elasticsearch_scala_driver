@@ -1,7 +1,8 @@
 package org.elastic.elasticsearch.driver.scala
 
-import org.elastic.elasticsearch.driver.scala.ElasticsearchBase._
 import org.elastic.elasticsearch.driver.scala.ModifierGroups._
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{EsReadable, EsResource}
 
 /**
   * The different read/write/delete operations mixed with the

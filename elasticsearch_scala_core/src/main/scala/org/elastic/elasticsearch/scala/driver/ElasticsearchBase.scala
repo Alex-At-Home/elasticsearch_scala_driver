@@ -1,4 +1,4 @@
-package org.elastic.elasticsearch.driver.scala
+package org.elastic.elasticsearch.scala.driver
 
 import scala.concurrent.ExecutionContext
 
@@ -153,30 +153,5 @@ object ElasticsearchBase {
   }
 
   //////////////////////////////////////////////////////////////////////////////////
-
-  import scala.reflect.macros.Context
-  import scala.language.experimental.macros
-
-  trait MacroOperatable[T <: BaseDriverOp] {
-    def opImpl(_resource: EsResource, _op: String, _body: Option[String], _mods: List[String]): T =
-      macro MacroOperatable.materializeOpImpl[T]
-  }
-  object MacroOperatable {
-    def materializeOpImpl[T <: BaseDriverOp]
-    (c: Context)
-    (_resource: c.Expr[EsResource], _op: c.Expr[String], _body: c.Expr[Option[String]], _mods: c.Expr[List[String]])
-    (implicit T: c.WeakTypeTag[T])
-    : c.Expr[T] =
-    {
-      import c.universe._
-      c.Expr[T] {
-        q"""
-            case class Internal(resource: EsResource, op: String, body: Option[String], mods: List[String]) extends $T {
-              def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods).asInstanceOf[this.type]
-            }
-            Internal(null, null, null, List())
-      """ }
-    }
-  }
 
 }
