@@ -5,6 +5,7 @@ import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon._
 
 /**
   * Contains a hierarchical model of the API resources
+  * TODO: replace the $s with actual fields index/field/type sort of thing
   */
 object ApiModelNavigationTree {
 
@@ -110,7 +111,7 @@ object ApiModelNavigationTree {
       *
       * @return The search template rendering resource
       */
-    def _render = `/_render`()
+    def _render = `tree:/_render`()
 
     /**
       * The search suggest resource
@@ -131,7 +132,7 @@ object ApiModelNavigationTree {
       *
       * @return An intermediate resource to configure aliases
       */
-    def _alias = `/_alias`()
+    def _alias = `tree:/_alias`()
 
     /**
       * A resource to perform complex configuration on aliases
@@ -194,7 +195,7 @@ object ApiModelNavigationTree {
       *
       * @return An intermediate step to retrieve cache resources
       */
-    def _cache = `/_cache`()
+    def _cache = `tree:/_cache`()
 
     /**
       * A resource to flush one or more indices
@@ -303,7 +304,7 @@ object ApiModelNavigationTree {
       *
       * @return An intermediate resource to configure aliases
       */
-    def _alias = `/$indexes/_alias`(Seq(index) ++ otherIndexes:_*)
+    def _alias = `tree:/$indexes/_alias`(Seq(index) ++ otherIndexes:_*)
 
     /**
       * A resource to update the index settings
@@ -345,7 +346,7 @@ object ApiModelNavigationTree {
       *
       * @return An intermediate step to retrieve cache resources
       */
-    def _cache = `/$indexes/_cache`(Seq(index) ++ otherIndexes:_*)
+    def _cache = `tree:/$indexes/_cache`(Seq(index) ++ otherIndexes:_*)
 
     /**
       * A resource to flush one or more indices
@@ -487,7 +488,7 @@ object ApiModelNavigationTree {
       *
       * @return An intermediate resource to configure aliases
       */
-    def _alias = `/$indexes/_alias`(index)
+    def _alias = `tree:/$indexes/_alias`(index)
 
     /**
       * A resource to update the index settings
@@ -536,7 +537,7 @@ object ApiModelNavigationTree {
       *
       * @return An intermediate step to retrieve cache resources
       */
-    def _cache = `/$indexes/_cache`(index)
+    def _cache = `tree:/$indexes/_cache`(index)
 
     /**
       * A resource to flush one or more indices
@@ -570,7 +571,7 @@ object ApiModelNavigationTree {
       * @param types The list of types
       * @return An intermediate search step
       */
-    def $(types: String*) = `/_all/$types`(types:_*)
+    def $(types: String*) = `tree:/_all/$types`(types:_*)
 
     /**
       * A resource to open all indexes in the cluster
@@ -598,7 +599,7 @@ object ApiModelNavigationTree {
       *
       * @return An intermediate resource to configure aliases
       */
-    def _alias = `/_all/_alias`()
+    def _alias = `tree:/_all/_alias`()
 
     /**
       * A resource to update the index settings
@@ -635,7 +636,7 @@ object ApiModelNavigationTree {
       *
       * @return An intermediate step to retrieve cache resources
       */
-    def _cache = `/_all/_cache`()
+    def _cache = `tree:/_all/_cache`()
 
     /**
       * A resource to flush one or more indices
@@ -785,13 +786,11 @@ object ApiModelNavigationTree {
     def _suggest = `/$indexes/$types/_suggest`(index)(`type`)
   }
 
-  //TODO: got here
-
   /**
     * An intermediate step to search all indexes
     * but a subset of types
     */
-  case class `/_all/$types`(types: String*) {
+  case class `tree:/_all/$types`(types: String*) {
     /**
       * A search over specified types
       *
@@ -841,7 +840,7 @@ object ApiModelNavigationTree {
   /**
     * Intermediate class to render search templates
     */
-  case class `/_render`() {
+  case class `tree:/_render`() {
     def template = `/_render/template`()
   }
 
@@ -849,11 +848,172 @@ object ApiModelNavigationTree {
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html
 
   /**
+    * Gets the mapping for all indexes and all types - intermediate step
+    */
+  trait `tree:/_mapping`
+  {
+    /**
+      * Returns the mapping control resource for all indexes and specified types
+      *
+      * @param types The types over which to restrict the mapping operations
+      * @return Returns the mapping control resource for all indexes and specified types
+      */
+    def $(types: String*) = `/_mapping/$types`(types:_*)
+
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `tree:/_mapping/field`()
+  }
+
+  /**
+    * Gets the mapping for all indexes and 1+ types - intermediate step
+    */
+  trait `tree:/_mapping/$types`
+  {
+    def types: Seq[String]
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `tree:/_mapping/$types/field`(types:_*)
+  }
+  /**
+    * Gets the mapping for all indexes and all types - intermediate step
+    */
+  trait `tree:/_all/_mapping`
+  {
+    /**
+      * Returns the mapping control resource for all indexes and specified types
+      *
+      * @param types The types over which to restrict the mapping operations
+      * @return Returns the mapping control resource for all indexes and specified types
+      */
+    def $(types: String*) = `/_all/_mapping/$types`(types:_*)
+
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `tree:/_all/_mapping/field`()
+  }
+
+  /**
+    * Gets the mapping for all indexes and 1+ types - intermediate step
+    *
+    */
+  trait `tree:/_all/_mapping/$types`
+  {
+    def types: Seq[String]
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `tree:/_all/_mapping/$types/field`(types:_*)
+  }
+  /**
+    * an intermediate step leading to the get field mapping resources
+    */
+  case class `tree:/_mapping/field`() {
+    /**
+      * Returns the get field mapping for these fields (+parent restrictions)
+      *
+      * @param fields The set of fields for which to retrieve the mapping
+      * @return The get field mapping resource
+      */
+    def $(fields: String*) = `/_mapping/field/$fields`(fields: _*)
+  }
+  /**
+    * an intermediate step leading to the get field mapping resources
+    *
+    * @param types The types over which the field mappings are retrieved
+    */
+  case class `tree:/_mapping/$types/field`(types: String*) {
+    /**
+      * Returns the get field mapping for these fields (+parent restrictions)
+      *
+      * @param fields The set of fields for which to retrieve the mapping
+      * @return The get field mapping resource
+      */
+    def $(fields: String*) = `/_mapping/$types/field/$fields`(types:_*)(fields:_*)
+  }
+  /**
+    * an intermediate step leading to the get field mapping resources
+    */
+  case class `tree:/_all/_mapping/field`() {
+    /**
+      * Returns the get field mapping for these fields (+parent restrictions)
+      *
+      * @param fields The set of fields for which to retrieve the mapping
+      * @return The get field mapping resource
+      */
+    def $(fields: String*) = `/_all/_mapping/field/$fields`(fields:_*)
+  }
+  /**
+    * an intermediate step leading to the get field mapping resources
+    *
+    * @param types The types over which the field mappings are retrieved
+    */
+  case class `tree:/_all/_mapping/$types/field`(types: String*) {
+    /**
+      * Returns the get field mapping for these fields (+parent restrictions)
+      *
+      * @param fields The set of fields for which to retrieve the mapping
+      * @return The get field mapping resource
+      */
+    def $(fields: String*) = `/_all/_mapping/$types/field/$fields`(types:_*)(fields:_*)
+  }
+
+
+  /**
+    * Get the mapping for 1+ indexes and all types - intermediate step
+    */
+  trait `tree:/$indexes/_mapping`
+  {
+    def indexes: Seq[String]
+
+    /**
+      * Returns the mapping control resource for specified indexes and types
+      *
+      * @param types The types over which to restrict the mapping operations
+      * @return Returns the mapping control resource for specified indexes and types
+      */
+    def $(types: String*) = `/$indexes/_mapping/$types`(indexes, types)
+
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `tree:/$indexes/_mapping/field`(indexes:_*)
+  }
+
+  /**
+    * Gets the mapping for 1+ indexes and 1+ types - intermediate step
+    */
+  trait `tree:/$indexes/_mapping/$types`
+  {
+    def indexes: Seq[String]
+    def types: Seq[String]
+    /**
+      * Returns an intermediate step leading to the get field mapping resources
+      *
+      * @return An intermediate step leading to the get field mapping resources
+      */
+    def field  = `tree:/$indexes/_mapping/$types/field`(indexes, types)
+  }
+
+  /**
     * an intermediate step leading to the get field mapping resources
     *
     * @param indexes The indexes over which the field mappings are retrieved
     */
-  case class `/$indexes/_mapping/field`(indexes: String*) {
+  case class `tree:/$indexes/_mapping/field`(indexes: String*) {
     /**
       * Returns the get field mapping for these fields (+parent restrictions)
       *
@@ -868,7 +1028,7 @@ object ApiModelNavigationTree {
     * @param indexes The indexes over which the field mappings are retrieved
     * @param types The types over which the field mappings are retrieved
     */
-  case class `/$indexes/_mapping/$types/field`(indexes: String*)(types: String*) {
+  case class `tree:/$indexes/_mapping/$types/field`(indexes: Seq[String], types: Seq[String]) {
     /**
       * Returns the get field mapping for these fields (+parent restrictions)
       *
@@ -877,58 +1037,6 @@ object ApiModelNavigationTree {
       */
     def $(fields: String*) = `/$indexes/_mapping/$types/field/$fields`(indexes:_*)(types:_*)(fields:_*)
   }
-  /**
-    * an intermediate step leading to the get field mapping resources
-    */
-  case class `/_mapping/field`() {
-    /**
-      * Returns the get field mapping for these fields (+parent restrictions)
-      *
-      * @param fields The set of fields for which to retrieve the mapping
-      * @return The get field mapping resource
-      */
-    def $(fields: String*) = `/_mapping/field/$fields`(fields: _*)
-  }
-  /**
-    * an intermediate step leading to the get field mapping resources
-    *
-    * @param types The types over which the field mappings are retrieved
-    */
-  case class `/_mapping/$types/field`(types: String*) {
-    /**
-      * Returns the get field mapping for these fields (+parent restrictions)
-      *
-      * @param fields The set of fields for which to retrieve the mapping
-      * @return The get field mapping resource
-      */
-    def $(fields: String*) = `/_mapping/$types/field/$fields`(types:_*)(fields:_*)
-  }
-  /**
-    * an intermediate step leading to the get field mapping resources
-    */
-  case class `/_all/_mapping/field`() {
-    /**
-      * Returns the get field mapping for these fields (+parent restrictions)
-      *
-      * @param fields The set of fields for which to retrieve the mapping
-      * @return The get field mapping resource
-      */
-    def $(fields: String*) = `/_all/_mapping/field/$fields`(fields:_*)
-  }
-  /**
-    * an intermediate step leading to the get field mapping resources
-    *
-    * @param types The types over which the field mappings are retrieved
-    */
-  case class `/_all/_mapping/$types/field`(types: String*) {
-    /**
-      * Returns the get field mapping for these fields (+parent restrictions)
-      *
-      * @param fields The set of fields for which to retrieve the mapping
-      * @return The get field mapping resource
-      */
-    def $(fields: String*) = `/_all/_mapping/$types/field/$fields`(types:_*)(fields:_*)
-  }
 
   // 0.3.4 Index aliases
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html
@@ -936,7 +1044,7 @@ object ApiModelNavigationTree {
   /**
     * An intermediate object for navigating to alias related resources
     */
-  case class `/_alias`() {
+  case class `tree:/_alias`() {
     /**
       * Returns the check/retrieve _alias resource for the specified aliases
       *
@@ -957,7 +1065,7 @@ object ApiModelNavigationTree {
     *
     * @param indexes The indexes over which to restrict these alias operations
     */
-  case class `/$indexes/_alias`(indexes: String*) {
+  case class `tree:/$indexes/_alias`(indexes: String*) {
     /**
       * Returns the check/retrieve/delete/write _alias resource for the specified aliases
       *
@@ -987,7 +1095,7 @@ object ApiModelNavigationTree {
   /**
     * An intermediate object for navigating to alias related resources
     */
-  case class `/_all/_alias`() {
+  case class `tree:/_all/_alias`() {
     /**
       * Returns the check/retrieve/delete/write _alias resource for the specified aliases
       *
@@ -1018,10 +1126,40 @@ object ApiModelNavigationTree {
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-settings.html
 
+  // 3.5 Get and Update index settings
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-settings.html
+
+  /**
+    * Read or Update the settings for the entire cluster - intermediate step
+    */
+  trait `tree:/_settings`
+  {
+    /**
+      * Returns an intermediate class that provides navigation to the filter index settings resource
+      *
+      * @return An intermediate class that provides navigation to the filter index settings resource
+      */
+    def name =  `tree:/_settings/name=`()
+  }
+
+  /**
+    * Read or Update the settings for the entire cluster - intermediate step
+    */
+  trait `tree:/_all/_settings`
+  {
+    /**
+      * Returns an intermediate class that provides navigation to the filter index settings resource
+      *
+      * @return An intermediate class that provides navigation to the filter index settings resource
+      */
+    def name =  `tree:/_all/_settings/name=`()
+  }
+
   /**
     * An intermediate class that provides navigation to the filter index settings resource
     */
-  case class `/_settings/name=`() {
+  case class `tree:/_settings/name=`() {
     /**
       * Returns the filtered resource for getting the index settings
       *
@@ -1034,7 +1172,7 @@ object ApiModelNavigationTree {
   /**
     * An intermediate class that provides navigation to the filter index settings resource
     */
-  case class `/_all/_settings/name=`() {
+  case class `tree:/_all/_settings/name=`() {
     /**
       * Returns the filtered resource for getting the index settings
       *
@@ -1045,11 +1183,25 @@ object ApiModelNavigationTree {
   }
 
   /**
+    * Read or Update the settings for one or more clusters - intermediate step
+    */
+  trait `tree:/$indexes/_settings`
+  {
+    def indexes: Seq[String]
+    /**
+      * Returns an intermediate class that provides navigation to the filter index settings resource
+      *
+      * @return An intermediate class that provides navigation to the filter index settings resource
+      */
+    def name =  `tree:/$indexes/_settings/name=`(indexes:_*)
+  }
+
+  /**
     * An intermediate class that provides navigation to the filter index settings resource
     *
     * @param indexes The indexes to read
     */
-  case class `/$indexes/_settings/name=`(indexes: String*) {
+  case class `tree:/$indexes/_settings/name=`(indexes: String*) {
     /**
       * Returns the filtered resource for getting the index settings
       *
@@ -1066,7 +1218,7 @@ object ApiModelNavigationTree {
     * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
     * (Intermediate step)
     */
-  case class `/_cache`() {
+  case class `tree:/_cache`() {
     /**
       * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
       *
@@ -1079,7 +1231,7 @@ object ApiModelNavigationTree {
     * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
     * (Intermediate step)
     */
-  case class `/_all/_cache`() {
+  case class `tree:/_all/_cache`() {
     /**
       * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
       *
@@ -1092,12 +1244,43 @@ object ApiModelNavigationTree {
     * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
     * (Intermediate step)
     */
-  case class `/$indexes/_cache`(indexes: String*) {
+  case class `tree:/$indexes/_cache`(indexes: String*) {
     /**
       * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
       *
       * @return The clear cache resource
       */
     def clear = `/$indexes/_cache/clear`(indexes:_*)
+  }
+
+  /**
+    * Intermediate step to various document operations
+    */
+  trait `tree:/$index/$type/$id`
+  {
+    def index: String
+    def `type`: String
+    def id: String
+
+    /**
+      * The _update resource
+      *
+      * @return The _update resource
+      */
+    def _update = `/$index/$type/$id/_update`(index, `type`, id)
+
+    /**
+      * The _update resource
+      *
+      * @return The _update resource
+      */
+    def _source = `/$index/$type/$id/_source`(index, `type`, id)
+
+    /**
+      * The term vectors resource
+      *
+      * @return The term vectors resource
+      */
+    def _termvectors = `/$index/$type/$id/_termvectors`(index, `type`, id)
   }
 }

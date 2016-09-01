@@ -3,15 +3,28 @@ package org.elastic.elasticsearch.scala.driver.versions
 import org.elastic.elasticsearch.scala.driver.v2_3.ApiModel_v2_3
 
 /**
-  * Created by Alex on 8/27/2016.
+  * Ties together different resources into versions
   */
 object Versions {
 
+  /**
+    * The latest version of the driver
+    */
   val latest = `2.3`
 
+  /**
+    * Version 2.3 of the driver
+    */
   object `2.3`
     extends ApiModel_v2_3.Common
       with ApiModel_v2_3.Cluster
       with ApiModel_v2_3.Search
       with ApiModel_v2_3.Indices
+  {
+    /**
+      * Obtain the root node of the resource tree
+      * @return The root node of the resource tree
+      */
+    def apply() = `2.3`.`/`()
+  }
 }

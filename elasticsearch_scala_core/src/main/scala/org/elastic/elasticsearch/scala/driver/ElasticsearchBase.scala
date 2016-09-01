@@ -1,11 +1,40 @@
 package org.elastic.elasticsearch.scala.driver
 
 import scala.concurrent.ExecutionContext
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
+import io.circe._
+import io.circe.generic.JsonCodec
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
 
 /**
   * The base operations for the Elasticsearch DSL
   */
 object ElasticsearchBase {
+
+  /**
+    * Parent type for Modifiers to resources (representing URL parameters)
+    */
+  trait Modifier {
+    /**
+      * Creates the key=val to append to the URL
+      *
+      * @param mod The value of the modifier
+      * @return A string in the format "$key=$val"
+      */
+    def getModifier(mod: Any): String = {
+      val methodName = Thread.currentThread().getStackTrace.apply(3).getMethodName
+      val paramVal = mod match {
+        case s: Seq[_] => s.mkString(",")
+        case toStr: AnyRef => toStr.toString
+      }
+      s"$methodName=$paramVal"
+    }
+  }
 
   /**
     * The base type for the different Elasticsearch drivers, eg:
@@ -63,12 +92,50 @@ object ElasticsearchBase {
       * @param m The new modifier
       * @return The updated driver operation
       */
-    def ?(m: String): this.type = withModifier(m)
+    def m(m: String): this.type = withModifier(m)
 
     //TODO execJ via pimp from the desired library (support scalajs)
     def execS(implicit driver: EsDriver, ec: ExecutionContext): String = null
   }
 
+  /**
+    * The base ES resource, all the case classes should be derived from this
+    */
+  trait EsResource { self: Product =>
+
+    /**
+      * Internal implementation to retrieve the location of the resource, the first time `location` is accessed
+      * Replaces $xxx with the correspodning case class parameter, in order
+      *
+      * @return The location of the resource
+      */
+    private[this] def locationImpl: String = {
+      def formatVal(a: Any) = a match {
+        case s: Seq[_] => s.mkString(",")
+        case toStr: AnyRef => toStr.toString
+      }
+      val locationTemplate = productPrefix.replace("`", "")
+      val splits = locationTemplate.split("/")
+      if (splits.length > 0) {
+        splits.foldLeft(("", 0)) { case ((acc, i), v) =>
+          v.headOption
+            .filter(_ == '$')
+            .map(_ => (acc + "/" + formatVal(productElement(i)), i + 1))
+            .getOrElse((acc + "/" + v, i))
+        }._1.tail
+      }
+      else locationTemplate
+    }
+    /**
+      * The location of the resource, generated from the classname
+      * by substituting in the field names
+      */
+    lazy val location = locationImpl
+  }
+
+  ///////////////////////////////////////////////////////////////////
+
+  //TODO remove everything under here once refactor is complete
 
   /**
     * The base readable type
@@ -139,19 +206,4 @@ object ElasticsearchBase {
       */
     def delete(body: String): D
   }
-
-  /**
-    * The base ES resource, all the case classes should be derived from this
-    */
-  trait EsResource {
-
-    /**
-      * The location of the resource, generated from the classname
-      * by substituting in the field names
-      */
-    def location: String = "" //TODO
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////
-
 }

@@ -253,11 +253,8 @@ object OperationGroups {
     * @param rawResource The URL (minus the leading /)
     */
   class RawOperatableResource(rawResource: String)
-    extends SimpleReadable with SimpleWithDataReadable
-      with SimpleWritable with SimpleNoDataWritable
-      with SimpleDeletable with SimpleWithDataDeletable
-    with EsResource {
-    override def location = rawResource
+    {
+//    override def location = rawResource
   }
 
   /**

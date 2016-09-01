@@ -417,70 +417,12 @@ object ApiModel_common {
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html
 
   /**
-    * Get the mapping for 1+ indexes and all types
-    *
-    * @param indexes The index or indexes whose mapping to get
-    */
-  case class `/$indexes/_mapping`(indexes: String*)
-    extends SimpleReadable
-      with EsResource
-  {
-    /**
-      * Returns the mapping control resource for specified indexes and types
-      *
-      * @param types The types over which to restrict the mapping operations
-      * @return Returns the mapping control resource for specified indexes and types
-      */
-    def $(types: String*) = `/$indexes/_mapping/$types`(indexes:_*)(types:_*)
-
-    /**
-      * Returns an intermediate step leading to the get field mapping resources
-      *
-      * @return An intermediate step leading to the get field mapping resources
-      */
-    def field  = `/$indexes/_mapping/field`(indexes:_*)
-  }
-
-  /**
-    * Gets the mapping for 1+ indexes and 1+ types
-    *
-    * @param indexes The index or indexes whose mapping to get
-    * @param types The type or type whose mapping to get
-    */
-  case class `/$indexes/_mapping/$types`(indexes: String*)(types: String*)
-    extends SimpleReadable
-      with EsResource
-  {
-    /**
-      * Returns an intermediate step leading to the get field mapping resources
-      *
-      * @return An intermediate step leading to the get field mapping resources
-      */
-    def field  = `/$indexes/_mapping/$types/field`(indexes:_*)(types:_*)
-  }
-
-  /**
     * Gets the mapping for all indexes and all types
     */
   case class `/_mapping`()
-    extends SimpleReadable
+    extends `tree:/_mapping`
+      with SimpleReadable
       with EsResource
-  {
-    /**
-      * Returns the mapping control resource for all indexes and specified types
-      *
-      * @param types The types over which to restrict the mapping operations
-      * @return Returns the mapping control resource for all indexes and specified types
-      */
-    def $(types: String*) = `/_mapping/$types`(types:_*)
-
-    /**
-      * Returns an intermediate step leading to the get field mapping resources
-      *
-      * @return An intermediate step leading to the get field mapping resources
-      */
-    def field  = `/_mapping/field`()
-  }
 
   /**
     * Gets the mapping for all indexes and 1+ types
@@ -488,38 +430,17 @@ object ApiModel_common {
     * @param types The type or type whose mapping to get
     */
   case class `/_mapping/$types`(types: String*)
-    extends SimpleReadable
+    extends `tree:/_mapping/$types`
+      with SimpleReadable
       with EsResource
-  {
-    /**
-      * Returns an intermediate step leading to the get field mapping resources
-      *
-      * @return An intermediate step leading to the get field mapping resources
-      */
-    def field  = `/_mapping/$types/field`(types:_*)
-  }
+
   /**
     * Gets the mapping for all indexes and all types
     */
   case class `/_all/_mapping`()
-    extends SimpleReadable
+    extends `tree:/_all/_mapping`
+      with SimpleReadable
       with EsResource
-  {
-    /**
-      * Returns the mapping control resource for all indexes and specified types
-      *
-      * @param types The types over which to restrict the mapping operations
-      * @return Returns the mapping control resource for all indexes and specified types
-      */
-    def $(types: String*) = `/_all/_mapping/$types`(types:_*)
-
-    /**
-      * Returns an intermediate step leading to the get field mapping resources
-      *
-      * @return An intermediate step leading to the get field mapping resources
-      */
-    def field  = `/_all/_mapping/field`()
-  }
 
   /**
     * Gets the mapping for all indexes and 1+ types
@@ -527,16 +448,31 @@ object ApiModel_common {
     * @param types The type or type whose mapping to get
     */
   case class `/_all/_mapping/$types`(types: String*)
-    extends SimpleReadable
+    extends `tree:/_all/_mapping/$types`
+      with SimpleReadable
       with EsResource
-  {
-    /**
-      * Returns an intermediate step leading to the get field mapping resources
-      *
-      * @return An intermediate step leading to the get field mapping resources
-      */
-    def field  = `/_all/_mapping/$types/field`(types:_*)
-  }
+
+  /**
+    * Get the mapping for 1+ indexes and all types
+    *
+    * @param indexes The index or indexes whose mapping to get
+    */
+  case class `/$indexes/_mapping`(indexes: String*)
+    extends `tree:/$indexes/_mapping`
+      with SimpleReadable
+      with EsResource
+
+  /**
+    * Gets the mapping for 1+ indexes and 1+ types
+    *
+    * @param indexes The index or indexes whose mapping to get
+    * @param types The type or type whose mapping to get
+    */
+  case class `/$indexes/_mapping/$types`(indexes: Seq[String], types: Seq[String])
+    extends `tree:/$indexes/_mapping/$types`
+      with SimpleReadable
+      with EsResource
+
 
   // 3.3 Field mappings
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html
@@ -696,17 +632,10 @@ object ApiModel_common {
     * Read or Update the settings for the entire cluster
     */
   case class `/_settings`()
-    extends SimpleReadable
+    extends `tree:/_settings`
+      with SimpleReadable
       with SimpleWritable
       with EsResource
-  {
-    /**
-      * Returns an intermediate class that provides navigation to the filter index settings resource
-      *
-      * @return An intermediate class that provides navigation to the filter index settings resource
-      */
-    def name =  `/_settings/name=`()
-  }
 
   /**
     * Read the filtered settings for the entire cluster
@@ -721,17 +650,10 @@ object ApiModel_common {
     * Read or Update the settings for the entire cluster
     */
   case class `/_all/_settings`()
-    extends SimpleReadable
+    extends `tree:/_all/_settings`
+      with SimpleReadable
       with SimpleWritable
       with EsResource
-  {
-    /**
-      * Returns an intermediate class that provides navigation to the filter index settings resource
-      *
-      * @return An intermediate class that provides navigation to the filter index settings resource
-      */
-    def name =  `/_all/_settings/name=`()
-  }
 
   /**
     * Read the filtered settings for the entire cluster
@@ -748,17 +670,11 @@ object ApiModel_common {
     * @param indexes The indexes to read/update
     */
   case class `/$indexes/_settings`(indexes: String*)
-    extends SimpleReadable
+    extends `tree:/$indexes/_settings`
+      with SimpleReadable
       with SimpleWritable
       with EsResource
-  {
-    /**
-      * Returns an intermediate class that provides navigation to the filter index settings resource
-      *
-      * @return An intermediate class that provides navigation to the filter index settings resource
-      */
-    def name =  `/$indexes/_settings/name=`(indexes:_*)
-  }
+
   /**
     * Read the filtered settings for the entire cluster
     *

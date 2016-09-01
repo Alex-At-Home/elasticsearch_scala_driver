@@ -11,7 +11,7 @@ object Modifiers {
   /**
     * Parent type for Modifiers to resources (representing URL parameters)
     */
-  sealed trait Modifier { def test = "test" } //TODO
+  sealed trait Modifier
 
   // Generic modifiers, used in lots of places
 

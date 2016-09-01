@@ -2,7 +2,7 @@ package org.elastic.elasticsearch.scala.driver.common
 
 import org.elastic.elasticsearch.driver.scala.OperationGroups.{FieldsSimpleReadable, SimpleWithDataReadable, _}
 import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.EsResource
-import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree.{`tree:/$index/$type`, `tree:/$index`, `tree:/$indexes/$types`, `tree:/`}
+import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 
 /**
   * Misc Rerources:
@@ -28,10 +28,11 @@ trait ApiModelCommon {
 
   /**
     * Utility methods on the root Elasticsearch resource
+    * TODO: implement RawOperatableResource
     */
   object `/` {
     /**
-      * TODO what is this?
+      * The generic "any URL" method - the string `resource` is applied by the driver
       *
       * @param resource The resource on which to operate (minus the leading /)
       * @return The operatable resource
@@ -103,7 +104,8 @@ trait ApiModelCommon {
     * @param id The id
     */
   case class `/$index/$type/$id`(index: String, `type`: String, id: String)
-    extends FullyModifiableReadable
+    extends `tree:/$index/$type/$id`
+      with FullyModifiableReadable
       with SimpleCheckable
       with FullyModifiableWritable
       with FullyModifiableDeletable
