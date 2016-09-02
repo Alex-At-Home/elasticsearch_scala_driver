@@ -15,9 +15,9 @@ object ElasticsearchBaseTests extends TestSuite {
 
         def getListModifier(ss: List[String]): String = this.getModifier(ss)
       }
-      assert(ModTest().getStringModifier("x") == "getStringModifier=x")
-      assert(ModTest().getBooleanModifier(true) == "getBooleanModifier=true")
-      assert(ModTest().getListModifier(List("x", "y")) == "getListModifier=x,y")
+      ModTest().getStringModifier("x") ==> "getStringModifier=x"
+      ModTest().getBooleanModifier(true) ==> "getBooleanModifier=true"
+      ModTest().getListModifier(List("x", "y")) ==> "getListModifier=x,y"
     }
     "Check the location generator works" - {
       case class `/`() extends EsResource
@@ -26,10 +26,10 @@ object ElasticsearchBaseTests extends TestSuite {
         (variable: String, anotherVariable: String) extends EsResource
       case class `/test/$list`(ss: String*) extends EsResource
 
-      assert(`/`().location == "/")
-      assert(`/$list`(Seq("a", "b")).location == "/a,b")
-      assert(`/test/$variable/test2/$anotherVariable`("a", "b").location == "/test/a/test2/b")
-      assert(`/test/$list`("a", "b").location == "/test/a,b")
+      `/`().location ==> "/"
+      `/$list`(Seq("a", "b")).location ==> "/a,b"
+      `/test/$variable/test2/$anotherVariable`("a", "b").location ==> "/test/a/test2/b"
+      `/test/$list`("a", "b").location ==> "/test/a,b"
     }
   }
 }

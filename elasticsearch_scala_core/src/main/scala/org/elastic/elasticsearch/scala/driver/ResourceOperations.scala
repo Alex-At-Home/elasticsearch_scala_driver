@@ -27,6 +27,21 @@ object ResourceOperations {
   }
 
   /**
+    * The base check (HEAD) type
+    *
+    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
+    */
+  trait EsCheckable[D <: BaseDriverOp] { self: EsResource =>
+    /**
+      * Creates a driver operation
+      *
+      * @return The driver operation
+      */
+    @MacroUtils.OpType(ElasticsearchBase.HEAD)
+    def check(): D = macro MacroUtils.materializeOpImpl[D]
+  }
+
+  /**
     * The base readable type where the reply is controlled by data written to the resource
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`

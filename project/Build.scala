@@ -17,11 +17,21 @@ object BuildSettings {
 }
 
 object MyBuild extends Build {
-
   import BuildSettings._
 
-  val esScalaDriverVersion = "0.1-SNAPSHOT"
+  // Dependencies:
+
   val circeVersion = "0.4.1"
+  lazy val circeDeps = Seq(
+    "io.circe" %% "circe-core",
+    "io.circe" %% "circe-generic",
+    "io.circe" %% "circe-parser"
+  ).map(_ % circeVersion)
+  //add like: libraryDependencies ++= circeDeps,
+
+  // Project definitions
+
+  val esScalaDriverVersion = "0.1-SNAPSHOT"
 
   lazy val root = Project("root", file("."))
     .aggregate(elasticsearch_scala_core, elasticsearch_scala_java_client, elasticsearch_scala_js_client)
@@ -34,11 +44,6 @@ object MyBuild extends Build {
       version := esScalaDriverVersion,
       libraryDependencies += "com.lihaoyi" %% "utest" % "0.4.3" % "test",
       libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.11.2",
-      libraryDependencies ++= Seq(
-        "io.circe" %% "circe-core",
-        "io.circe" %% "circe-generic",
-        "io.circe" %% "circe-parser"
-      ).map(_ % circeVersion),
       testFrameworks += new TestFramework("utest.runner.Framework")
     )
   )

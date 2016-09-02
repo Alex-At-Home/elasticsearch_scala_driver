@@ -1,15 +1,6 @@
 package org.elastic.elasticsearch.scala.driver
 
 import scala.concurrent.ExecutionContext
-import io.circe._
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
-import io.circe._
-import io.circe.generic.JsonCodec
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
 
 /**
   * The base operations for the Elasticsearch DSL
@@ -96,6 +87,12 @@ object ElasticsearchBase {
 
     //TODO execJ via pimp from the desired library (support scalajs)
     def execS(implicit driver: EsDriver, ec: ExecutionContext): String = null
+
+    /**
+      * Retrieves the URL for the operation on the resource with the modifiers
+      * @return The URL for the operation on the resource with the modifiers
+      */
+    def getUrl: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") + mods.mkString("&")
   }
 
   /**
