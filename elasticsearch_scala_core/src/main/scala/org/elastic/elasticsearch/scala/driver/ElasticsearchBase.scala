@@ -41,34 +41,28 @@ object ElasticsearchBase {
   val POST = "POST"
   val PUT = "PUT"
 
-  /**
-    * The base type for driver operations
+  /** The base type for driver operations
     * gets mixed in with different traits derived from `Modifier`
     * Gets a concrete case class for each set of such `Modifier`s which are then
     * mixed into the the `EsResource` instances
     */
   trait BaseDriverOp {
-    /**
-      * The resource that is being operated upon
+    /** The resource that is being operated upon
       */
     val resource: EsResource
-    /**
-      * The operation type if translated to REST
+    /** The operation type if translated to REST
       */
     val op: String
-    /**
-      * If the operation involves writing data to the resource, this is that data
+    /** If the operation involves writing data to the resource, this is that data
       */
     val body: Option[String]
 
-    /**
-      * The set of modifications, typically filled in by the `Modifier` traits
+    /** The set of modifications, typically filled in by the `Modifier` traits
       * (but modifiers can also be manually generated using `withModifier`)
       */
     val mods: List[String]
 
-    /**
-      * Add a generic string modifier to the driver operation
+    /** Add a generic string modifier to the driver operation
       * (Has to be overridden by each group, always via:
       *  "override def withModifier(m: String): this.type = copy(mods = m :: mods)")
       *
@@ -77,8 +71,7 @@ object ElasticsearchBase {
       */
     def withModifier(m: String): this.type
 
-    /**
-      * Add a generic string modifier to the driver operation
+    /** Add a generic string modifier to the driver operation
       *
       * @param m The new modifier
       * @return The updated driver operation
@@ -88,20 +81,17 @@ object ElasticsearchBase {
     //TODO execJ via pimp from the desired library (support scalajs)
     def execS(implicit driver: EsDriver, ec: ExecutionContext): String = null
 
-    /**
-      * Retrieves the URL for the operation on the resource with the modifiers
+    /** Retrieves the URL for the operation on the resource with the modifiers
       * @return The URL for the operation on the resource with the modifiers
       */
-    def getUrl: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") + mods.mkString("&")
+    def getUrl: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") + mods.reverse.mkString("&")
   }
 
-  /**
-    * The base ES resource, all the case classes should be derived from this
+  /** The base ES resource, all the case classes should be derived from this
     */
   trait EsResource { self: Product =>
 
-    /**
-      * Internal implementation to retrieve the location of the resource, the first time `location` is accessed
+    /** Internal implementation to retrieve the location of the resource, the first time `location` is accessed
       * Replaces $xxx with the correspodning case class parameter, in order
       *
       * @return The location of the resource
@@ -113,7 +103,7 @@ object ElasticsearchBase {
       }
       val locationTemplate = productPrefix.replace("`", "")
       val splits = locationTemplate.split("/")
-      if (splits.length > 0) {
+      if (splits.nonEmpty) {
         splits.foldLeft(("", 0)) { case ((acc, i), v) =>
           v.headOption
             .filter(_ == '$')
@@ -123,8 +113,7 @@ object ElasticsearchBase {
       }
       else locationTemplate
     }
-    /**
-      * The location of the resource, generated from the classname
+    /** The location of the resource, generated from the classname
       * by substituting in the field names
       */
     lazy val location = locationImpl
@@ -134,28 +123,24 @@ object ElasticsearchBase {
 
   //TODO remove everything under here once refactor is complete
 
-  /**
-    * The base readable type
+  /** The base readable type
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
   trait EsReadable[D <: BaseDriverOp] {
-    /**
-      * Creates a driver operation
+    /** Creates a driver operation
       *
       * @return The driver opertion
       */
     def read(): D
   }
 
-  /**
-    * The base readable type where the reply is controlled by data written to the resource
+  /** The base readable type where the reply is controlled by data written to the resource
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
   trait WithDataEsReadable[D <: BaseDriverOp] {
-    /**
-      * Creates a driver operation
+    /** Creates a driver operation
       *
       * @param body The data to write to the resource
       * @return The driver opertion
@@ -163,15 +148,13 @@ object ElasticsearchBase {
     def read(body: String): D
   }
 
-  /**
-    * The base writable type
+  /** The base writable type
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
   trait EsWritable[D <: BaseDriverOp] {
 
-    /**
-      * Creates a driver operation
+    /** Creates a driver operation
       *
       * @param body The data to write to the resource
       * @return The driver opertion
@@ -179,8 +162,7 @@ object ElasticsearchBase {
     def write(body: String): D
   }
 
-  /**
-    * The base deletable type
+  /** The base deletable type
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
@@ -189,14 +171,12 @@ object ElasticsearchBase {
     def delete(): D
   }
 
-  /**
-    * The base deletable type where the delete is controlled by data written to the resource
+  /** The base deletable type where the delete is controlled by data written to the resource
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
   trait WithDataEsDeletable[D <: BaseDriverOp] {
-    /**
-      * Creates a driver operation
+    /** Creates a driver operation
       *
       * @param body The data to write to the resource
       * @return The driver opertion

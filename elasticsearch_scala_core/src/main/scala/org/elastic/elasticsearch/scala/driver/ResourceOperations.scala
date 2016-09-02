@@ -11,8 +11,7 @@ import scala.language.experimental.macros
   */
 object ResourceOperations {
 
-  /**
-    * The base readable type
+  /** The base readable type
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
@@ -26,8 +25,7 @@ object ResourceOperations {
     def read(): D = macro MacroUtils.materializeOpImpl[D]
   }
 
-  /**
-    * The base check (HEAD) type
+  /** The base check (HEAD) type
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
@@ -41,12 +39,11 @@ object ResourceOperations {
     def check(): D = macro MacroUtils.materializeOpImpl[D]
   }
 
-  /**
-    * The base readable type where the reply is controlled by data written to the resource
+  /** The base readable type where the reply is controlled by data written to the resource
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
-  trait WithDataEsReadable[D <: BaseDriverOp] {
+  trait EsWithDataReadable[D <: BaseDriverOp] {
     /**
       * Creates a driver operation
       *
@@ -57,8 +54,7 @@ object ResourceOperations {
     def read(body: String): D = macro MacroUtils.materializeOpImpl_Body[D]
   }
 
-  /**
-    * The base writable type
+  /** The base writable type
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
@@ -73,8 +69,21 @@ object ResourceOperations {
     def write(body: String): D = macro MacroUtils.materializeOpImpl_Body[D]
   }
 
-  /**
-    * The base deletable type
+  /** The base writable type, for cases where no data is written
+    *
+    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
+    */
+  trait EsNoDataWritable[D <: BaseDriverOp] {
+    /**
+      * Creates a driver operation
+      *
+      * @return The driver operation
+      */
+    @MacroUtils.OpType(ElasticsearchBase.PUT)
+    def write(): D = macro MacroUtils.materializeOpImpl[D]
+  }
+
+  /** The base deletable type
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
@@ -88,12 +97,11 @@ object ResourceOperations {
     def delete(): D = macro MacroUtils.materializeOpImpl[D]
   }
 
-  /**
-    * The base deletable type where the delete is controlled by data written to the resource
+  /** The base deletable type where the delete is controlled by data written to the resource
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
-  trait WithDataEsDeletable[D <: BaseDriverOp] {
+  trait EsWithDataDeletable[D <: BaseDriverOp] {
     /**
       * Creates a driver operation
       *

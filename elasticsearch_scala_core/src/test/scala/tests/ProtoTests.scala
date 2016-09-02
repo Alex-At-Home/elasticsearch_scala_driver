@@ -15,7 +15,7 @@ object ProtoTests extends TestSuite{
   trait Internal extends BaseDriverOp with Pretty with Human
 //  case class TestRead() extends EsReadable[Internal] with EsResource
   case class TestRead() extends EsReadable[Internal] with EsResource
-  case class TestReadBody() extends WithDataEsReadable[Internal] with EsResource
+  case class TestReadBody() extends EsWithDataReadable[Internal] with EsResource
 
   //////////////////////////////////////////////////////////////////////////////////////
 

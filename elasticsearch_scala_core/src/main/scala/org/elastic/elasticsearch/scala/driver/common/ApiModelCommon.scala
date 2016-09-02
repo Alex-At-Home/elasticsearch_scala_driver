@@ -6,7 +6,7 @@ import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
 
 /**
-  * Misc Rerources:
+  * Misc Resources:
   *  - (0) Root
   *  - (0) Indexes and Types
   *  - (1) Document
@@ -17,8 +17,7 @@ trait ApiModelCommon {
 
   // 0 Root nodes: indexes and types
 
-  /**
-    * The root node of the Elasticsearch resource tree
+  /** The root node of the Elasticsearch resource tree
     * Will return very basic information about a cluster (via `EsReadable.read()`), and
     * is also a starting point for navigating the hierarchy
     */
@@ -27,19 +26,24 @@ trait ApiModelCommon {
       with EsReadable[StandardParams]
       with EsResource
 
-  case class `/$url`(resource: String) extends EsResource
-    with EsReadable[NoParams] with EsWritable[NoParams] with EsDeletable[NoParams]
-    with WithDataEsReadable[NoParams] with WithDataEsDeletable[NoParams] with EsCheckable[NoParams]
+  /** Allows for generic access to the ES client - any URI string, any operation, and any modifier
+    *
+    * @param uri The resource name (including the leading '/')
+    */
+  case class `/$uri`(uri: String) extends EsResource
+    with EsReadable[NoParams] with EsWithDataReadable[NoParams] with EsCheckable[NoParams]
+    with EsWritable[NoParams] with EsNoDataWritable[NoParams]
+    with EsDeletable[NoParams] with EsWithDataDeletable[NoParams]
   {
-    override lazy val location = "/" + resource
+    override lazy val location = uri
   }
-  //TODO: parent and test
 
   /** Create/configure/delete an entire index
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html Read and Check Docs]]
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html Write Docs]]
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html Delete Docs]]
     * Also an intermediate step that can be used to get to other parts of the API mode
+    *
     * @param index The index to read/transform
     */
   case class `/$index`(index: String)
@@ -52,6 +56,7 @@ trait ApiModelCommon {
 
   /** Can be checked to see if the indexes/indexes and type/types exist
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html Check Docs]]
+    *
     * @param indexes The indexes to check
     * @param types The types to check
     */
@@ -63,6 +68,7 @@ trait ApiModelCommon {
   /** Performs activities on the specified index, type, and automatically generated id
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html Check Docs]]
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html Write Docs]]
+    *
     * @param index The index
     * @param `type` The type
     */
@@ -92,6 +98,7 @@ trait ApiModelCommon {
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html Read and Check Docs]]
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html Write Docs]]
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html Delete Docs]]
+    *
     * @param index The index
     * @param `type` The type
     * @param id The document id
@@ -106,6 +113,7 @@ trait ApiModelCommon {
 
   /** Performs activities on the specified index, type, and id:
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html Read Docs]]
+    *
     * @param index The index
     * @param `type` The type
     * @param id The document id
@@ -119,6 +127,7 @@ trait ApiModelCommon {
 
   /** Performs update activities on the specified index, type, and id:
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html Write Docs]]
+    *
     * @param index The index
     * @param `type` The type
     * @param id The document id
@@ -132,6 +141,7 @@ trait ApiModelCommon {
 
   /** Updates objects in the specified index based on a query body
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update-by-query.html Docs]]
+    *
     * @param index The index
     */
   case class `/$index/_update_by_query`(index: String)
@@ -154,6 +164,7 @@ trait ApiModelCommon {
     * The response includes a docs array with all the fetched documents, each element similar in structure to a document
     * provided by the get API.
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html Docs]]
+    *
     * @param index The index
     */
   case class `/$index/_mget`(index: String)
@@ -164,6 +175,7 @@ trait ApiModelCommon {
     * The response includes a docs array with all the fetched documents, each element similar in structure to a document
     * provided by the get API.
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html Docs]]
+    *
     * @param index The index
     * @param `type` The type
     */
@@ -186,6 +198,7 @@ trait ApiModelCommon {
   /** Executes a bulk request of index/create/update/delete, based on the
     * object written to the resource
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html Docs]]
+    *
     * @param index The index - sub-requests missing an index will use this as default
     */
   case class `/$index/_bulk`(index: String)
@@ -196,6 +209,7 @@ trait ApiModelCommon {
   /** Executes a bulk request of index/create/update/delete, based on the
     * object written to the resource
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html Docs]]
+    *
     * @param index The index - sub-requests missing an index will use this as default
     * @param `type` The type - sub-requests missing an index will use this as default
     */
@@ -219,6 +233,7 @@ trait ApiModelCommon {
 
   /** Gets the term vectors from the specified index, type, and id:
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-termvectors.html Docs]]
+    *
     * @param index The index
     * @param `type` The type
     */
@@ -228,6 +243,7 @@ trait ApiModelCommon {
 
   /** Gets the term vectors from the specified index, type, and id:
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-termvectors.html Docs]]
+    *
     * @param index The index
     * @param `type` The type
     * @param id The document id
@@ -244,26 +260,28 @@ trait ApiModelCommon {
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-termvectors.html Docs]]
     */
   case class `/_mtermvectors`()
-    extends WithDataEsReadable[StandardParams]
+    extends EsWithDataReadable[StandardParams]
       with EsResource
 
   /** Allows to get multiple term vectors at once, depending on the object
     * written to the endpoint
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-termvectors.html Docs]]
+    *
     * @param index The index
     */
   case class `/$index/_mtermvectors`(index: String)
-    extends WithDataEsReadable[StandardParams]
+    extends EsWithDataReadable[StandardParams]
       with EsResource
 
   /** Allows to get multiple term vectors at once, depending on the object
     * written to the endpoint
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-termvectors.html Docs]]
+    *
     * @param index The index
     * @param `type` The type
     */
   case class `/$index/$type/_mtermvectors`(index: String, `type`: String)
-    extends WithDataEsReadable[StandardParams]
+    extends EsWithDataReadable[StandardParams]
       with EsResource
 }
 object ApiModelCommon extends ApiModelCommon

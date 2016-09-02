@@ -19,6 +19,10 @@ object ApiModelNavigationTree {
     */
   trait `tree:/`
   {
+    /** Allows for generic access to the ES client - any URL string, any operation, and any modifier
+      * @param uri The resource name (including the leading '/')
+      */
+    def uri(uri: String) = `/$uri`(uri)
     /**
       * Sub-resources that require the index
       *
