@@ -29,6 +29,12 @@ object MyBuild extends Build {
   ).map(_ % circeVersion)
   //add like: libraryDependencies ++= circeDeps,
 
+  val esRestVersion = "5.0.0-alpha5"
+  lazy val esRestDeps = "org.elasticsearch.client" % "rest" % esRestVersion
+
+  val utestJvmVersion = "0.4.3"
+  lazy val utestJvmDeps = "com.lihaoyi" %% "utest" % utestJvmVersion % "test"
+
   // Project definitions
 
   val esScalaDriverVersion = "0.1-SNAPSHOT"
@@ -42,8 +48,8 @@ object MyBuild extends Build {
     settings = buildSettings ++ Seq(
       name := "Elasticsearch Scala Core",
       version := esScalaDriverVersion,
-      libraryDependencies += "com.lihaoyi" %% "utest" % "0.4.3" % "test",
       libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.11.2",
+      libraryDependencies += utestJvmDeps,
       testFrameworks += new TestFramework("utest.runner.Framework")
     )
   )
@@ -53,9 +59,12 @@ object MyBuild extends Build {
     file("elasticsearch_scala_java_client"),
     settings = buildSettings ++ Seq(
       name := "Elasticsearch Java Client Scala bridge",
-      version := esScalaDriverVersion
+      version := esScalaDriverVersion,
+      libraryDependencies += utestJvmDeps,
+      libraryDependencies += esRestDeps,
+      testFrameworks += new TestFramework("utest.runner.Framework")
     )
-  )
+  ).dependsOn(elasticsearch_scala_core)
 
   lazy val elasticsearch_scala_js_client: Project = Project(
     "elasticsearch_scala_js_client",
@@ -64,5 +73,5 @@ object MyBuild extends Build {
       name := "Elasticsearch Scala Js Client",
       version := esScalaDriverVersion
     )
-  )
+  ).dependsOn(elasticsearch_scala_core)
 }
