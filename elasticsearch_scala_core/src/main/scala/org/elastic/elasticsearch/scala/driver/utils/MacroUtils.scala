@@ -8,6 +8,7 @@ import scala.reflect.macros._
 
 /**
   * Contains scala macros
+  * TODO: reduce these 3 mehods down to 1 eg default params, eg body = q"None", mods = q"List()" etc
   */
 object MacroUtils {
 
@@ -46,10 +47,16 @@ object MacroUtils {
 
     c.Expr[T] {
       q"""
-            case class Internal(resource: EsResource, op: String, body: Option[String], mods: List[String]) extends $T {
-              def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods).asInstanceOf[this.type]
+            case class Internal
+            (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+              extends $T
+            {
+              override def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods, headers)
+                .asInstanceOf[this.type]
+              override def withHeader(h: String): this.type = Internal(resource, op, body, mods, h :: headers)
+                .asInstanceOf[this.type]
             }
-            Internal($self, $opType, None, List())
+            Internal($self, $opType, None, List(), List())
       """ }
   }
 
@@ -86,10 +93,16 @@ object MacroUtils {
 
     c.Expr[T] {
       q"""
-            case class Internal(resource: EsResource, op: String, body: Option[String], mods: List[String]) extends $T {
-              def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods).asInstanceOf[this.type]
+            case class Internal
+            (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+            extends $T
+            {
+              override def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods, headers)
+                .asInstanceOf[this.type]
+              override def withHeader(h: String): this.type = Internal(resource, op, body, mods, h :: headers)
+                .asInstanceOf[this.type]
             }
-            Internal($self, $opType, Some($body), List())
+            Internal($self, $opType, Some($body), List(), List())
       """ }
   }
 
@@ -105,23 +118,31 @@ object MacroUtils {
     * @param op The operation from `ElasticsearchBase` (`GET`, `HEAD`, etc)
     * @param body The body to write to the resource (or None for pure reads)
     * @param mods The list of modifiers to apply
+    * @param headers The list of headers to apply
     * @param T The type (combination of `Modifier` classes and `BaseDriverOp`)
     * @tparam T The type (combination of `Modifier` classes and `BaseDriverOp`)
     * @return A chainable version of the `BaseDriverOp` mixed with T
     */
   def materializeOpImpl_AllParams[T <: BaseDriverOp]
   (c: Context)
-  (resource: c.Expr[EsResource], op: c.Expr[String], body: c.Expr[Option[String]], mods: c.Expr[List[String]])
+  (resource: c.Expr[EsResource], op: c.Expr[String], body: c.Expr[Option[String]],
+   mods: c.Expr[List[String]], headers: c.Expr[List[String]])
   (implicit T: c.WeakTypeTag[T])
   : c.Expr[T] =
   {
     import c.universe._
     c.Expr[T] {
       q"""
-          case class Internal(resource: EsResource, op: String, body: Option[String], mods: List[String]) extends $T {
-            def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods).asInstanceOf[this.type]
+          case class Internal
+          (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+          extends $T
+          {
+            override def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods, headers)
+              .asInstanceOf[this.type]
+            override def withHeader(h: String): this.type = Internal(resource, op, body, mods, h :: headers)
+              .asInstanceOf[this.type]
           }
-          Internal(resource, op, body, mods)
+          Internal(resource, op, body, mods, headers)
     """ }
   }
 }

@@ -1,6 +1,5 @@
 package org.elastic.elasticsearch.driver.scala
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase
 import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.BaseDriverOp
 
 /**
