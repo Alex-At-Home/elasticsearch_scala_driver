@@ -16,7 +16,7 @@ import scala.concurrent.duration.Duration
 
 /** The Elasticsearch driver for the JVM
   * Run `start()` to provide a client that can be used to execute resource operations
-  * @param hostPort host:port
+  * @param hostPorts A list of endpoints in the format "host:port"
   * @param connectTimeout The connect timeout (human readable format, eg "1 second")
   * @param socketTimeout The socket timeout (human readable format, eg "10 seconds")
   * @param retryTimeout The retry timeout (human readable format, eg "10 seconds")
@@ -26,7 +26,7 @@ import scala.concurrent.duration.Duration
   * @param advancedConfig Advanced configuration for the underlying REST client
   */
 case class ElasticsearchDriver
-  (hostPort: String = "localhost:9200",
+  (hostPorts: List[String] = List("localhost:9200"),
    connectTimeout: String = "1 second",
    socketTimeout: String = "10 seconds",
    retryTimeout: String = "10 seconds",
@@ -35,12 +35,18 @@ case class ElasticsearchDriver
    defaultHeaders: List[String] = List(),
    advancedConfig: List[RestClientBuilder.HttpClientConfigCallback] = List())
 {
-  /** Creates a new drive with a changed URL
+  /** Creates a new drive with different or appended host:ports
     *
-    * @param newHostPort The new host:port
+    * @param newHostPorts The new host:port
+    * @param overwrite Whether to overwrite the existing settings, or append to them
     * @return A new copy of the driver with the updated settings
     */
-  def withHostPort(newHostPort: String): ElasticsearchDriver = this.copy(hostPort = newHostPort)
+  def withNewHostPorts(newHostPorts: List[String], overwrite: Boolean = true): ElasticsearchDriver = {
+    val newPorts =
+      if (overwrite) newHostPorts
+      else hostPorts ++ newHostPorts
+    this.copy(hostPorts = hostPorts)
+  }
 
   /** Change the connect timeout
     *
@@ -175,8 +181,10 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends EsDriver
     val client = for {
       _ <- Some()
       // URL
-      Array(host, port) = esDriver.hostPort.split(":")
-      fromUrl <- Some(RestClient.builder(new HttpHost(host, port.toInt)))
+      hostPorts = esDriver.hostPorts.map(_.split(":", 2)).map { case Array(host, port) =>
+        new HttpHost(host, port.toInt)
+      }
+      fromUrl <- Some(RestClient.builder(hostPorts:_*))
 
       // Connect and socket timeouts
       fromTimeouts <- Some(fromUrl).map { builder =>

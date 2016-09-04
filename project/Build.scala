@@ -35,6 +35,8 @@ object MyBuild extends Build {
   val utestJvmVersion = "0.4.3"
   lazy val utestJvmDeps = "com.lihaoyi" %% "utest" % utestJvmVersion % "test"
 
+  //lazy val simpleScalaHttpServer = //TODO
+
   // Project definitions
 
   val esScalaDriverVersion = "0.1-SNAPSHOT"
@@ -62,6 +64,7 @@ object MyBuild extends Build {
       version := esScalaDriverVersion,
       libraryDependencies += utestJvmDeps,
       libraryDependencies += esRestDeps,
+      //libraryDependencies += simpleScalaHttpServer,
       testFrameworks += new TestFramework("utest.runner.Framework")
     )
   ).dependsOn(elasticsearch_scala_core)

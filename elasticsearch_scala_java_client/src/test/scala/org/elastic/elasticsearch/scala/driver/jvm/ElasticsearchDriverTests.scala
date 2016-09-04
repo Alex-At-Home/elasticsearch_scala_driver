@@ -10,9 +10,9 @@ object ElasticsearchDriverTests extends TestSuite {
   val tests = this {
     "Test ElasticsearchDriver builder operations" - {
       val driver = ElasticsearchDriver()
-      val base = ElasticsearchDriver("localhost:9200", "1 second", "10 seconds", "10 seconds", 1, None, List())
+      val base = ElasticsearchDriver(List("localhost:9200"), "1 second", "10 seconds", "10 seconds", 1, None, List())
       driver ==> base
-      driver.withHostPort("alex:9999") ==> base.copy(hostPort = "alex:9999")
+      driver.withNewHostPorts(List("alex:9999")) ==> base.copy(hostPorts = List("alex:9999"))
       driver.withConnectTimeout("2 seconds") ==> base.copy(connectTimeout = "2 seconds")
       driver.withSocketTimeout("3 seconds") ==> base.copy(socketTimeout = "3 seconds")
       driver.withRetryTimeout("4 seconds") ==> base.copy(retryTimeout = "4 seconds")
@@ -42,6 +42,9 @@ object ElasticsearchDriverTests extends TestSuite {
       basePlusConfig ==> base.copy(advancedConfig = List(a))
       basePlusConfig.withAdvancedConfig(List(b), overwrite = true) ==> base.copy(advancedConfig = List(b))
       basePlusConfig.withAdvancedConfig(List(b), overwrite = false) ==> base.copy(advancedConfig = List(a, b))
+    }
+    "Can read/write to/from an HTTP server" - {
+      //TODO
     }
   }
 }
