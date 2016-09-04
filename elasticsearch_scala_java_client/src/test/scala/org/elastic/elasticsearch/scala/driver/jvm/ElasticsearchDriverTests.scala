@@ -1,9 +1,21 @@
 package org.elastic.elasticsearch.scala.driver.jvm
 
+import colossus._
+import core._
+import service._
+import protocols.http._
+import UrlParsing._
+import HttpMethod._
 import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
+import org.elastic.elasticsearch.driver.utils.ServerUtils
+import org.elastic.elasticsearch.scala.driver.versions.Versions
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback
 import utest._
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 object ElasticsearchDriverTests extends TestSuite {
 
@@ -12,7 +24,9 @@ object ElasticsearchDriverTests extends TestSuite {
       val driver = ElasticsearchDriver()
       val base = ElasticsearchDriver(List("localhost:9200"), "1 second", "10 seconds", "10 seconds", 1, None, List())
       driver ==> base
-      driver.withNewHostPorts(List("alex:9999")) ==> base.copy(hostPorts = List("alex:9999"))
+      driver.withNewHostPorts(List("host1:9999")) ==> base.copy(hostPorts = List("host1:9999"))
+      driver.withNewHostPorts(List("host2:8888"), overwrite = false) ==>
+        base.copy(hostPorts = List("localhost:9200", "host2:8888"))
       driver.withConnectTimeout("2 seconds") ==> base.copy(connectTimeout = "2 seconds")
       driver.withSocketTimeout("3 seconds") ==> base.copy(socketTimeout = "3 seconds")
       driver.withRetryTimeout("4 seconds") ==> base.copy(retryTimeout = "4 seconds")
@@ -44,7 +58,49 @@ object ElasticsearchDriverTests extends TestSuite {
       basePlusConfig.withAdvancedConfig(List(b), overwrite = false) ==> base.copy(advancedConfig = List(a, b))
     }
     "Can read/write to/from an HTTP server" - {
+
+      // Just handle the "/" resource
+      class TestService(context: ServerContext) extends HttpService(context) {
+        //TODO: check headers
+        def handle = {
+          case request @ Get on Root if request.head.query.isEmpty =>
+            Callback.successful(request.ok("rx:/"))
+          case request @ Get on Root if request.head.query.isDefined =>
+            Callback.successful(request.ok(s"rx:/${request.head.query.get}"))
+        }
+      }
+
+      val (server, port) = ServerUtils.createTestServer(new TestService(_))
+
+      try {
+        val driver =
+          ElasticsearchDriver()
+            .withNewHostPorts(List(s"localhost:$port"))
+            .withDefaultHeaders(List("x-test: test"))
+            .start()
+
+        // Basic check
+        {
+          val futureResult = driver.exec(Versions.latest.`/`().read())
+          val retVal = Await.result(futureResult, Duration("1 second"))
+          retVal ==> "rx:/"
+        }
+        // URL params
+        {
+          val futureResult = driver.exec(Versions.latest.`/`().read().pretty(true))
+          val retVal = Await.result(futureResult, Duration("1 second"))
+          retVal ==> "rx:/pretty=true"
+        }
+
+        //TODO check body
+
+        //TODO check errors
+      }
+      finally {
+        server.die()
+      }
       //TODO
     }
+    //TODO: check auth / timeout / headers(x2)
   }
 }

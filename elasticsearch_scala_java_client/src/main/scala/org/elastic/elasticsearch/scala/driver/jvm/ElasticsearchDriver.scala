@@ -11,7 +11,7 @@ import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, E
 import org.elasticsearch.client.RestClientBuilder.{HttpClientConfigCallback, RequestConfigCallback}
 import org.elasticsearch.client.{ResponseListener, RestClient, RestClientBuilder}
 
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.concurrent.{Future, Promise}
 import scala.concurrent.duration.Duration
 
 /** The Elasticsearch driver for the JVM
@@ -42,10 +42,10 @@ case class ElasticsearchDriver
     * @return A new copy of the driver with the updated settings
     */
   def withNewHostPorts(newHostPorts: List[String], overwrite: Boolean = true): ElasticsearchDriver = {
-    val newPorts =
+    val newConfig =
       if (overwrite) newHostPorts
       else hostPorts ++ newHostPorts
-    this.copy(hostPorts = hostPorts)
+    this.copy(hostPorts = newConfig)
   }
 
   /** Change the connect timeout
@@ -148,10 +148,9 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends EsDriver
 
   /** Executes the designated operation
     * @param baseDriverOp The operation to execute
-    * @param ec Implicit execution context (not needed here but needed for the override)
     * @return A future returning the raw reply or throws `RequestException(code, body, message)`
     */
-  override def exec(baseDriverOp: BaseDriverOp)(implicit ec: ExecutionContext): Future[String] = {
+  override def exec(baseDriverOp: BaseDriverOp): Future[String] = {
     val promise = Promise[String]
     val responseCallback = new ResponseListener() {
       override def onSuccess(response: org.elasticsearch.client.Response) = {
@@ -171,7 +170,12 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends EsDriver
       val decomp = s.split(":", 2)
       new BasicHeader(decomp(0), decomp(1))
     }
-    restClient.performRequest(baseDriverOp.op, baseDriverOp.resource.location, responseCallback, headers:_*)
+
+    restClient.performRequest(
+      baseDriverOp.op,
+      baseDriverOp.getUrl,
+      responseCallback,
+      headers:_*)
     promise.future
   }
 

@@ -44,10 +44,9 @@ object ElasticsearchBase {
   trait EsDriver {
     /** Executes the designated operation
       * @param baseDriverOp The operation to execute
-      * @param ec Implicit execution context (not needed here but needed for the override)
       * @return A future returning the raw reply or throws `RequestException(code, body, message)`
       */
-    def exec(baseDriverOp: BaseDriverOp)(implicit ec: ExecutionContext): Future[String]
+    def exec(baseDriverOp: BaseDriverOp): Future[String]
   }
 
   val DELETE = "DELETE"
@@ -112,10 +111,15 @@ object ElasticsearchBase {
     //TODO execJ via pimp from the desired library (support scalajs)
     def execS(implicit driver: EsDriver, ec: ExecutionContext): String = null
 
-    /** Retrieves the URL for the operation on the resource with the modifiers
-      * @return The URL for the operation on the resource with the modifiers
+    /** Retrieves the URL (including params) for the operation on the resource with the modifiers
+      * @return The URL (including params) for the operation on the resource with the modifiers
       */
     def getUrl: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") + mods.reverse.mkString("&")
+
+    /** Retrieves the URL (no params) for the operation on the resource with the modifiers
+      * @return The URL (no params) for the operation on the resource with the modifiers
+      */
+    def getPath: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") + mods.reverse.mkString("&")
   }
 
   /** The base ES resource, all the case classes should be derived from this

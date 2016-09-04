@@ -35,7 +35,7 @@ object MyBuild extends Build {
   val utestJvmVersion = "0.4.3"
   lazy val utestJvmDeps = "com.lihaoyi" %% "utest" % utestJvmVersion % "test"
 
-  //lazy val simpleScalaHttpServer = //TODO
+  lazy val simpleScalaHttpServer = "com.tumblr" %% "colossus" % "0.8.1" % "test"
 
   // Project definitions
 
@@ -62,9 +62,9 @@ object MyBuild extends Build {
     settings = buildSettings ++ Seq(
       name := "Elasticsearch Java Client Scala bridge",
       version := esScalaDriverVersion,
-      libraryDependencies += utestJvmDeps,
       libraryDependencies += esRestDeps,
-      //libraryDependencies += simpleScalaHttpServer,
+      libraryDependencies += utestJvmDeps,
+      libraryDependencies += simpleScalaHttpServer,
       testFrameworks += new TestFramework("utest.runner.Framework")
     )
   ).dependsOn(elasticsearch_scala_core)
