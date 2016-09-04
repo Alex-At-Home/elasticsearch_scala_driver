@@ -9,7 +9,7 @@ import org.apache.http.impl.nio.reactor.IOReactorConfig
 import org.apache.http.message.BasicHeader
 import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsDriver, RequestException}
 import org.elasticsearch.client.RestClientBuilder.{HttpClientConfigCallback, RequestConfigCallback}
-import org.elasticsearch.client.{ResponseListener, RestClient, RestClientBuilder}
+import org.elasticsearch.client.{ResponseException, ResponseListener, RestClient, RestClientBuilder}
 
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.duration.Duration
@@ -164,7 +164,15 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends EsDriver
           promise.failure(RequestException(code, errorMessage, messageBody))
         }
       }
-      override def onFailure(ex: Exception) = promise.failure(ex)
+      override def onFailure(ex: Exception) = ex match {
+        case esEx: ResponseException =>
+          val response = esEx.getResponse.getStatusLine
+          val errorMessage = response.getReasonPhrase
+          promise.failure(RequestException(response.getStatusCode, errorMessage, Some(ex.getMessage)))
+
+        case _ =>
+          promise.failure(ex)
+      }
     }
     val headers = (baseDriverOp.headers ++ esDriver.defaultHeaders).map { s =>
       val decomp = s.split(":", 2)

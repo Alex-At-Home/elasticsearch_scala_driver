@@ -13,9 +13,11 @@ import org.elastic.elasticsearch.scala.driver.versions.Versions
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback
 import utest._
 import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
+import org.elasticsearch.client.ResponseException
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object ElasticsearchDriverTests extends TestSuite {
 
@@ -61,12 +63,15 @@ object ElasticsearchDriverTests extends TestSuite {
 
       // Just handle the "/" resource
       class TestService(context: ServerContext) extends HttpService(context) {
-        //TODO: check headers
         def handle = {
           case request @ Get on Root if request.head.query.isEmpty =>
-            Callback.successful(request.ok("rx:/"))
+            val hasDefaultHeader = request.head.headers.firstValue("x-default").contains("test1")
+            val hasRequestHeader = request.head.headers.firstValue("x-request").contains("test2")
+            Callback.successful(request.ok(s"rx:/ $hasDefaultHeader $hasRequestHeader"))
           case request @ Get on Root if request.head.query.isDefined =>
             Callback.successful(request.ok(s"rx:/${request.head.query.get}"))
+
+            //TODO other methods
         }
       }
 
@@ -76,14 +81,31 @@ object ElasticsearchDriverTests extends TestSuite {
         val driver =
           ElasticsearchDriver()
             .withNewHostPorts(List(s"localhost:$port"))
-            .withDefaultHeaders(List("x-test: test"))
+            .start()
+
+        val driver2 =
+          driver.createCopy
+            .withDefaultHeaders(List("x-default: test1"))
             .start()
 
         // Basic check
         {
           val futureResult = driver.exec(Versions.latest.`/`().read())
           val retVal = Await.result(futureResult, Duration("1 second"))
-          retVal ==> "rx:/"
+          retVal ==> "rx:/ false false"
+        }
+        // Basic check (default header)
+        {
+          val futureResult = driver2.exec(Versions.latest.`/`().read())
+          val retVal = Await.result(futureResult, Duration("1 second"))
+          retVal ==> "rx:/ true false"
+        }
+        // custom headers
+        {
+          val futureResult = driver2.exec(
+            Versions.latest.`/`().read().h("x-request: test2"))
+          val retVal = Await.result(futureResult, Duration("1 second"))
+          retVal ==> "rx:/ true true"
         }
         // URL params
         {
@@ -91,16 +113,25 @@ object ElasticsearchDriverTests extends TestSuite {
           val retVal = Await.result(futureResult, Duration("1 second"))
           retVal ==> "rx:/pretty=true"
         }
+        // Check errors
+        {
+          val futureResult =
+            driver.exec(Versions.latest.`/$uri`("/not_present").read())
+                .recover {
+                  case ex: RequestException => s"${ex.code}"
+                }
+          val retVal = Await.result(futureResult, Duration("1 second"))
+          retVal ==> "404"
+        }
 
-        //TODO check body
+        //TODO check all method/body comments (read-data, write, write-no-body, delete, delete-body, check)
+        Versions.latest.`/$index`("test_index")
 
-        //TODO check errors
+        //TODO: check auth
       }
       finally {
         server.die()
       }
-      //TODO
     }
-    //TODO: check auth / timeout / headers(x2)
   }
 }
