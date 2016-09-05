@@ -1,6 +1,6 @@
 package org.elastic.elasticsearch.scala.driver.common
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, CustomTypedToString, EsResource}
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, CustomTypedToString}
 import org.elastic.elasticsearch.scala.driver.utils.BulkUtils
 
 /** Common data model types used by the resources

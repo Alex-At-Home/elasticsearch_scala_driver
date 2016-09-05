@@ -70,7 +70,7 @@ object ResourceOperations {
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
   trait EsWritableTU[D <: BaseDriverOp, I] extends EsWritable[D] {
-    //TODO finish, stick elsewhere, add test case
+    //TODO add to other resources
     /**
       * Creates a driver operation
       *

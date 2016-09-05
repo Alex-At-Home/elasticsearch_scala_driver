@@ -83,36 +83,42 @@ object ApiModelCommonTests extends TestSuite {
       import org.elastic.elasticsearch.scala.driver.utils.NoJsonHelpers.NoJsonTypedToStringHelper
 
       val bulkOps = BulkIndexOps(List(
-        //TODO all the ops... (including type missing etc)
-        api.`/$index/$type`("index", "type").write("TEST1"),
-        api.`/$index/$type/$id`("index", "type", "id").write("TEST2"),
+        api.`/$index/$type`("index", "type").write("TEST1").m("param=tp"),
+        api.`/$index/$type/$id`("index", "type", "id").write("TEST2").m("param=tp"),
         api.`/$index/$type/$id`("", "type", "id").write("TEST3"),
-        api.`/$index/$type/$id`("index", "", "id").write("TEST4"),
+        api.`/$index/$type/$id`("index", "", "id").delete(),
         api.`/$index/$type/$id`("", "", "id").write("TEST5"),
-        api.`/$index`("index").write("TEST6")
+        api.`/$index`("index").write("TEST6").m("param=tp"),
+        api.`/$index/$type/$id/_update`("index", "type", "id").write("TEST7").m("param=tp")
       ))
 
-      def formatVals(s: String) = s.replace(" ", "").replace("\t", "").replace("\r", "")
+      def formatVals(s: String) =
+        s.replace(" ", "").replace("\t", "").replace("\r", "")
 
       val expected = formatVals(
-        s"""{ "index": {  "_index": "index" ,  "_type": "type"  } }
+        s"""{ "index": {  "_index": "index" ,  "_type": "type", "param": "tp"  } }
             |TEST1
-            |{ "index": {  "_index": "index" ,  "_type": "type", "_id": "id"  } }
+            |{ "index": {  "_index": "index" ,  "_type": "type", "_id": "id", "param": "tp"  } }
             |TEST2
             |{ "index": {  "_type": "type", "_id": "id"  } }
             |TEST3
-            |{ "index": {  "_index": "index", "_id": "id"  } }
-            |TEST4
+            |{ "delete": {  "_index": "index", "_id": "id"  } }
             |{ "index": {  "_id": "id"  } }
             |TEST5
-            |{ "index": {  "_index": "index"  } }
+            |{ "index": {  "_index": "index", "param": "tp"  } }
             |TEST6
+            |{ "update": {  "_index": "index", "_type": "type", "_id": "id", "param": "tp"  } }
+            |TEST7
             |"""
           .stripMargin.stripSuffix("\n"))
 
-      formatVals(api.`/_bulk`().write(bulkOps).body.get) ==> expected
 
-      //TODO updates, mix in some deletes for coverage and sort ,s out
+      // (handy debug statement for if this fails)
+      //val xxx = formatVals(api.`/_bulk`().write(bulkOps).body.get)
+      //println("???????? " + xxx.getBytes.toList.zip(expected.getBytes.toList)
+      //  .map(x => if (x._1 != x._2) s"****$x****" else s"$x").mkString("|"))
+
+      formatVals(api.`/_bulk`().write(bulkOps).body.get) ==> expected
     }
   }
 }

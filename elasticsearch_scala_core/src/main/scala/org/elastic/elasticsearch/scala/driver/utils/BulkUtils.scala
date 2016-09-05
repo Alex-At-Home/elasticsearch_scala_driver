@@ -32,28 +32,61 @@ object BulkUtils {
     case _ => s""" "$field": "$value" """
   }
 
+  /** Adds an optional body block (eg DELETE doesn't have any body)
+    *
+    * @param body The optional body
+    * @return The "_bulk"-ified body (with newline) if present
+    */
+  private def addBodyBlock(body: Option[String]) = body.map(b => s"\n$b").getOrElse("")
+
+  /** Add modifiers to the JSON
+    * TODO: need ugh need to make mods be a list of String/Any and the only convert at the end?
+    *
+    * @param mods The list of modifiers
+    * @return A list of JSON-ified mods
+    */
+  private def addMods(mods: List[String]): List[String] = mods.map(_.split("=", 2)).flatMap {
+    case Array(key, value) => List(s""" "$key": "$value" """)
+    case _ => List()
+  }
+
+  /** Convert a list of strings into a block of JSON clauses
+    *
+    * @param l The list of strings
+    */
+  private def listToString(l: List[String]) = l.filter(!_.isEmpty).mkString(",")
+
   /** List of operations to apply as part of the bulk operation
     *
     * @param ops The list of ES operations
-    * @return builds a JSON string out of the list of operations
-    */
+a    */
   def buildBulkOps(ops: List[BaseDriverOp]): String = ops.map {
 
     case BaseDriverOp(`/$index`(index),
-    method @ _, Some(body @ _), _, _) =>
-      s"""{ "${methodToBulkOp(method)}": { ${addBlock("_index", index)} } }\n$body """
+    method @ _, body @ _, mods @ _, _) =>
+      val blocks = listToString(List(addBlock("_index", index)) ++ addMods(mods))
+      s"""{ "${methodToBulkOp(method)}": { $blocks } }${addBodyBlock(body)}"""
 
     case BaseDriverOp(`/$index/$type`(index, theType),
-    method @ _, Some(body @ _), _, _) =>
-      s"""{ "${methodToBulkOp(method)}": { ${addBlock("_index", index)}, ${addBlock("_type", theType)} } }\n$body """
+      method @ _, body @ _, mods @ _, _) =>
+        val blocks = listToString(List(
+          addBlock("_index", index), addBlock("_type", theType)) ++
+          addMods(mods))
+        s"""{ "${methodToBulkOp(method)}": { $blocks } }${addBodyBlock(body)}"""
 
     case BaseDriverOp(`/$index/$type/$id`(index, theType, id),
-    method @ _, Some(body @ _), _, _) =>
-      s"""{ "${methodToBulkOp(method)}": { ${addBlock("_index", index)}, ${addBlock("_type", theType)}, "_id": "$id" } }\n$body """
+      method @ _, body @ _, mods @ _, _) =>
+        val blocks = listToString(List(
+          addBlock("_index",index), addBlock("_type", theType), addBlock("_id", id)) ++
+          addMods(mods))
+        s"""{ "${methodToBulkOp(method)}": { $blocks } }${addBodyBlock(body)}"""
 
     case BaseDriverOp(`/$index/$type/$id/_update`(index, theType, id),
-    _, Some(body @ _), _, _) =>
-      s"""{ "update": { ${addBlock("_index", index)}, ${addBlock("_type", theType)}, "_id": "$id" } }\n$body """
+      _, body @ _, mods @ _, _) =>
+        val blocks = listToString(List(
+          addBlock("_index", index), addBlock("_type", theType), addBlock("_id", id)) ++
+          addMods(mods))
+        s"""{ "update": { $blocks } }${addBodyBlock(body)}"""
 
     case op @ _ => throw EsRequestException(s"This operation is not supported by _bulk: $op")
 
