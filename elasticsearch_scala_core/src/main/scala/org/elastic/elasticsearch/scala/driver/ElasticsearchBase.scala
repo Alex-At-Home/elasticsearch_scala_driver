@@ -109,7 +109,7 @@ object ElasticsearchBase {
     def h(h: String): this.type = withHeader(h)
 
     //TODO execJ via pimp from the desired library (support scalajs)
-    def execS(implicit driver: EsDriver, ec: ExecutionContext): String = null
+    def execS()(implicit driver: EsDriver): Future[String] = driver.exec(this)
 
     /** Retrieves the URL (including params) for the operation on the resource with the modifiers
       * @return The URL (including params) for the operation on the resource with the modifiers
@@ -120,6 +120,14 @@ object ElasticsearchBase {
       * @return The URL (no params) for the operation on the resource with the modifiers
       */
     def getPath: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") + mods.reverse.mkString("&")
+  }
+  object BaseDriverOp {
+    /** Extractor for `BaseDriverOp`
+      *
+      * @param op The operation to decompose
+      * @return The 5-tupe
+      */
+    def unapply(op: BaseDriverOp) = Some((op.resource, op.op, op.body, op.mods, op.headers))
   }
 
   /** The base ES resource, all the case classes should be derived from this
