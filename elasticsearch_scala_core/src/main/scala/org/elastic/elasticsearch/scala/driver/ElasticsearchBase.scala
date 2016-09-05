@@ -1,6 +1,7 @@
 package org.elastic.elasticsearch.scala.driver
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * The base operations for the Elasticsearch DSL
@@ -14,6 +15,19 @@ object ElasticsearchBase {
     * @param body The body of the error, if present
     */
   case class RequestException(code: Int, message: String, body: Option[String]) extends Exception
+
+  /**
+    * A trait to be implemented and used as an implicit to define
+    * @tparam T
+    */
+  trait StringToJsonHelper[T] {
+    /** Creates a JSON object (of type T) from the string
+      *
+      * @param s
+      * @return
+      */
+    def jsonOf(s: String): T
+  }
 
   /**
     * Parent type for Modifiers to resources (representing URL parameters)
@@ -108,7 +122,11 @@ object ElasticsearchBase {
       */
     def h(h: String): this.type = withHeader(h)
 
-    //TODO execJ via pimp from the desired library (support scalajs)
+    /**
+      * Actually executes the operation
+      * @param driver The driver which executes the operation
+      * @return A future containing the result of the operation as a string
+      */
     def execS()(implicit driver: EsDriver): Future[String] = driver.exec(this)
 
     /** Retrieves the URL (including params) for the operation on the resource with the modifiers
