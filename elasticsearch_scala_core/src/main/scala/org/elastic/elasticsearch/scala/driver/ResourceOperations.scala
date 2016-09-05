@@ -1,6 +1,6 @@
 package org.elastic.elasticsearch.scala.driver
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsResource, JsonToStringHelper, TypedToStringHelper}
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
 import org.elastic.elasticsearch.scala.driver.utils.MacroUtils
 
 import scala.language.experimental.macros
@@ -11,7 +11,23 @@ import scala.language.experimental.macros
   */
 object ResourceOperations {
 
-  /** The base readable type
+  /** The base typed readable operation
+    *
+    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
+    * @tparam I The type (case class) of the return operation
+    */
+  trait EsReadableT[D <: BaseDriverOp, I] extends EsReadable[D] { self: EsResource =>
+    //TODO get working, test, and add to other resources
+    /**
+      * Creates a typed driver operation
+      *
+      * @return The typed driver operation
+      */
+    @MacroUtils.OpType("GET")
+    override def read(): D with TypedOperation[I] = macro MacroUtils.materializeOpImpl_TypedInput[D, I]
+  }
+
+  /** The base readable type (untyped)
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */

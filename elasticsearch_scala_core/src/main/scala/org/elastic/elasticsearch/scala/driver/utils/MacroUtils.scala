@@ -1,7 +1,7 @@
 package org.elastic.elasticsearch.scala.driver.utils
 
 import org.elastic.elasticsearch.scala.driver.ElasticsearchBase
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, JsonToStringHelper, TypedToStringHelper}
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, JsonToStringHelper, TypedOperation, TypedToStringHelper}
 
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros._
@@ -43,6 +43,7 @@ object MacroUtils {
   }
 
   /** The actual code in quasi-codes for building the header/param modifiable case class
+    * (untyped return)
     *
     * @param c The context of the macro operation
     * @param self The `EsResource`
@@ -50,7 +51,7 @@ object MacroUtils {
     * @param body The body to post
     * @param modifiers The parameters/modifiers
     * @param headers The headers
-    * @param ct The evidence for the trait containing the list of available modifiers
+    * @param ctt The evidence for the trait containing the list of available modifiers
     * @tparam T The trait containing the list of available modifiers
     * @return The macro code to inject
     */
@@ -58,18 +59,54 @@ object MacroUtils {
     (c: blackbox.Context)
     (self: c.Expr[c.PrefixType], opType: String, body: c.Expr[Option[String]],
      modifiers: List[String], headers: List[String],
-     ct: c.WeakTypeTag[T]) =
+     ctt: c.WeakTypeTag[T]) =
   {
     import c.universe._
     q"""
       case class Internal
       (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
-        extends $ct
+        extends $ctt
       {
         override def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods, headers)
           .asInstanceOf[this.type]
         override def withHeader(h: String): this.type = Internal(resource, op, body, mods, h :: headers)
           .asInstanceOf[this.type]
+      }
+      Internal($self, $opType, $body, $modifiers, $headers)
+    """
+  }
+
+  /** The actual code in quasi-codes for building the header/param modifiable case class
+    * (untyped return)
+    *
+    * @param c The context of the macro operation
+    * @param self The `EsResource`
+    * @param opType The operation type
+    * @param body The body to post
+    * @param modifiers The parameters/modifiers
+    * @param headers The headers
+    * @param ctt The evidence for the trait containing the list of available modifiers
+    * @tparam T The trait containing the list of available modifiers
+    * @return The macro code to inject
+    */
+  private def buildInternalClass[T, C]
+  (c: blackbox.Context)
+  (self: c.Expr[c.PrefixType], opType: String, body: c.Expr[Option[String]],
+   modifiers: List[String], headers: List[String],
+   ctt: c.WeakTypeTag[T], ctc: c.WeakTypeTag[C]) =
+  {
+    import c.universe._
+    q"""
+      case class Internal
+      (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+        extends $ctt with TypedOperation[$ctc]
+      {
+        override def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods, headers)
+          .asInstanceOf[this.type]
+        override def withHeader(h: String): this.type = Internal(resource, op, body, mods, h :: headers)
+          .asInstanceOf[this.type]
+
+          //TODO: add typed exec
       }
       Internal($self, $opType, $body, $modifiers, $headers)
     """
@@ -97,6 +134,33 @@ object MacroUtils {
 
     c.Expr[T] {
       buildInternalClass[T](c)(self, opType, reify { None }, List(), List(), ct).asInstanceOf[c.Tree]
+    }
+  }
+
+  /**
+    * The Macro implementation, allows for modifiers to be chained
+    * Without this, needed two extra case classes for each combination of modifiers
+    * (one extra class - the first case class can be replaced with a much simpler list
+    *
+    * @param c The macro context
+    * @param ctt The operation type evidence (combination of `Modifier` classes and `BaseDriverOp`)
+    * @param ctc The return type evidence (combination of `Modifier` classes and `BaseDriverOp`)
+    * @tparam T The type (combination of `Modifier` classes and `BaseDriverOp`)
+    * @return A chainable version of the `BaseDriverOp` mixed with T
+    */
+  def materializeOpImpl_TypedInput[T <: BaseDriverOp, C]
+  (c: blackbox.Context)()
+  (implicit ctt: c.WeakTypeTag[T], ctc: c.WeakTypeTag[C])
+  : c.Expr[T with TypedOperation[C]] =
+  {
+    import c.universe._
+
+    val opType = getOpType(c)
+    val self = c.prefix
+
+    c.Expr[T with TypedOperation[C]] {
+      buildInternalClass[T, C](c)(self, opType, reify { None }, List(), List(), ctt, ctc)
+        .asInstanceOf[c.Tree]
     }
   }
 
@@ -136,7 +200,8 @@ object MacroUtils {
     *
     * @param c The macro context
     * @param body The body to write to the resource (or None for pure reads)
-    * @param ct The type evidence (combination of `Modifier` classes and `BaseDriverOp`)
+    * @param ctt The operation type evidence (combination of `Modifier` classes and `BaseDriverOp`)
+    * @param ctc The body type evidence (combination of `Modifier` classes and `BaseDriverOp`)
     * @tparam T The type (combination of `Modifier` classes and `BaseDriverOp`)
     * @return A chainable version of the `BaseDriverOp` mixed with T
     */

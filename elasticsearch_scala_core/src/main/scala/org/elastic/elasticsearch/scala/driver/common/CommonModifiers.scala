@@ -134,6 +134,10 @@ object CommonModifiers {
   * Common groupings of modifiers
   */
 object CommonModifierGroups {
+
+  //TODO: support common modifiers from here:
+  //https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html
+
   import CommonModifiers._
 
   /** No modifiers are supported for these parameters */

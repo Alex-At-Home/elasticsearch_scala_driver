@@ -21,6 +21,21 @@ object ElasticsearchBase {
     */
   case class EsRequestException(message: String) extends Exception
 
+  /** A trait of `BaseDriverOp` that indicates the typed return type of an operation
+    *
+    * @tparam T The type of the operation return
+    */
+  trait TypedOperation[T] { self: BaseDriverOp =>
+    /** Actually executes the operation
+      *
+      * @param driver The driver which executes the operation
+      * @param stringToTypedHelper An implicit helper to convert the op return to a type
+      * @return A future containing the result of the operation as a type
+      */
+    def exec()(implicit driver: EsDriver, stringToTypedHelper: StringToTypedHelper): Future[T] =
+      self.execS().map(stringToTypedHelper.toType(_))
+  }
+
   /** Case classes that want a custom overwrite should inherit this trait and implement
     * `fromTyped`, bypasses needing a JSON library with an overridden serializer etc etc
     */
@@ -46,6 +61,20 @@ object ElasticsearchBase {
       * @return The JSON string representing `t`
       */
     def fromTyped[T](t: T): String
+  }
+
+  /** A trait to be implemented and used as an implicit to indicate how to go from a
+    * JSON string (ie a return from an operation) to a typed (case class) object
+    */
+  trait StringToTypedHelper {
+
+    /** Helper to convert from a JSON string to a typed (case class) object
+      *
+      * @param s String return
+      * @tparam T The desired type of the return operation
+      * @return An object of type `T`
+      */
+    def toType[T](s: String): T
   }
 
   /**
