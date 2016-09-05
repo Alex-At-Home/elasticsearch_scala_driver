@@ -1,6 +1,6 @@
 package org.elastic.elasticsearch.scala.driver
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsResource}
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsResource, JsonToStringHelper}
 import org.elastic.elasticsearch.scala.driver.utils.MacroUtils
 
 import scala.language.experimental.macros
@@ -21,7 +21,7 @@ object ResourceOperations {
       *
       * @return The driver operation
       */
-    @MacroUtils.OpType(ElasticsearchBase.GET)
+    @MacroUtils.OpType("GET")
     def read(): D = macro MacroUtils.materializeOpImpl[D]
   }
 
@@ -35,7 +35,7 @@ object ResourceOperations {
       *
       * @return The driver operation
       */
-    @MacroUtils.OpType(ElasticsearchBase.HEAD)
+    @MacroUtils.OpType("HEAD")
     def check(): D = macro MacroUtils.materializeOpImpl[D]
   }
 
@@ -50,11 +50,28 @@ object ResourceOperations {
       * @param body The data to write to the resource
       * @return The driver operation
       */
-    @MacroUtils.OpType(ElasticsearchBase.GET)
+    @MacroUtils.OpType("GET")
     def read(body: String): D = macro MacroUtils.materializeOpImpl_Body[D]
+
+    /**
+      * Creates a driver operation
+      *
+      * @param body The JSON data to write to the resource
+      * @return The driver operation
+      */
+    @MacroUtils.OpType("GET")
+    def read[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D =
+      macro MacroUtils.materializeOpImpl_JBody[D, J]
   }
 
-  /** The base writable type
+  /** The base writable resource (typed input, untyped output)
+    *
+    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
+    */
+  trait EsWritableTU[D <: BaseDriverOp] extends EsWritable[D] {
+    //TODO
+  }
+  /** The base writable resource (untyped in both input and output)
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
@@ -62,11 +79,21 @@ object ResourceOperations {
     /**
       * Creates a driver operation
       *
-      * @param body The data to write to the resource
+      * @param body The String data to write to the resource
       * @return The driver operation
       */
-    @MacroUtils.OpType(ElasticsearchBase.PUT)
+    @MacroUtils.OpType("PUT")
     def write(body: String): D = macro MacroUtils.materializeOpImpl_Body[D]
+
+    /**
+      * Creates a driver operation
+      *
+      * @param body The JSON data to write to the resource
+      * @return The driver operation
+      */
+    @MacroUtils.OpType("PUT")
+    def write[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D =
+      macro MacroUtils.materializeOpImpl_JBody[D, J]
   }
 
   /** The base writable type, for cases where no data is written
@@ -79,7 +106,7 @@ object ResourceOperations {
       *
       * @return The driver operation
       */
-    @MacroUtils.OpType(ElasticsearchBase.PUT)
+    @MacroUtils.OpType("PUT")
     def write(): D = macro MacroUtils.materializeOpImpl[D]
   }
 
@@ -93,7 +120,7 @@ object ResourceOperations {
       *
       * @return The driver operation
       */
-    @MacroUtils.OpType(ElasticsearchBase.DELETE)
+    @MacroUtils.OpType("DELETE")
     def delete(): D = macro MacroUtils.materializeOpImpl[D]
   }
 
@@ -108,7 +135,17 @@ object ResourceOperations {
       * @param body The data to write to the resource
       * @return The driver operation
       */
-    @MacroUtils.OpType(ElasticsearchBase.DELETE)
+    @MacroUtils.OpType("DELETE")
     def delete(body: String): D = macro MacroUtils.materializeOpImpl_Body[D]
+
+    /**
+      * Creates a driver operation
+      *
+      * @param body The JSON data to write to the resource
+      * @return The driver operation
+      */
+    @MacroUtils.OpType("DELETE")
+    def delete[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D =
+      macro MacroUtils.materializeOpImpl_JBody[D, J]
   }
 }
