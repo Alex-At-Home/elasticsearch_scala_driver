@@ -1,6 +1,6 @@
 package org.elastic.elasticsearch.scala.driver
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsResource, JsonToStringHelper}
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsResource, JsonToStringHelper, TypedToStringHelper}
 import org.elastic.elasticsearch.scala.driver.utils.MacroUtils
 
 import scala.language.experimental.macros
@@ -57,6 +57,7 @@ object ResourceOperations {
       * Creates a driver operation
       *
       * @param body The JSON data to write to the resource
+      * @param jsonToStringHelper The implicit per-JSON-lib to generate
       * @return The driver operation
       */
     @MacroUtils.OpType("GET")
@@ -68,8 +69,17 @@ object ResourceOperations {
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
-  trait EsWritableTU[D <: BaseDriverOp] extends EsWritable[D] {
-    //TODO
+  trait EsWritableTU[D <: BaseDriverOp, I] extends EsWritable[D] {
+    //TODO finish, stick elsewhere, add test case
+    /**
+      * Creates a driver operation
+      *
+      * @param body The typed data to write to the resource
+      * @return The driver operation
+      */
+    @MacroUtils.OpType("PUT")
+    def write(body: I)(implicit typeToStringHelper: TypedToStringHelper): D =
+      macro MacroUtils.materializeOpImpl_CBody[D, I]
   }
   /** The base writable resource (untyped in both input and output)
     *
@@ -89,6 +99,7 @@ object ResourceOperations {
       * Creates a driver operation
       *
       * @param body The JSON data to write to the resource
+      * @param jsonToStringHelper The implicit per-JSON-lib to generate
       * @return The driver operation
       */
     @MacroUtils.OpType("PUT")
@@ -142,6 +153,7 @@ object ResourceOperations {
       * Creates a driver operation
       *
       * @param body The JSON data to write to the resource
+      * @param jsonToStringHelper The implicit per-JSON-lib to generate
       * @return The driver operation
       */
     @MacroUtils.OpType("DELETE")

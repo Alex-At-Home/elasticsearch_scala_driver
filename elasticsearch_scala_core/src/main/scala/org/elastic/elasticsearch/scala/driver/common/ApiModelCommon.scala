@@ -4,6 +4,7 @@ import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.EsResource
 import org.elastic.elasticsearch.scala.driver.ResourceOperations._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
+import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.BulkIndexOps
 
 /**
   * Misc Resources:
@@ -191,9 +192,8 @@ trait ApiModelCommon {
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html Docs]]
     */
   case class `/_bulk`()
-    extends EsWritable[StandardParams]
+    extends EsWritableTU[StandardParams, BulkIndexOps]
       with EsResource
-  //TODO: allow a list of index/create/update/delete case classes to be written
 
   /** Executes a bulk request of index/create/update/delete, based on the
     * object written to the resource
@@ -202,9 +202,8 @@ trait ApiModelCommon {
     * @param index The index - sub-requests missing an index will use this as default
     */
   case class `/$index/_bulk`(index: String)
-    extends EsWritable[StandardParams]
+    extends EsWritableTU[StandardParams, BulkIndexOps]
       with EsResource
-  //TODO: allow a list of index/create/update/delete case classes to be written
 
   /** Executes a bulk request of index/create/update/delete, based on the
     * object written to the resource
@@ -214,9 +213,8 @@ trait ApiModelCommon {
     * @param `type` The type - sub-requests missing an index will use this as default
     */
   case class `/$index/$type/_bulk`(index: String, `type`: String)
-    extends EsWritable[StandardParams]
+    extends EsWritableTU[StandardParams, BulkIndexOps]
       with EsResource
-  //TODO: allow a list of index/create/update/delete case classes to be written
 
   // 1.7] Reindex API
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html

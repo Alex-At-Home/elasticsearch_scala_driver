@@ -7,7 +7,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
 import org.apache.http.impl.nio.reactor.IOReactorConfig
 import org.apache.http.message.BasicHeader
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsDriver, RequestException}
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsDriver, EsServerException}
 import org.elasticsearch.client.RestClientBuilder.{HttpClientConfigCallback, RequestConfigCallback}
 import org.elasticsearch.client.{ResponseException, ResponseListener, RestClient, RestClientBuilder}
 
@@ -161,14 +161,14 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends EsDriver
         }
         else {
           val errorMessage = response.getStatusLine.getReasonPhrase
-          promise.failure(RequestException(code, errorMessage, messageBody))
+          promise.failure(EsServerException(code, errorMessage, messageBody))
         }
       }
       override def onFailure(ex: Exception) = ex match {
         case esEx: ResponseException =>
           val response = esEx.getResponse.getStatusLine
           val errorMessage = response.getReasonPhrase
-          promise.failure(RequestException(response.getStatusCode, errorMessage, Some(ex.getMessage)))
+          promise.failure(EsServerException(response.getStatusCode, errorMessage, Some(ex.getMessage)))
 
         case _ =>
           promise.failure(ex)

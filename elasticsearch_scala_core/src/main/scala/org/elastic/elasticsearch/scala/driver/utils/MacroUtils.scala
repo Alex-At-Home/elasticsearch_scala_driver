@@ -1,7 +1,7 @@
 package org.elastic.elasticsearch.scala.driver.utils
 
 import org.elastic.elasticsearch.scala.driver.ElasticsearchBase
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, JsonToStringHelper}
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, JsonToStringHelper, TypedToStringHelper}
 
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros._
@@ -125,6 +125,35 @@ object MacroUtils {
 
     c.Expr[T] {
       buildInternalClass[T](c)(self, opType, maybeBody, List(), List(), ct)
+        .asInstanceOf[c.Tree]
+    }
+  }
+
+  /**
+    * The Macro implementation, allows for modifiers to be chained
+    * Without this, needed two extra case classes for each combination of modifiers
+    * (one extra class - the first case class can be replaced with a much simpler list
+    *
+    * @param c The macro context
+    * @param body The body to write to the resource (or None for pure reads)
+    * @param ct The type evidence (combination of `Modifier` classes and `BaseDriverOp`)
+    * @tparam T The type (combination of `Modifier` classes and `BaseDriverOp`)
+    * @return A chainable version of the `BaseDriverOp` mixed with T
+    */
+  def materializeOpImpl_CBody[T <: BaseDriverOp, C]
+  (c: blackbox.Context)(body: c.Expr[C])
+  (typeToStringHelper: c.Expr[TypedToStringHelper])
+  (implicit ctt: c.WeakTypeTag[T], ctc: c.WeakTypeTag[C])
+  : c.Expr[T] =
+  {
+    import c.universe._
+
+    val opType = getOpType(c)
+    val self = c.prefix
+    val maybeBody = reify { Option(typeToStringHelper.splice.fromTyped[C](body.splice)) }
+
+    c.Expr[T] {
+      buildInternalClass[T](c)(self, opType, maybeBody, List(), List(), ctt)
         .asInstanceOf[c.Tree]
     }
   }

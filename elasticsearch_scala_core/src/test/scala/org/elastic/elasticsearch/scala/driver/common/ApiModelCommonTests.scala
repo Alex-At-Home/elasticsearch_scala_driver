@@ -2,6 +2,7 @@ package org.elastic.elasticsearch.scala.driver.common
 
 import utest._
 import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
+import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.BulkIndexOps
 
 object ApiModelCommonTests extends TestSuite {
 
@@ -75,6 +76,43 @@ object ApiModelCommonTests extends TestSuite {
 
       api.`/_mtermvectors`().read("TEST").pretty().getUrl ==> "/_mtermvectors?pretty=true"
       api.`/$index/_mtermvectors`("a").read("TEST").pretty(true).getUrl ==> "/a/_mtermvectors?pretty=true"
+    }
+    "Custom typed operations: _bulk" - {
+      object api extends ApiModelCommon
+
+      import org.elastic.elasticsearch.scala.driver.utils.NoJsonHelpers.NoJsonTypedToStringHelper
+
+      val bulkOps = BulkIndexOps(List(
+        //TODO all the ops... (including type missing etc)
+        api.`/$index/$type`("index", "type").write("TEST1"),
+        api.`/$index/$type/$id`("index", "type", "id").write("TEST2"),
+        api.`/$index/$type/$id`("", "type", "id").write("TEST3"),
+        api.`/$index/$type/$id`("index", "", "id").write("TEST4"),
+        api.`/$index/$type/$id`("", "", "id").write("TEST5"),
+        api.`/$index`("index").write("TEST6")
+      ))
+
+      def formatVals(s: String) = s.replace(" ", "").replace("\t", "").replace("\r", "")
+
+      val expected = formatVals(
+        s"""{ "index": {  "_index": "index" ,  "_type": "type"  } }
+            |TEST1
+            |{ "index": {  "_index": "index" ,  "_type": "type", "_id": "id"  } }
+            |TEST2
+            |{ "index": {  "_type": "type", "_id": "id"  } }
+            |TEST3
+            |{ "index": {  "_index": "index", "_id": "id"  } }
+            |TEST4
+            |{ "index": {  "_id": "id"  } }
+            |TEST5
+            |{ "index": {  "_index": "index"  } }
+            |TEST6
+            |"""
+          .stripMargin.stripSuffix("\n"))
+
+      formatVals(api.`/_bulk`().write(bulkOps).body.get) ==> expected
+
+      //TODO updates, mix in some deletes for coverage and sort ,s out
     }
   }
 }

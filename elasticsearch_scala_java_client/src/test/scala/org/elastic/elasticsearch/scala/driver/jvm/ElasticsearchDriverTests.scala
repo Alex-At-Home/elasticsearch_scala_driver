@@ -118,7 +118,7 @@ object ElasticsearchDriverTests extends TestSuite {
           val futureResult =
             driver.exec(Versions.latest.`/$uri`("/not_present").read())
                 .recover {
-                  case ex: RequestException => s"${ex.code}"
+                  case ex: EsServerException => s"${ex.code}"
                 }
           val retVal = Await.result(futureResult, Duration("1 second"))
           retVal ==> "404"

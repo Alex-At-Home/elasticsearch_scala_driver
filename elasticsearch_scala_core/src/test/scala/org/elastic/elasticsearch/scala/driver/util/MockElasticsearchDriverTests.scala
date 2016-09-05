@@ -30,7 +30,7 @@ object MockElasticsearchDriverTests extends TestSuite {
       // Unhandled:
       {
         val future = `/`().read().execS()(mockDriver)
-          .recover { case e: RequestException => s"${e.code}" }
+          .recover { case e: EsServerException => s"${e.code}" }
 
         val retVal = Await.result(future, Duration("1 second"))
         retVal ==> "404"
