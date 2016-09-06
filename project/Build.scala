@@ -27,7 +27,6 @@ object MyBuild extends Build {
     "io.circe" %% "circe-generic",
     "io.circe" %% "circe-parser"
   ).map(_ % circeVersion)
-  //add like: libraryDependencies ++= circeDeps,
 
   val esRestVersion = "5.0.0-alpha5"
   lazy val esRestDeps = "org.elasticsearch.client" % "rest" % esRestVersion
@@ -77,4 +76,15 @@ object MyBuild extends Build {
       version := esScalaDriverVersion
     )
   ).dependsOn(elasticsearch_scala_core)
+
+  lazy val rest_json_circe_module: Project = Project(
+    "rest_json_circe_module",
+    file("rest_json_circe_module"),
+    settings = buildSettings ++ Seq(
+      name := "REST JSON - CIRCE module",
+      version := esScalaDriverVersion,
+      libraryDependencies ++= circeDeps
+    )
+  ).dependsOn(elasticsearch_scala_core)
+
 }

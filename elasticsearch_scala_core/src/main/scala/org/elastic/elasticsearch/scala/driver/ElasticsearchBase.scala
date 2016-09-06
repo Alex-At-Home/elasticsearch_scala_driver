@@ -66,11 +66,7 @@ object ElasticsearchBase {
     *  and provide helpers
     */
   trait CustomStringToTyped {
-    /** Wraps of converts a JSON string into a type
-      *
-      * @return a wrapped or converted JSON string
-      */
-    def toType(s: String): this.type
+    //TODO: not sure how to do this?
   }
 
   /** A trait to be implemented and used as an implicit to define how to go from a typed object
