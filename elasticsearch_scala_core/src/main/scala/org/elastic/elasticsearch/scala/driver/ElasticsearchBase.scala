@@ -1,6 +1,7 @@
 package org.elastic.elasticsearch.scala.driver
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.runtime.universe._
 
 /**
   * The base operations for the Elasticsearch DSL
@@ -26,14 +27,27 @@ object ElasticsearchBase {
     * @tparam T The type of the operation return
     */
   trait TypedOperation[T] { self: BaseDriverOp =>
+
+    /**
+      * Evidence for the type of the operation
+      */
+    protected implicit val ct: WeakTypeTag[T]
+
     /** Actually executes the operation
       *
-      * @param driver The driver which executes the operation
       * @param stringToTypedHelper An implicit helper to convert the op return to a type
+      * @param driver The driver which executes the operation
+      * @param ec The execution context for futures
       * @return A future containing the result of the operation as a type
       */
-    def exec()(implicit driver: EsDriver, stringToTypedHelper: StringToTypedHelper): Future[T] =
-      self.execS().map(stringToTypedHelper.toType(_))
+    def exec
+      ()
+      (implicit stringToTypedHelper: StringToTypedHelper,
+       driver: EsDriver,
+       ec: ExecutionContext
+      )
+      : Future[T] =
+        self.execS().map(stringToTypedHelper.toType(_)(ct))
   }
 
   /** Case classes that want a custom overwrite should inherit this trait and implement
@@ -45,6 +59,18 @@ object ElasticsearchBase {
       * @return self as JSON string
       */
     def fromTyped: String
+  }
+
+  /** Classes that want a custom overwrite as return types should inherit this trait
+    * and implement `toType`, typically still use a JSON library, eg to wrap a JSON element
+    *  and provide helpers
+    */
+  trait CustomStringToTyped {
+    /** Wraps of converts a JSON string into a type
+      *
+      * @return a wrapped or converted JSON string
+      */
+    def toType(s: String): this.type
   }
 
   /** A trait to be implemented and used as an implicit to define how to go from a typed object
@@ -65,16 +91,19 @@ object ElasticsearchBase {
 
   /** A trait to be implemented and used as an implicit to indicate how to go from a
     * JSON string (ie a return from an operation) to a typed (case class) object
+    * Note that the overridden `toType` should check `ct.tpe <:< CustomStringToTyped` and
+    * simply return `x.asInstanceOf[CustomStringToTyped].toType(s)` in such cases
     */
   trait StringToTypedHelper {
 
     /** Helper to convert from a JSON string to a typed (case class) object
       *
       * @param s String return
+      * @param ct The type tag associated with the type
       * @tparam T The desired type of the return operation
       * @return An object of type `T`
       */
-    def toType[T](s: String): T
+    def toType[T](s: String)(implicit ct: WeakTypeTag[T]): T
   }
 
   /**

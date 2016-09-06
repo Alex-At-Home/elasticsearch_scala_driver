@@ -1,7 +1,6 @@
 package org.elastic.elasticsearch.scala.driver.utils
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, JsonToStringHelper, TypedOperation, TypedToStringHelper}
+import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
 
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros._
@@ -96,11 +95,15 @@ object MacroUtils {
    ctt: c.WeakTypeTag[T], ctc: c.WeakTypeTag[C]) =
   {
     import c.universe._
+
     q"""
       case class Internal
       (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
         extends $ctt with TypedOperation[$ctc]
       {
+        override val ct: scala.reflect.runtime.universe.WeakTypeTag[$ctc] =
+          scala.reflect.runtime.universe.weakTypeTag[$ctc]
+
         override def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods, headers)
           .asInstanceOf[this.type]
         override def withHeader(h: String): this.type = Internal(resource, op, body, mods, h :: headers)

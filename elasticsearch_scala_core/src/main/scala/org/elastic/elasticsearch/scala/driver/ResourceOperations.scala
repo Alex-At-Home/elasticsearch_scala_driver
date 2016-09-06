@@ -11,6 +11,8 @@ import scala.language.experimental.macros
   */
 object ResourceOperations {
 
+  //TODO: add a set of Update operations (corresponds to POST)
+
   /** The base typed readable operation
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`

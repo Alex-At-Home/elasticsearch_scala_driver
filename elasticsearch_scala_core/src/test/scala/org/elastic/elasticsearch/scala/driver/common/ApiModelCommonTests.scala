@@ -2,7 +2,15 @@ package org.elastic.elasticsearch.scala.driver.common
 
 import utest._
 import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
-import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.BulkIndexOps
+import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon.`/$uri`
+import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.{BulkIndexOps, ElasticsearchInfo}
+import org.elastic.elasticsearch.scala.driver.utils.MockElasticsearchDriver
+
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.reflect.runtime.universe._
+
 
 object ApiModelCommonTests extends TestSuite {
 
@@ -112,13 +120,33 @@ object ApiModelCommonTests extends TestSuite {
             |"""
           .stripMargin.stripSuffix("\n"))
 
-
       // (handy debug statement for if this fails)
       //val xxx = formatVals(api.`/_bulk`().write(bulkOps).body.get)
       //println("???????? " + xxx.getBytes.toList.zip(expected.getBytes.toList)
       //  .map(x => if (x._1 != x._2) s"****$x****" else s"$x").mkString("|"))
 
       formatVals(api.`/_bulk`().write(bulkOps).body.get) ==> expected
+    }
+    "Custom typed operations: return values" - {
+      object latest extends ApiModelCommon
+
+      val handler: PartialFunction[BaseDriverOp, Future[String]] = {
+        case BaseDriverOp(latest.`/`(), _, None, List("pretty=true"), _) =>
+          Future.successful("test_cluster")
+      }
+      implicit val mockDriver = new MockElasticsearchDriver(handler)
+
+      implicit val stringToTypedHelper = new StringToTypedHelper() {
+        override def toType[T](s: String)(implicit ct: WeakTypeTag[T]): T = {
+          if (ct.tpe =:= typeOf[ElasticsearchInfo]) {
+            ElasticsearchInfo(200, s, s, ElasticsearchInfo.VersionInfo("", "", "", build_snapshot = true, ""), "You know, for search")
+          }.asInstanceOf[T]
+          else throw EsRequestException(s"Internal logic error: toType $ct vs ElasticsearchInfo")
+        }
+      }
+
+      val result = Await.result(latest.`/`().read().pretty(true).exec(), Duration("1 second"))
+      result.cluster_name ==> "test_cluster"
     }
   }
 }

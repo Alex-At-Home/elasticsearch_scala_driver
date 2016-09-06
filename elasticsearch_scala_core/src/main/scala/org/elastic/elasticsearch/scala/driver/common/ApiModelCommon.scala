@@ -4,7 +4,7 @@ import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.EsResource
 import org.elastic.elasticsearch.scala.driver.ResourceOperations._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
-import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.BulkIndexOps
+import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.{BulkIndexOps, ElasticsearchInfo}
 
 /**
   * Misc Resources:
@@ -24,7 +24,7 @@ trait ApiModelCommon {
     */
   case class `/`()
     extends `tree:/`
-      with EsReadable[StandardParams]
+      with EsReadableT[StandardParams, ElasticsearchInfo]
       with EsResource
 
   /** Allows for generic access to the ES client - any URI string, any operation, and any modifier
