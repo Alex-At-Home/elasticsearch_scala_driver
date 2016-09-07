@@ -83,6 +83,7 @@ object MyBuild extends Build {
     settings = buildSettings ++ Seq(
       name := "REST JSON - CIRCE module",
       version := esScalaDriverVersion,
+      libraryDependencies += utestJvmDeps,
       libraryDependencies ++= circeDeps
     )
   ).dependsOn(elasticsearch_scala_core)

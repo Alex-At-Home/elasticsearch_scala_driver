@@ -14,7 +14,9 @@ class MockElasticsearchDriver
   (handler: PartialFunction[BaseDriverOp, Future[String]]) extends EsDriver
 {
   private val fallback: PartialFunction[BaseDriverOp, Future[String]] =
-   { case _ => Future.failed(EsServerException(404, "Resource not found", None)) }
+   { case _ =>
+     Future.failed(EsServerException(404, "Resource not found", None))
+   }
 
   def exec(op: BaseDriverOp): Future[String] = (handler orElse fallback)(op)
 }
