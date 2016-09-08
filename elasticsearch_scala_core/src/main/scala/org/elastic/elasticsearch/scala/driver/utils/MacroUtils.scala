@@ -85,24 +85,26 @@ object MacroUtils {
     * @param modifiers The parameters/modifiers
     * @param headers The headers
     * @param ctt The evidence for the trait containing the list of available modifiers
+    * @param cto The evidence for the output
     * @tparam T The trait containing the list of available modifiers
+    * @tparam O The output type
     * @return The macro code to inject
     */
-  private def buildInternalClass[T, C]
+  private def buildInternalClass[T, O]
   (c: blackbox.Context)
   (self: c.Expr[c.PrefixType], opType: String, body: c.Expr[Option[String]],
    modifiers: List[String], headers: List[String],
-   ctt: c.WeakTypeTag[T], ctc: c.WeakTypeTag[C]) =
+   ctt: c.WeakTypeTag[T], cto: c.WeakTypeTag[O]) =
   {
     import c.universe._
 
     q"""
       case class Internal
       (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
-        extends $ctt with TypedOperation[$ctc]
+        extends $ctt with TypedOperation[$cto]
       {
-        override val ct: scala.reflect.runtime.universe.WeakTypeTag[$ctc] =
-          scala.reflect.runtime.universe.weakTypeTag[$ctc]
+        override val ct: scala.reflect.runtime.universe.WeakTypeTag[$cto] =
+          scala.reflect.runtime.universe.weakTypeTag[$cto]
 
         override def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods, headers)
           .asInstanceOf[this.type]
@@ -147,22 +149,23 @@ object MacroUtils {
     *
     * @param c The macro context
     * @param ctt The operation type evidence (combination of `Modifier` classes and `BaseDriverOp`)
-    * @param ctc The return type evidence (combination of `Modifier` classes and `BaseDriverOp`)
+    * @param cto The return type evidence (combination of `Modifier` classes and `BaseDriverOp`)
     * @tparam T The type (combination of `Modifier` classes and `BaseDriverOp`)
+    * @tparam O The output type (combination of `Modifier` classes and `BaseDriverOp`)
     * @return A chainable version of the `BaseDriverOp` mixed with T
     */
-  def materializeOpImpl_TypedInput[T <: BaseDriverOp, C]
+  def materializeOpImpl_TypedOutput[T <: BaseDriverOp, O]
   (c: blackbox.Context)()
-  (implicit ctt: c.WeakTypeTag[T], ctc: c.WeakTypeTag[C])
-  : c.Expr[T with TypedOperation[C]] =
+  (implicit ctt: c.WeakTypeTag[T], cto: c.WeakTypeTag[O])
+  : c.Expr[T with TypedOperation[O]] =
   {
     import c.universe._
 
     val opType = getOpType(c)
     val self = c.prefix
 
-    c.Expr[T with TypedOperation[C]] {
-      buildInternalClass[T, C](c)(self, opType, reify { None }, List(), List(), ctt, ctc)
+    c.Expr[T with TypedOperation[O]] {
+      buildInternalClass[T, O](c)(self, opType, reify { None }, List(), List(), ctt, cto)
         .asInstanceOf[c.Tree]
     }
   }
@@ -202,10 +205,41 @@ object MacroUtils {
     * (one extra class - the first case class can be replaced with a much simpler list
     *
     * @param c The macro context
+    * @param ctt The operation type evidence (combination of `Modifier` classes and `BaseDriverOp`)
+    * @param cto The return type evidence (combination of `Modifier` classes and `BaseDriverOp`)
+    * @tparam T The type (combination of `Modifier` classes and `BaseDriverOp`)
+    * @tparam O The output type (combination of `Modifier` classes and `BaseDriverOp`)
+    * @return A chainable version of the `BaseDriverOp` mixed with T
+    */
+  def materializeOpImpl_JBody_TypedOutput[T <: BaseDriverOp, J, O]
+  (c: blackbox.Context)(body: c.Expr[J])
+  (jsonToStringHelper: c.Expr[JsonToStringHelper[J]])
+  (implicit ctt: c.WeakTypeTag[T], cto: c.WeakTypeTag[O])
+  : c.Expr[T with TypedOperation[O]] =
+  {
+    import c.universe._
+
+    val opType = getOpType(c)
+    val self = c.prefix
+    val maybeBody = reify { Option(jsonToStringHelper.splice.fromJson(body.splice)) }
+
+    c.Expr[T with TypedOperation[O]] {
+      buildInternalClass[T, O](c)(self, opType, maybeBody, List(), List(), ctt, cto)
+        .asInstanceOf[c.Tree]
+    }
+  }
+
+  /**
+    * The Macro implementation, allows for modifiers to be chained
+    * Without this, needed two extra case classes for each combination of modifiers
+    * (one extra class - the first case class can be replaced with a much simpler list
+    *
+    * @param c The macro context
     * @param body The body to write to the resource (or None for pure reads)
     * @param ctt The operation type evidence (combination of `Modifier` classes and `BaseDriverOp`)
     * @param ctc The body type evidence (combination of `Modifier` classes and `BaseDriverOp`)
     * @tparam T The type (combination of `Modifier` classes and `BaseDriverOp`)
+    * @tparam C The input type
     * @return A chainable version of the `BaseDriverOp` mixed with T
     */
   def materializeOpImpl_CBody[T <: BaseDriverOp, C]
@@ -233,13 +267,46 @@ object MacroUtils {
     *
     * @param c The macro context
     * @param body The body to write to the resource (or None for pure reads)
-    * @param ct The type evidence (combination of `Modifier` classes and `BaseDriverOp`)
+    * @param ctt The operation type evidence (combination of `Modifier` classes and `BaseDriverOp`)
+    * @param ctc The body type evidence
+    * @param cto The output type evidence
+    * @tparam T The type (combination of `Modifier` classes and `BaseDriverOp`)
+    * @tparam C The input type
+    * @tparam O The output type
+    * @return A chainable version of the `BaseDriverOp` mixed with T
+    */
+  def materializeOpImpl_CBody_TypedOutput[T <: BaseDriverOp, C, O]
+  (c: blackbox.Context)(body: c.Expr[C])
+  (typeToStringHelper: c.Expr[TypedToStringHelper])
+  (implicit ctt: c.WeakTypeTag[T], ctc: c.WeakTypeTag[C], cto: c.WeakTypeTag[O])
+  : c.Expr[T] =
+  {
+    import c.universe._
+
+    val opType = getOpType(c)
+    val self = c.prefix
+    val maybeBody = reify { Option(typeToStringHelper.splice.fromTyped[C](body.splice)) }
+
+    c.Expr[T with TypedOperation[O]] {
+      buildInternalClass[T, O](c)(self, opType, maybeBody, List(), List(), ctt, cto)
+        .asInstanceOf[c.Tree]
+    }
+  }
+
+  /**
+    * The Macro implementation, allows for modifiers to be chained
+    * Without this, needed two extra case classes for each combination of modifiers
+    * (one extra class - the first case class can be replaced with a much simpler list
+    *
+    * @param c The macro context
+    * @param body The body to write to the resource (or None for pure reads)
+    * @param ctt The type evidence (combination of `Modifier` classes and `BaseDriverOp`)
     * @tparam T The type (combination of `Modifier` classes and `BaseDriverOp`)
     * @return A chainable version of the `BaseDriverOp` mixed with T
     */
   def materializeOpImpl_Body[T <: BaseDriverOp]
     (c: blackbox.Context)(body: c.Expr[String])
-    (implicit ct: c.WeakTypeTag[T])
+    (implicit ctt: c.WeakTypeTag[T])
     : c.Expr[T] =
   {
     import c.universe._
@@ -249,7 +316,37 @@ object MacroUtils {
     val maybeBody = reify { Option(body.splice) }
 
     c.Expr[T] {
-      buildInternalClass[T](c)(self, opType, maybeBody, List(), List(), ct)
+      buildInternalClass[T](c)(self, opType, maybeBody, List(), List(), ctt)
+        .asInstanceOf[c.Tree]
+    }
+  }
+
+  /**
+    * The Macro implementation, allows for modifiers to be chained
+    * Without this, needed two extra case classes for each combination of modifiers
+    * (one extra class - the first case class can be replaced with a much simpler list
+    *
+    * @param c The macro context
+    * @param body The body to write to the resource (or None for pure reads)
+    * @param ctt The type evidence (combination of `Modifier` classes and `BaseDriverOp`)
+    * @param cto The output type evidence
+    * @tparam T The type (combination of `Modifier` classes and `BaseDriverOp`)
+    * @tparam O The output type
+    * @return A chainable version of the `BaseDriverOp` mixed with T
+    */
+  def materializeOpImpl_Body_TypedOutput[T <: BaseDriverOp, O]
+  (c: blackbox.Context)(body: c.Expr[String])
+  (implicit ctt: c.WeakTypeTag[T], cto: c.WeakTypeTag[O])
+  : c.Expr[T] =
+  {
+    import c.universe._
+
+    val opType = getOpType(c)
+    val self = c.prefix
+    val maybeBody = reify { Option(body.splice) }
+
+    c.Expr[T] {
+      buildInternalClass[T, O](c)(self, opType, maybeBody, List(), List(), ctt, cto)
         .asInstanceOf[c.Tree]
     }
   }
