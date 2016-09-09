@@ -1,7 +1,6 @@
 package org.elastic.elasticsearch.scala.driver.common
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.BaseDriverOp
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.Modifier
+import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, Modifier}
 
 /**
   * Modifiers for Elasticearch resources

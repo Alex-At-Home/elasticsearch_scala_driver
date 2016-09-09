@@ -1,8 +1,8 @@
 package org.elastic.elasticsearch.scala.driver.utils
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsRequestException}
-import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon.{`/$index/$type/$id/_update`, `/$index/$type/$id`, `/$index/$type`, `/$index`}
+import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon.{`/$index/$type/$id/_update`, `/$index/$type/$id`, `/$index/$type`, `/$uri`}
+import org.elastic.rest.scala.driver.RestBase
+import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, RestRequestException}
 
 /**
   * Utility methods to add a nice custom typed API for bulk operations
@@ -11,14 +11,15 @@ object BulkUtils {
 
   /**
     * Translates from REST method to ES operation
+ *
     * @param m The REST method
     * @return The ES operation string
     */
   private def methodToBulkOp(m: String): String = m match {
-    case ElasticsearchBase.PUT => "index"
-    case ElasticsearchBase.POST => "index"
-    case ElasticsearchBase.DELETE => "delete"
-    case _ => throw EsRequestException(s"This method is not supported by _bulk: $m")
+    case RestBase.PUT => "index"
+    case RestBase.POST => "index"
+    case RestBase.DELETE => "delete"
+    case _ => throw RestRequestException(s"This method is not supported by _bulk: $m")
   }
 
   /** Handles default index and types
@@ -59,10 +60,10 @@ object BulkUtils {
   /** List of operations to apply as part of the bulk operation
     *
     * @param ops The list of ES operations
-a    */
+*a    */
   def buildBulkOps(ops: List[BaseDriverOp]): String = ops.map {
 
-    case BaseDriverOp(`/$index`(index),
+    case BaseDriverOp(`/$uri`(index),
     method @ _, body @ _, mods @ _, _) =>
       val blocks = listToString(List(addBlock("_index", index)) ++ addMods(mods))
       s"""{ "${methodToBulkOp(method)}": { $blocks } }${addBodyBlock(body)}"""
@@ -88,7 +89,7 @@ a    */
           addMods(mods))
         s"""{ "update": { $blocks } }${addBodyBlock(body)}"""
 
-    case op @ _ => throw EsRequestException(s"This operation is not supported by _bulk: $op")
+    case op @ _ => throw RestRequestException(s"This operation is not supported by _bulk: $op")
 
   }.mkString("\n")
 }

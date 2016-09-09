@@ -1,6 +1,7 @@
-package org.elastic.elasticsearch.scala.driver.utils
+package org.elastic.rest.scala.driver.utils
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{CustomTypedToString, EsRequestException, TypedToStringHelper}
+import org.elastic.rest.scala.driver.RestBase.{CustomTypedToString, RestRequestException, TypedToStringHelper}
+
 import scala.reflect.runtime.universe._
 
 /**
@@ -15,7 +16,7 @@ object NoJsonHelpers {
   implicit val NoJsonTypedToStringHelper = new TypedToStringHelper() {
     def fromTyped[T](t: T)(implicit ct: WeakTypeTag[T]): String = t match {
       case custom: CustomTypedToString => custom.fromTyped
-      case _ => throw EsRequestException(s"Type ${t.getClass} not supported with JSON lib")
+      case _ => throw RestRequestException(s"Type ${t.getClass} not supported with JSON lib")
     }
   }
 }

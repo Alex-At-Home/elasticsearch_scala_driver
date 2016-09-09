@@ -1,6 +1,6 @@
-package org.elastic.elasticsearch.scala.driver.utils
+package org.elastic.rest.scala.driver.utils
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
+import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, JsonToStringHelper, TypedOperation, TypedToStringHelper}
 
 import scala.annotation.StaticAnnotation
 import scala.reflect.macros._
@@ -45,7 +45,7 @@ object MacroUtils {
     * (untyped return)
     *
     * @param c The context of the macro operation
-    * @param self The `EsResource`
+    * @param self The `RestResource`
     * @param opType The operation type
     * @param body The body to post
     * @param modifiers The parameters/modifiers
@@ -63,7 +63,7 @@ object MacroUtils {
     import c.universe._
     q"""
       case class Internal
-      (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+      (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
         extends $ctt
       {
         override def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods, headers)
@@ -79,7 +79,7 @@ object MacroUtils {
     * (untyped return)
     *
     * @param c The context of the macro operation
-    * @param self The `EsResource`
+    * @param self The `RestResource`
     * @param opType The operation type
     * @param body The body to post
     * @param modifiers The parameters/modifiers
@@ -100,7 +100,7 @@ object MacroUtils {
 
     q"""
       case class Internal
-      (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+      (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
         extends $ctt with TypedOperation[$cto]
       {
         override val ct: scala.reflect.runtime.universe.WeakTypeTag[$cto] =

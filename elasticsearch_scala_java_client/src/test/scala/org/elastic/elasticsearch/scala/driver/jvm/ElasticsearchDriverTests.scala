@@ -12,8 +12,7 @@ import org.elastic.elasticsearch.driver.utils.ServerUtils
 import org.elastic.elasticsearch.scala.driver.versions.Versions
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback
 import utest._
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
-import org.elasticsearch.client.ResponseException
+import org.elastic.rest.scala.driver.RestBase._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -118,14 +117,14 @@ object ElasticsearchDriverTests extends TestSuite {
           val futureResult =
             driver.exec(Versions.latest.`/$uri`("/not_present").read())
                 .recover {
-                  case ex: EsServerException => s"${ex.code}"
+                  case ex: RestServerException => s"${ex.code}"
                 }
           val retVal = Await.result(futureResult, Duration("1 second"))
           retVal ==> "404"
         }
 
         //TODO check all method/body comments (read-data, write, write-no-body, delete, delete-body, check)
-        Versions.latest.`/$index`("test_index")
+        Versions.latest.`/$uri`("test_index")
 
         //TODO: check auth
       }

@@ -1,18 +1,21 @@
 package org.elastic.rest.scala.driver.json
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{TypedOperation, BaseDriverOp, EsResource}
-import org.elastic.elasticsearch.scala.driver.ResourceOperations.{EsReadable, EsReadableT, EsWritable, EsWritableTU}
-import org.elastic.elasticsearch.scala.driver.utils.MockElasticsearchDriver
 import utest._
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.elastic.rest.scala.driver.json.CirceModule._
 import io.circe.jawn._
-import io.circe._, io.circe.generic.semiauto._
-import scala.reflect.runtime.universe._
+import io.circe._
+import io.circe.generic.semiauto._
+import org.elastic.rest.scala.driver.ResourceOperations.RestReadable
+import org.elastic.rest.scala.driver.RestBase.BaseDriverOp
+import org.elastic.rest.scala.driver.utils.MockRestDriver
+import org.elastic.rest.scala.driver.RestBase
+import org.elastic.rest.scala.driver.RestBase._
+import org.elastic.rest.scala.driver.ResourceOperations._
 
+import scala.reflect.runtime.universe._
 import scala.concurrent.duration.Duration
 
 object CirceModuleTests extends TestSuite {
@@ -20,13 +23,13 @@ object CirceModuleTests extends TestSuite {
   val tests = this {
     "Test JSON" - {
       val handler: PartialFunction[BaseDriverOp, Future[String]] = {
-        case BaseDriverOp(TestApi.`/`(), ElasticsearchBase.PUT,
+        case BaseDriverOp(TestApi.`/`(), RestBase.PUT,
           Some("""{"test":"write"}"""), List(), List()) =>
             Future.successful("""{ "test": "written" }""")
-        case BaseDriverOp(TestApi.`/`(), ElasticsearchBase.GET, _, List(), List()) =>
+        case BaseDriverOp(TestApi.`/`(), RestBase.GET, _, List(), List()) =>
           Future.successful("""{ "test": "get" }""")
       }
-      implicit val mockDriver = new MockElasticsearchDriver(handler)
+      implicit val mockDriver = new MockRestDriver(handler)
 
       Await.result(TestApi.`/`().read().execJ(), Duration("1 second")) ==>
         parse("""{ "test": "get" }""").getOrElse(Json.Null)
@@ -37,13 +40,13 @@ object CirceModuleTests extends TestSuite {
     }
     "Test typed" - {
       val handler: PartialFunction[BaseDriverOp, Future[String]] = {
-        case BaseDriverOp(TestApi.`/typed`(), ElasticsearchBase.PUT,
+        case BaseDriverOp(TestApi.`/typed`(), RestBase.PUT,
         Some("""{"testWrite":"write"}"""), List(), List()) =>
           Future.successful("""{ "test": "written" }""")
-        case BaseDriverOp(TestApi.`/typed`(), ElasticsearchBase.GET, _, List(), List()) =>
+        case BaseDriverOp(TestApi.`/typed`(), RestBase.GET, _, List(), List()) =>
           Future.successful("""{ "testRead": "get" }""")
       }
-      implicit val mockDriver = new MockElasticsearchDriver(handler)
+      implicit val mockDriver = new MockRestDriver(handler)
 
       CirceModule.decoderRegistry.putIfAbsent(
         weakTypeTag[TestDataModel.TestRead].tpe.toString,
@@ -68,12 +71,12 @@ object TestDataModel {
 }
 object TestApi {
   case class `/`()
-    extends EsReadable[BaseDriverOp]
-    with EsWritable[BaseDriverOp]
-    with EsResource
+    extends RestReadable[BaseDriverOp]
+    with RestWritable[BaseDriverOp]
+    with RestResource
 
   case class `/typed`()
-    extends EsReadableT[BaseDriverOp, TestDataModel.TestRead]
-      with EsWritableTU[BaseDriverOp, TestDataModel.TestWrite]
-      with EsResource
+    extends RestReadableT[BaseDriverOp, TestDataModel.TestRead]
+      with RestWritableTU[BaseDriverOp, TestDataModel.TestWrite]
+      with RestResource
 }

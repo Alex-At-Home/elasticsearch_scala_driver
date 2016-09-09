@@ -1,6 +1,6 @@
-package org.elastic.elasticsearch.scala.driver.utils
+package org.elastic.rest.scala.driver.utils
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsDriver, EsServerException}
+import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, RestDriver, RestServerException}
 
 import scala.concurrent.Future
 
@@ -10,12 +10,12 @@ import scala.concurrent.Future
   *
   * @param handler The partial function, a set of cases on the decomposed BaseDriverOp
   */
-class MockElasticsearchDriver
-  (handler: PartialFunction[BaseDriverOp, Future[String]]) extends EsDriver
+class MockRestDriver
+  (handler: PartialFunction[BaseDriverOp, Future[String]]) extends RestDriver
 {
   private val fallback: PartialFunction[BaseDriverOp, Future[String]] =
    { case _ =>
-     Future.failed(EsServerException(404, "Resource not found", None))
+     Future.failed(RestServerException(404, "Resource not found", None))
    }
 
   def exec(op: BaseDriverOp): Future[String] = (handler orElse fallback)(op)

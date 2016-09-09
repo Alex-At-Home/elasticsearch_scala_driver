@@ -1,10 +1,9 @@
 package org.elastic.elasticsearch.scala.driver.common
 
 import utest._
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
-import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon.`/$uri`
 import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.{BulkIndexOps, ElasticsearchInfo}
-import org.elastic.elasticsearch.scala.driver.utils.MockElasticsearchDriver
+import org.elastic.rest.scala.driver.RestBase._
+import org.elastic.rest.scala.driver.utils.{MockRestDriver, NoJsonHelpers}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
@@ -88,7 +87,7 @@ object ApiModelCommonTests extends TestSuite {
     "Custom typed operations: _bulk" - {
       object api extends ApiModelCommon
 
-      import org.elastic.elasticsearch.scala.driver.utils.NoJsonHelpers.NoJsonTypedToStringHelper
+      import NoJsonHelpers.NoJsonTypedToStringHelper
 
       val bulkOps = BulkIndexOps(List(
         api.`/$index/$type`("index", "type").write("TEST1").m("param=tp"),
@@ -96,7 +95,7 @@ object ApiModelCommonTests extends TestSuite {
         api.`/$index/$type/$id`("", "type", "id").write("TEST3"),
         api.`/$index/$type/$id`("index", "", "id").delete(),
         api.`/$index/$type/$id`("", "", "id").write("TEST5"),
-        api.`/$index`("index").write("TEST6").m("param=tp"),
+        api.`/$uri`("index").write("TEST6").m("param=tp"),
         api.`/$index/$type/$id/_update`("index", "type", "id").write("TEST7").m("param=tp")
       ))
 
@@ -134,14 +133,14 @@ object ApiModelCommonTests extends TestSuite {
         case BaseDriverOp(latest.`/`(), _, None, List("pretty=true"), _) =>
           Future.successful("test_cluster")
       }
-      implicit val mockDriver = new MockElasticsearchDriver(handler)
+      implicit val mockDriver = new MockRestDriver(handler)
 
       implicit val stringToTypedHelper = new StringToTypedHelper() {
         override def toType[T](s: String)(implicit ct: WeakTypeTag[T]): T = {
           if (ct.tpe =:= typeOf[ElasticsearchInfo]) {
             ElasticsearchInfo(200, s, s, ElasticsearchInfo.VersionInfo("", "", "", build_snapshot = true, ""), "You know, for search")
           }.asInstanceOf[T]
-          else throw EsRequestException(s"Internal logic error: toType $ct vs ElasticsearchInfo")
+          else throw RestRequestException(s"Internal logic error: toType $ct vs ElasticsearchInfo")
         }
       }
 

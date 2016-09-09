@@ -1,7 +1,7 @@
 package org.elastic.elasticsearch.scala.driver.common
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, CustomTypedToString}
 import org.elastic.elasticsearch.scala.driver.utils.BulkUtils
+import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, CustomTypedToString}
 
 /** Common data model types used by the resources
   */

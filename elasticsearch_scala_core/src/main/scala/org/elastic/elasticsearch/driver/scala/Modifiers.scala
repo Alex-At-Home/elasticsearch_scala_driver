@@ -1,6 +1,6 @@
 package org.elastic.elasticsearch.driver.scala
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.BaseDriverOp
+import org.elastic.rest.scala.driver.RestBase.BaseDriverOp
 
 /**
   * A list of modifiers for the various Elasticsearch resources

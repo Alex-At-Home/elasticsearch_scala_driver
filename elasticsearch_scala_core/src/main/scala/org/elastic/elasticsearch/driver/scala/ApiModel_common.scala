@@ -1,8 +1,9 @@
 package org.elastic.elasticsearch.driver.scala
 
 import org.elastic.elasticsearch.driver.scala.OperationGroups._
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
+import org.elastic.rest.scala.driver.RestBase
+import org.elastic.rest.scala.driver.RestBase.RestResource
 
 /**
   * A set of DSLs representing the Elasticsearch resources
@@ -21,7 +22,7 @@ object ApiModel_common {
     */
   case class `/_search`()
     extends QueryUriReadable with QueryWithDataReadable
-      with EsResource
+      with RestResource
   {
     /**
       * An intermediate result to use templates to search
@@ -39,7 +40,7 @@ object ApiModel_common {
     */
   case class `/_all/$types/_search`(types: String*)
     extends QueryUriReadable with QueryWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -51,7 +52,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_search`(indexes: String*)
     extends QueryUriReadable with QueryWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -64,7 +65,7 @@ object ApiModel_common {
     */
   case class `/$indexes/$types/_search`(indexes: String*)(types: String*)
     extends QueryUriReadable with QueryWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -77,7 +78,7 @@ object ApiModel_common {
     */
   case class `/_search/template`()
     extends SimpleWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -88,7 +89,7 @@ object ApiModel_common {
     extends SimpleReadable
       with SimpleWritable
       with SimpleDeletable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -97,7 +98,7 @@ object ApiModel_common {
     */
   case class `/_render/template`()
     extends SimpleWithDataReadable
-    with EsResource
+    with RestResource
   {
   }
 
@@ -113,7 +114,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_search_shards`(indexes: String*)
     extends QuerySearchShardsReadable
-    with EsResource
+    with RestResource
   {
   }
 
@@ -126,7 +127,7 @@ object ApiModel_common {
     */
   case class `/_suggest`()
     extends QueryMiscUriReadable with QueryMiscWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -138,7 +139,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_suggest`(indexes: String*)
     extends QueryMiscUriReadable with QueryMiscWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -150,7 +151,7 @@ object ApiModel_common {
     */
   case class `/_all/$types/_suggest`(types: String*)
     extends QueryMiscUriReadable with QueryMiscWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -163,7 +164,7 @@ object ApiModel_common {
     */
   case class `/$indexes/$types/_suggest`(indexes: String*)(types: String*)
     extends QueryMiscUriReadable with QueryMiscWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -176,7 +177,7 @@ object ApiModel_common {
     */
   case class `/_msearch`()
     extends SimpleWithDataReadable
-      with EsResource
+      with RestResource
   {
     //TODO: typed API for this
   }
@@ -189,7 +190,7 @@ object ApiModel_common {
     */
   case class `/_all/$types/_msearch`(types: String*)
     extends SimpleWithDataReadable
-      with EsResource
+      with RestResource
   {
     //TODO: typed API for this
   }
@@ -202,7 +203,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_msearch`(indexes: String*)
     extends SimpleWithDataReadable
-      with EsResource
+      with RestResource
   {
     //TODO: typed API for this
   }
@@ -216,7 +217,7 @@ object ApiModel_common {
     */
   case class `/$indexes/$types/_msearch`(indexes: String*)(types: String*)
     extends SimpleWithDataReadable
-      with EsResource
+      with RestResource
   {
     //TODO: typed API for this
   }
@@ -230,7 +231,7 @@ object ApiModel_common {
     */
   case class `/_count`()
     extends QueryCountUriReadable with QueryCountWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -242,7 +243,7 @@ object ApiModel_common {
     */
   case class `/_all/$types/_count`(types: String*)
     extends QueryCountUriReadable with QueryCountWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -254,7 +255,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_count`(indexes: String*)
     extends QueryCountUriReadable with QueryCountWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -267,7 +268,7 @@ object ApiModel_common {
     */
   case class `/$indexes/$types/_count`(indexes: String*)(types: String*)
     extends QueryCountUriReadable with QueryCountWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -279,7 +280,7 @@ object ApiModel_common {
     */
   case class `/_validate`()
     extends QueryMiscUriReadable with QueryCountWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -290,7 +291,7 @@ object ApiModel_common {
     */
   case class `/_all/$types/_validate`(types: String*)
     extends QueryMiscUriReadable with QueryCountWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -301,7 +302,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_validate`(indexes: String*)
     extends QueryMiscUriReadable with QueryCountWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -313,7 +314,7 @@ object ApiModel_common {
     */
   case class `/$indexes/$types/_validate`(indexes: String*)(types: String*)
     extends QueryMiscUriReadable with QueryCountWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -325,7 +326,7 @@ object ApiModel_common {
     */
   case class `/_explain`()
     extends QueryExplainUriReadable with QueryExplainWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -336,7 +337,7 @@ object ApiModel_common {
     */
   case class `/_all/$types/_explain`(types: String*)
     extends QueryExplainUriReadable with QueryExplainWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -347,7 +348,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_explain`(indexes: String*)
     extends QueryExplainUriReadable with QueryExplainWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -359,7 +360,7 @@ object ApiModel_common {
     */
   case class `/$indexes/$types/_explain`(indexes: String*)(types: String*)
     extends QueryExplainUriReadable with QueryExplainWithDataReadable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -380,7 +381,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_open`(indexes: String*)
     extends OpenCloseIndexesNoDataWritable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -389,7 +390,7 @@ object ApiModel_common {
     */
   case class `/_all/_open`()
     extends SimpleNoDataWritable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -400,7 +401,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_close`(indexes: String*)
     extends OpenCloseIndexesNoDataWritable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -409,7 +410,7 @@ object ApiModel_common {
     */
   case class `/_all/_close`()
     extends SimpleNoDataWritable
-      with EsResource
+      with RestResource
   {
   }
 
@@ -422,7 +423,7 @@ object ApiModel_common {
   case class `/_mapping`()
     extends `tree:/_mapping`
       with SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * Gets the mapping for all indexes and 1+ types
@@ -432,7 +433,7 @@ object ApiModel_common {
   case class `/_mapping/$types`(types: String*)
     extends `tree:/_mapping/$types`
       with SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * Gets the mapping for all indexes and all types
@@ -440,7 +441,7 @@ object ApiModel_common {
   case class `/_all/_mapping`()
     extends `tree:/_all/_mapping`
       with SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * Gets the mapping for all indexes and 1+ types
@@ -450,7 +451,7 @@ object ApiModel_common {
   case class `/_all/_mapping/$types`(types: String*)
     extends `tree:/_all/_mapping/$types`
       with SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * Get the mapping for 1+ indexes and all types
@@ -460,7 +461,7 @@ object ApiModel_common {
   case class `/$indexes/_mapping`(indexes: String*)
     extends `tree:/$indexes/_mapping`
       with SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * Gets the mapping for 1+ indexes and 1+ types
@@ -471,7 +472,7 @@ object ApiModel_common {
   case class `/$indexes/_mapping/$types`(indexes: Seq[String], types: Seq[String])
     extends `tree:/$indexes/_mapping/$types`
       with SimpleReadable
-      with EsResource
+      with RestResource
 
 
   // 3.3 Field mappings
@@ -484,7 +485,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_mapping/field/$fields`(indexes: String*)(fields: String*)
     extends SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * an intermediate step leading to the get field mapping resources
@@ -494,14 +495,14 @@ object ApiModel_common {
     */
   case class `/$indexes/_mapping/$types/field/$fields`(indexes: String*)(types: String*)(fields: String*)
     extends SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * an intermediate step leading to the get field mapping resources
     */
   case class `/_mapping/field/$fields`(fields: String*)
     extends SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * an intermediate step leading to the get field mapping resources
@@ -510,14 +511,14 @@ object ApiModel_common {
     */
   case class `/_mapping/$types/field/$fields`(types: String*)(fields: String*)
     extends SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * an intermediate step leading to the get field mapping resources
     */
   case class `/_all/_mapping/field/$fields`(fields: String*)
     extends SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * an intermediate step leading to the get field mapping resources
@@ -526,7 +527,7 @@ object ApiModel_common {
     */
   case class `/_all/_mapping/$types/field/$fields`(types: String*)(fields: String*)
     extends SimpleReadable
-      with EsResource
+      with RestResource
 
   // 3.4 Index aliases
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html
@@ -536,7 +537,7 @@ object ApiModel_common {
     */
   case class `/_aliases`()
     extends SimpleWritable
-      with EsResource
+      with RestResource
 
   /**
     * Retrieve/check the aliases across all aliases
@@ -546,7 +547,7 @@ object ApiModel_common {
   case class `/_alias/$aliases`(aliases: String)
     extends SimpleReadable
       with SimpleCheckable
-      with EsResource
+      with RestResource
 
   /**
     * Retrieve/check all aliases across all aliases
@@ -554,7 +555,7 @@ object ApiModel_common {
   case class `/_alias/*`()
     extends SimpleReadable
       with SimpleCheckable
-      with EsResource
+      with RestResource
 
   /**
     * Create/delete/retrieve a mapping from a single alias to the specified index(es)
@@ -567,7 +568,7 @@ object ApiModel_common {
       with SimpleCheckable
       with SimpleNoDataWritable
       with SimpleDeletable
-      with EsResource
+      with RestResource
 
   /**
     * Delete/retrieve mappings from a multiple aliases to the specified index(es)
@@ -579,7 +580,7 @@ object ApiModel_common {
     extends SimpleReadable
       with SimpleCheckable
       with SimpleDeletable
-      with EsResource
+      with RestResource
 
   /**
     * Delete/retrieve mappings from a multiple aliases to the specified index(es)
@@ -590,7 +591,7 @@ object ApiModel_common {
     extends SimpleReadable
       with SimpleCheckable
       with SimpleDeletable
-      with EsResource
+      with RestResource
 
   /**
     * Create/delete/retrieve a mapping from single alias to all the indexes
@@ -602,7 +603,7 @@ object ApiModel_common {
       with SimpleCheckable
       with SimpleNoDataWritable
       with SimpleDeletable
-      with EsResource
+      with RestResource
 
   /**
     * Ddelete/retrieve a mapping from multiple aliases to all the indexes
@@ -613,7 +614,7 @@ object ApiModel_common {
     extends SimpleReadable
       with SimpleCheckable
       with SimpleDeletable
-      with EsResource
+      with RestResource
 
   /**
     * Delete/retrieve a mapping from all the aliases to all the indexes
@@ -622,7 +623,7 @@ object ApiModel_common {
     extends SimpleReadable
       with SimpleCheckable
       with SimpleDeletable
-      with EsResource
+      with RestResource
 
   // 3.5 Get and Update index settings
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html
@@ -635,7 +636,7 @@ object ApiModel_common {
     extends `tree:/_settings`
       with SimpleReadable
       with SimpleWritable
-      with EsResource
+      with RestResource
 
   /**
     * Read the filtered settings for the entire cluster
@@ -644,7 +645,7 @@ object ApiModel_common {
     */
   case class `/_settings/name=$name`(name: String)
     extends SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * Read or Update the settings for the entire cluster
@@ -653,7 +654,7 @@ object ApiModel_common {
     extends `tree:/_all/_settings`
       with SimpleReadable
       with SimpleWritable
-      with EsResource
+      with RestResource
 
   /**
     * Read the filtered settings for the entire cluster
@@ -662,7 +663,7 @@ object ApiModel_common {
     */
   case class `/_all/_settings/name=$name`(name: String)
     extends SimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * Read or Update the settings for one or more clusters
@@ -673,7 +674,7 @@ object ApiModel_common {
     extends `tree:/$indexes/_settings`
       with SimpleReadable
       with SimpleWritable
-      with EsResource
+      with RestResource
 
   /**
     * Read the filtered settings for the entire cluster
@@ -683,7 +684,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_settings/name=$name`(indexes: String*)(name: String)
     extends SimpleReadable
-      with EsResource
+      with RestResource
 
   // 3.6 Analyze
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-analyze.html
@@ -693,7 +694,7 @@ object ApiModel_common {
     */
   case class `/_analyze`()
     extends SimpleWithDataReadable
-      with EsResource
+      with RestResource
 
   /**
     * Analyze some text against any of the analyzers registered vs the index
@@ -702,7 +703,7 @@ object ApiModel_common {
     */
   case class `/$index/_analyze`(index: String)
     extends SimpleWithDataReadable
-      with EsResource
+      with RestResource
 
   // 3.7 Templates
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html
@@ -713,7 +714,7 @@ object ApiModel_common {
     */
   case class `/_template`()
     extends SimpleReadable
-      with EsResource
+      with RestResource
   {
     /**
       * Returns the index template resource for this template
@@ -745,7 +746,7 @@ object ApiModel_common {
       with SimpleWritable
       with SimpleDeletable
       with SimpleCheckable
-      with EsResource
+      with RestResource
 
   /**
     * The read resource for multuple templates
@@ -754,7 +755,7 @@ object ApiModel_common {
     */
   case class `/_template/$templates`(templates: String*)
     extends SimpleReadable
-      with EsResource
+      with RestResource
 
   // 3.8 Indices stats
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html
@@ -764,7 +765,7 @@ object ApiModel_common {
     */
   case class `/_stats`()
     extends IndexStatsReadable
-    with EsResource
+    with RestResource
   {
     /**
       * Restricts the list to the specified statistics
@@ -782,7 +783,7 @@ object ApiModel_common {
     */
   case class `/_stats/$statsGroups`(statsGroups: String*)
     extends IndexStatsReadable
-      with EsResource
+      with RestResource
   {
     /**
       * Restricts the list to the specified fields
@@ -802,7 +803,7 @@ object ApiModel_common {
     */
   case class `/_stats/$statsGroups/$fieldGroups`(statsGroups: String*)(fieldGroups: String*)
     extends IndexStatsReadable
-      with EsResource
+      with RestResource
 
   /**
     * Returns high level aggregation and index level stats for specified indices
@@ -811,7 +812,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_stats`(indexes: String*)
     extends IndexStatsReadable
-      with EsResource
+      with RestResource
   {
     /**
       * Restricts the list to the specified statistics
@@ -830,7 +831,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_stats/$statsGroups`(indexes: String*)(statsGroups: String*)
     extends IndexStatsReadable
-      with EsResource
+      with RestResource
   {
     /**
       * Restricts the list to the specified fields
@@ -853,7 +854,7 @@ object ApiModel_common {
   case class `/$indexes/_stats/$statsGroups/$fieldGroups`
     (indexes: String*)(statsGroups: String*)(fieldGroups: String*)
     extends IndexStatsReadable
-      with EsResource
+      with RestResource
 
   // 3.9 Segments
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html
@@ -865,7 +866,7 @@ object ApiModel_common {
     */
   case class `/_segments`()
     extends VerboseSimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * Provide low level segments information that a Lucene index (shard level) is built with.
@@ -874,7 +875,7 @@ object ApiModel_common {
     */
   case class `/_all/_segments`()
     extends VerboseSimpleReadable
-      with EsResource
+      with RestResource
 
   /**
     * Provide low level segments information that a Lucene index (shard level) is built with.
@@ -884,7 +885,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_segments`(indexes: String*)
     extends VerboseSimpleReadable
-      with EsResource
+      with RestResource
 
   // 3.10 Indices recovery
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html
@@ -895,7 +896,7 @@ object ApiModel_common {
     */
   case class `/_recovery`()
     extends IndexRecoveryReadable
-      with EsResource
+      with RestResource
 
   /**
     * The indices recovery API provides insight into on-going index shard recoveries.
@@ -903,7 +904,7 @@ object ApiModel_common {
     */
   case class `/_all/_recovery`()
     extends IndexRecoveryReadable
-      with EsResource
+      with RestResource
 
   /**
     * The indices recovery API provides insight into on-going index shard recoveries.
@@ -912,7 +913,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_recovery`(indexes: String*)
     extends IndexRecoveryReadable
-      with EsResource
+      with RestResource
 
   // 2.11 Shard stores
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-shards-stores.html
@@ -924,7 +925,7 @@ object ApiModel_common {
     */
   case class `/_shard_stores`()
     extends ShardStoreReadable
-      with EsResource
+      with RestResource
 
   /**
     * Provides store information for shard copies of indices. Store information reports on which nodes shard copies
@@ -933,7 +934,7 @@ object ApiModel_common {
     */
   case class `/_all/_shard_stores`()
     extends ShardStoreReadable
-      with EsResource
+      with RestResource
 
   /**
     * Provides store information for shard copies of indices. Store information reports on which nodes shard copies
@@ -943,7 +944,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_shard_stores`(indexes: String*)
     extends ShardStoreReadable
-      with EsResource
+      with RestResource
 
   // 2.12 Clear cache
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html
@@ -953,14 +954,14 @@ object ApiModel_common {
     */
   case class `/_cache/clear`()
     extends ShardStoreReadable
-      with EsResource
+      with RestResource
 
   /**
     * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
     */
   case class `/_all/_cache/clear`()
     extends ShardStoreReadable
-      with EsResource
+      with RestResource
 
   /**
     * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
@@ -968,7 +969,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_cache/clear`(indexes: String*)
     extends ShardStoreReadable
-      with EsResource
+      with RestResource
 
   // 2.13 Flush
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-flush.html
@@ -981,7 +982,7 @@ object ApiModel_common {
     */
   case class `/_flush`()
     extends FlushNoDataWritable
-      with EsResource
+      with RestResource
 
   /**
     * The flush API allows to flush one or more indices through an API. The flush process of an index basically frees
@@ -991,7 +992,7 @@ object ApiModel_common {
     */
   case class `/_all/_flush`()
     extends FlushNoDataWritable
-      with EsResource
+      with RestResource
 
   /**
     * The flush API allows to flush one or more indices through an API. The flush process of an index basically frees
@@ -1002,7 +1003,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_flush`(indexes: String*)
     extends FlushNoDataWritable
-      with EsResource
+      with RestResource
 
   // 2.14 Refresh
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-refresh.html
@@ -1014,7 +1015,7 @@ object ApiModel_common {
     */
   case class `/_refresh`()
     extends SimpleNoDataWritable
-      with EsResource
+      with RestResource
 
   /**
     * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
@@ -1023,7 +1024,7 @@ object ApiModel_common {
     */
   case class `/_all/_refresh`()
     extends SimpleNoDataWritable
-      with EsResource
+      with RestResource
 
   /**
     * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
@@ -1033,7 +1034,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_refresh`(indexes: String*)
     extends SimpleNoDataWritable
-      with EsResource
+      with RestResource
 
   // 2.15 Force Merge
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html
@@ -1045,7 +1046,7 @@ object ApiModel_common {
     */
   case class `/_forcemerge`()
     extends ForceMergeNoDataWritable
-      with EsResource
+      with RestResource
 
   /**
     * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
@@ -1054,7 +1055,7 @@ object ApiModel_common {
     */
   case class `/_all/_forcemerge`()
     extends ForceMergeNoDataWritable
-      with EsResource
+      with RestResource
 
   /**
     * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
@@ -1064,7 +1065,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_forcemerge`(indexes: String*)
     extends ForceMergeNoDataWritable
-      with EsResource
+      with RestResource
 
   // 2.16 Upgrade
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-upgrade.html
@@ -1076,7 +1077,7 @@ object ApiModel_common {
     */
   case class `/_upgrade`()
     extends UpgradeNoDataWritable
-      with EsResource
+      with RestResource
 
   /**
     * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
@@ -1085,7 +1086,7 @@ object ApiModel_common {
     */
   case class `/_all/_upgrade`()
     extends UpgradeNoDataWritable
-      with EsResource
+      with RestResource
 
   /**
     * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
@@ -1095,7 +1096,7 @@ object ApiModel_common {
     */
   case class `/$indexes/_upgrade`(indexes: String*)
     extends UpgradeNoDataWritable
-      with EsResource
+      with RestResource
 
   //TODO 4] cluster API
 

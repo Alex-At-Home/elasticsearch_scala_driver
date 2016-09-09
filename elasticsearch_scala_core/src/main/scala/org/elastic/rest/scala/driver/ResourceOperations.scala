@@ -1,13 +1,13 @@
-package org.elastic.elasticsearch.scala.driver
+package org.elastic.rest.scala.driver
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase._
-import org.elastic.elasticsearch.scala.driver.utils.MacroUtils
+import RestBase._
+import org.elastic.rest.scala.driver.utils.MacroUtils
 
 import scala.language.experimental.macros
 
 /**
   * Contains the base operations that, associated with the modifiers, can be executed against the
-  * ES resources
+  * REST resources
   */
 object ResourceOperations {
 
@@ -20,7 +20,7 @@ object ResourceOperations {
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
-  trait EsCheckable[D <: BaseDriverOp] { self: EsResource =>
+  trait RestCheckable[D <: BaseDriverOp] { self: RestResource =>
     /**
       * Creates a driver operation
       *
@@ -35,7 +35,7 @@ object ResourceOperations {
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     * @tparam O The type (case class) of the return operation
     */
-  trait EsCheckableT[D <: BaseDriverOp, O] extends EsCheckable[D] { self: EsResource =>
+  trait RestCheckableT[D <: BaseDriverOp, O] extends RestCheckable[D] { self: RestResource =>
     //TODO: test case
     /**
       * Creates a driver operation
@@ -52,7 +52,7 @@ object ResourceOperations {
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
-  trait EsReadable[D <: BaseDriverOp] { self: EsResource =>
+  trait RestReadable[D <: BaseDriverOp] { self: RestResource =>
     /**
       * Creates a driver operation
       *
@@ -67,7 +67,7 @@ object ResourceOperations {
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     * @tparam O The type (case class) of the return operation
     */
-  trait EsReadableT[D <: BaseDriverOp, O] extends EsReadable[D] { self: EsResource =>
+  trait RestReadableT[D <: BaseDriverOp, O] extends RestReadable[D] { self: RestResource =>
     /**
       * Creates a typed driver operation
       *
@@ -83,7 +83,7 @@ object ResourceOperations {
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
-  trait EsWithDataReadable[D <: BaseDriverOp] {
+  trait RestWithDataReadable[D <: BaseDriverOp] {
     /**
       * Creates a driver operation
       *
@@ -111,7 +111,7 @@ object ResourceOperations {
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     * @tparam O The type (case class) of the return operation
     */
-  trait EsWithDataReadableUT[D <: BaseDriverOp, O] extends EsWithDataReadable[D] {
+  trait RestWithDataReadableUT[D <: BaseDriverOp, O] extends RestWithDataReadable[D] {
     //TODO: test case
     /**
       * Creates a driver operation
@@ -141,7 +141,7 @@ object ResourceOperations {
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     * @tparam I The type of the input object
     */
-  trait EsWithDataReadableTU[D <: BaseDriverOp, I] extends EsWithDataReadable[D] {
+  trait RestWithDataReadableTU[D <: BaseDriverOp, I] extends RestWithDataReadable[D] {
     //TODO: test case
     /**
       * Creates a driver operation
@@ -161,7 +161,7 @@ object ResourceOperations {
     * @tparam I The type of the input object
     * @tparam O The type of the output object
     */
-  trait EsWithDataReadableTT[D <: BaseDriverOp, I, O] extends EsWithDataReadableUT[D, O] {
+  trait RestWithDataReadableTT[D <: BaseDriverOp, I, O] extends RestWithDataReadableUT[D, O] {
     //TODO: test case
     /**
       * Creates a driver operation
@@ -191,7 +191,7 @@ object ResourceOperations {
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
-  trait EsWritable[D <: BaseDriverOp] {
+  trait RestWritable[D <: BaseDriverOp] {
     /**
       * Creates a driver operation
       *
@@ -218,7 +218,7 @@ object ResourceOperations {
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     * @tparam I The type of the input object
     */
-  trait EsWritableTU[D <: BaseDriverOp, I] extends EsWritable[D] {
+  trait RestWritableTU[D <: BaseDriverOp, I] extends RestWritable[D] {
     /**
       * Creates a driver operation
       *
@@ -236,7 +236,7 @@ object ResourceOperations {
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
-  trait EsNoDataWritable[D <: BaseDriverOp] {
+  trait RestNoDataWritable[D <: BaseDriverOp] {
     /**
       * Creates a driver operation
       *
@@ -252,7 +252,7 @@ object ResourceOperations {
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
-  trait EsDeletable[D <: BaseDriverOp] {
+  trait RestDeletable[D <: BaseDriverOp] {
     /**
       * Creates a driver operation
       *
@@ -268,7 +268,7 @@ object ResourceOperations {
     *
     * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
     */
-  trait EsWithDataDeletable[D <: BaseDriverOp] {
+  trait RestWithDataDeletable[D <: BaseDriverOp] {
     /**
       * Creates a driver operation
       *

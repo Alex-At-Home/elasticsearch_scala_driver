@@ -1,8 +1,8 @@
 package org.elastic.elasticsearch.driver.scala
 
 import org.elastic.elasticsearch.driver.scala.Modifiers._
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{BaseDriverOp, EsResource}
+import org.elastic.rest.scala.driver.RestBase
+import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, RestResource}
 
 /**
   * Groups of modifiers used in the Elasticsearch DSL
@@ -17,7 +17,7 @@ object ModifierGroups {
     * @param mods
     */
   case class PrettyDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human
   {
@@ -31,7 +31,7 @@ object ModifierGroups {
     * @param mods
     */
   case class PrettyAndRoutingDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with Routing
   {
@@ -45,7 +45,7 @@ object ModifierGroups {
     * @param mods
     */
   case class PrettyAndFieldsDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with Fields
   {
@@ -59,7 +59,7 @@ object ModifierGroups {
     * @param mods
     */
   case class PrettyAndConflictDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with Conflict
   {
@@ -73,7 +73,7 @@ object ModifierGroups {
     * @param mods
     */
   case class PrettyAndVerboseDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with Verbose
   {
@@ -87,7 +87,7 @@ object ModifierGroups {
     * @param mods
     */
   case class FullyModifiableReadDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with SourceBase with SourceInclude with SourceExclude with Fields
   {
@@ -102,7 +102,7 @@ object ModifierGroups {
     * @param mods
     */
   case class FullyModifiableWriteDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with Version with OpType with Routing with Parent with Timeout
   {
@@ -117,7 +117,7 @@ object ModifierGroups {
     * @param mods
     */
   case class FullyModifiableDeleteDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with Routing with Parent with Refresh with Timeout
   {
@@ -132,7 +132,7 @@ object ModifierGroups {
     * @param mods
     */
   case class QueryUriDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human
       with Query with DefaultField with Analyzer with LowercaseExpandedTerms
@@ -152,7 +152,7 @@ object ModifierGroups {
     * @param mods
     */
   case class QueryDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human
       with Timeout with RequestCache with TerminateAfter
@@ -169,7 +169,7 @@ object ModifierGroups {
     * @param mods
     */
   case class QuerySearchShardsDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with Routing with Preference with Local
   {
@@ -184,7 +184,7 @@ object ModifierGroups {
     * @param mods
     */
   case class QueryCountDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human
       with Query with DefaultField with Analyzer with LowercaseExpandedTerms
@@ -202,7 +202,7 @@ object ModifierGroups {
     * @param mods
     */
   case class QueryMiscDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human
       with Query with DefaultField with Analyzer with LowercaseExpandedTerms
@@ -219,7 +219,7 @@ object ModifierGroups {
     * @param mods
     */
   case class QueryExplainDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human
       with Query with DefaultField with Analyzer with LowercaseExpandedTerms
@@ -239,7 +239,7 @@ object ModifierGroups {
     * @param mods
     */
   case class SearchFieldStatsDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with Level with Fields
   {
@@ -254,7 +254,7 @@ object ModifierGroups {
     * @param mods
     */
   case class OpenCloseIndexesDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with IgnoreUnavailable
   {
@@ -269,7 +269,7 @@ object ModifierGroups {
     * @param mods
     */
   case class IndexStatsDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with Level with Groups with Types
   {
@@ -284,7 +284,7 @@ object ModifierGroups {
     * @param mods
     */
   case class IndexRecoveryDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with Detailed with ActiveOnly
   {
@@ -299,7 +299,7 @@ object ModifierGroups {
     * @param mods
     */
   case class ShardStoreDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with Status
   {
@@ -314,7 +314,7 @@ object ModifierGroups {
     * @param mods
     */
   case class FlushDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with WaitIfOngoing with Force
   {
@@ -329,7 +329,7 @@ object ModifierGroups {
     * @param mods
     */
   case class ForceMergeDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with MaxNumSegments with OnlyExpungeDeletes with Flush
   {
@@ -344,7 +344,7 @@ object ModifierGroups {
     * @param mods
     */
   case class UpgradeDriverOp
-  (resource: EsResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+  (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
     extends BaseDriverOp
       with Pretty with Human with OnlyAncientSegments
   {

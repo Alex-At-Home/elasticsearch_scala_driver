@@ -29,7 +29,7 @@ object ApiModelNavigationTree {
       * @param `index` The index
       * @return An intermediate or final step of the API model
       */
-    def $(index: String) = `/$index`(index)
+    def $(index: String) = `/$uri`(index)
 
     /**
       * Sub-resources that support multiple (>1) indexes

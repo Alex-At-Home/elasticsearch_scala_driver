@@ -1,6 +1,6 @@
 package org.elastic.rest.scala.driver.json
 
-import org.elastic.elasticsearch.scala.driver.ElasticsearchBase.{JsonToStringHelper, _}
+import org.elastic.rest.scala.driver.RestBase._
 import io.circe._
 import io.circe.jawn._
 import io.circe.syntax._
@@ -26,7 +26,7 @@ object CirceModule {
 
   /** JSON outputs */
   implicit class StringToJsonHelper(op: BaseDriverOp) {
-    def execJ()(implicit driver: EsDriver): Future[io.circe.Json] = {
+    def execJ()(implicit driver: RestDriver): Future[io.circe.Json] = {
       driver.exec(op)
         .map(s => toJson(s))
     }
@@ -52,7 +52,7 @@ object CirceModule {
       else { // normal cases
         decode[T](s)(decoderRegistry(ct.tpe.toString).asInstanceOf[Decoder[T]])
           .leftMap({ err =>
-            throw EsServerException(200, s"JSON serialization error: $err", Option(s)) }
+            throw RestServerException(200, s"JSON serialization error: $err", Option(s)) }
           )
           .getOrElse(null.asInstanceOf[T])
       }
@@ -69,7 +69,7 @@ object CirceModule {
   private def toJson(s: String): Json = {
     parse(s)
       .leftMap({ err =>
-        throw EsServerException(200, s"JSON serialization error: $err", Option(s)) }
+        throw RestServerException(200, s"JSON serialization error: $err", Option(s)) }
       )
       .getOrElse(Json.Null)
   }
