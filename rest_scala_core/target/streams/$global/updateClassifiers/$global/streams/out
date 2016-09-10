@@ -1,0 +1,316 @@
+[warn] Multiple dependencies with the same organization/name but different versions. To avoid conflict, pick one version:
+[warn]  * org.scala-lang:scala-library:(2.11.2, 2.11.4)
+[warn]  * org.scala-lang:scala-reflect:(2.11.2, 2.11.4)
+[debug] :: resolving dependencies :: org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT
+[debug] 	confs: [compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool]
+[debug] 	validate = true
+[debug] 	refresh = false
+[debug] resolving dependencies for configuration 'compile'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->default(compile)]
+[info] Resolving org.scala-lang#scala-library;2.11.2 ...
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@3056530e
+[debug] sbt-chain: module revision found in cache: org.scala-lang#scala-library;2.11.2
+[debug] 	found org.scala-lang#scala-library;2.11.2 in sbt-chain
+[debug] 	[2.11.2] org.scala-lang#scala-library;2.11.2
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->default(compile)]
+[info] Resolving org.scala-lang#scala-reflect;2.11.2 ...
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@70726068
+[debug] sbt-chain: module revision found in cache: org.scala-lang#scala-reflect;2.11.2
+[debug] 	found org.scala-lang#scala-reflect;2.11.2 in sbt-chain
+[debug] 	[2.11.2] org.scala-lang#scala-reflect;2.11.2
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->master]
+[debug] resolving dependencies for configuration 'runtime'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [runtime]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime->master]
+[debug] resolving dependencies for configuration 'test'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [test]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [runtime]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test->default(compile)]
+[info] Resolving com.lihaoyi#utest_2.11;0.4.3 ...
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5c6325d1
+[debug] sbt-chain: module revision found in cache: com.lihaoyi#utest_2.11;0.4.3
+[debug] 	found com.lihaoyi#utest_2.11;0.4.3 in sbt-chain
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test->default(compile)]
+[info] Resolving org.scala-lang#scala-library;2.11.4 ...
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7708019e
+[debug] sbt-chain: module revision found in cache: org.scala-lang#scala-library;2.11.4
+[debug] 	found org.scala-lang#scala-library;2.11.4 in sbt-chain
+[debug] 	[2.11.4] org.scala-lang#scala-library;2.11.4
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test->default(compile)]
+[info] Resolving org.scala-lang#scala-reflect;2.11.4 ...
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@513bf490
+[debug] sbt-chain: module revision found in cache: org.scala-lang#scala-reflect;2.11.4
+[debug] 	found org.scala-lang#scala-reflect;2.11.4 in sbt-chain
+[debug] 	[2.11.4] org.scala-lang#scala-reflect;2.11.4
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test->default(compile)]
+[info] Resolving org.scala-sbt#test-interface;1.0 ...
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@a9527ec
+[debug] sbt-chain: module revision found in cache: org.scala-sbt#test-interface;1.0
+[debug] 	found org.scala-sbt#test-interface;1.0 in sbt-chain
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test->master]
+[debug] resolving dependencies for configuration 'provided'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [provided]
+[debug] resolving dependencies for configuration 'optional'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [optional]
+[debug] resolving dependencies for configuration 'compile-internal'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [compile-internal]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->master]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [optional]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [provided]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile-internal->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile-internal->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile-internal->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile-internal->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile-internal->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile-internal->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile-internal->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile-internal->master]
+[debug] resolving dependencies for configuration 'runtime-internal'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [runtime-internal]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [runtime]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime->master]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [optional]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime-internal->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime-internal->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime-internal->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime-internal->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime-internal->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime-internal->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime-internal->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime-internal->master]
+[debug] resolving dependencies for configuration 'test-internal'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [test-internal]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [test]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [runtime]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [compile->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [compile->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [compile->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [compile->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [compile->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [compile->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [compile->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [runtime->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [runtime->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [runtime->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [runtime->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [runtime->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [runtime->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [runtime->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [runtime->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [runtime->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [runtime->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test->master]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [optional]
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [provided]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test-internal->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test-internal->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test-internal->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->com.lihaoyi#utest_2.11;0.4.3 [test-internal->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test-internal->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test-internal->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test-internal->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.4 [test-internal->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test-internal->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test-internal->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test-internal->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.4 [test-internal->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test-internal->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test-internal->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test-internal->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-sbt#test-interface;1.0 [test-internal->master]
+[debug] resolving dependencies for configuration 'plugin'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [plugin]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [plugin->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [plugin->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [plugin->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [plugin->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [plugin->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [plugin->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [plugin->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [plugin->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scalamacros#paradise_2.11.2;2.1.0 [plugin->default(compile)]
+[info] Resolving org.scalamacros#paradise_2.11.2;2.1.0 ...
+[debug] sbt-chain: Checking cache for: dependency: org.scalamacros#paradise_2.11.2;2.1.0 {plugin=[default(compile)]}
+[debug] sbt-chain: module revision found in cache: org.scalamacros#paradise_2.11.2;2.1.0
+[debug] 	found org.scalamacros#paradise_2.11.2;2.1.0 in sbt-chain
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scalamacros#paradise_2.11.2;2.1.0 [plugin->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scalamacros#paradise_2.11.2;2.1.0 [plugin->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scalamacros#paradise_2.11.2;2.1.0 [plugin->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-compiler;2.11.2 [plugin->default(compile)]
+[info] Resolving org.scala-lang#scala-compiler;2.11.2 ...
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@23711e3b
+[debug] sbt-chain: module revision found in cache: org.scala-lang#scala-compiler;2.11.2
+[debug] 	found org.scala-lang#scala-compiler;2.11.2 in sbt-chain
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-compiler;2.11.2 [plugin->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-compiler;2.11.2 [plugin->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-compiler;2.11.2 [plugin->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-xml_2.11;1.0.2 [plugin->default(compile)]
+[info] Resolving org.scala-lang.modules#scala-xml_2.11;1.0.2 ...
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1c16b32e
+[debug] sbt-chain: module revision found in cache: org.scala-lang.modules#scala-xml_2.11;1.0.2
+[debug] 	found org.scala-lang.modules#scala-xml_2.11;1.0.2 in sbt-chain
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-xml_2.11;1.0.2 [plugin->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-xml_2.11;1.0.2 [plugin->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-xml_2.11;1.0.2 [plugin->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2 [plugin->default(compile)]
+[info] Resolving org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2 ...
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5a7c5c5b
+[debug] sbt-chain: module revision found in cache: org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2
+[debug] 	found org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2 in sbt-chain
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2 [plugin->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2 [plugin->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2 [plugin->master]
+[debug] resolving dependencies for configuration 'sources'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [sources]
+[debug] resolving dependencies for configuration 'docs'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [docs]
+[debug] resolving dependencies for configuration 'pom'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [pom]
+[debug] resolving dependencies for configuration 'scala-tool'
+[debug] == resolving dependencies for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT [scala-tool]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [scala-tool->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [scala-tool->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [scala-tool->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-library;2.11.2 [scala-tool->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [scala-tool->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [scala-tool->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [scala-tool->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-reflect;2.11.2 [scala-tool->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-compiler;2.11.2 [scala-tool->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-compiler;2.11.2 [scala-tool->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-compiler;2.11.2 [scala-tool->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang#scala-compiler;2.11.2 [scala-tool->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-xml_2.11;1.0.2 [scala-tool->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-xml_2.11;1.0.2 [scala-tool->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-xml_2.11;1.0.2 [scala-tool->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-xml_2.11;1.0.2 [scala-tool->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2 [scala-tool->default(compile)]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2 [scala-tool->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2 [scala-tool->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2 [scala-tool->master]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->jline#jline;2.12 [scala-tool->default(compile)]
+[info] Resolving jline#jline;2.12 ...
+[debug] sbt-chain: Checking cache for: dependency: jline#jline;2.12 {scala-tool=[default(compile)]}
+[debug] sbt-chain: module revision found in cache: jline#jline;2.12
+[debug] 	found jline#jline;2.12 in sbt-chain
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->jline#jline;2.12 [scala-tool->runtime]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->jline#jline;2.12 [scala-tool->compile]
+[debug] == resolving dependencies org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT->jline#jline;2.12 [scala-tool->master]
+[debug] 	resolved ivy file produced in cache
+[debug] :: downloading artifacts ::
+[debug] 	[NOT REQUIRED] org.scala-lang#scala-library;2.11.2!scala-library.jar
+[debug] 	[NOT REQUIRED] org.scala-lang#scala-library;2.11.2!scala-library.jar(src)
+[debug] 	[NOT REQUIRED] org.scala-lang#scala-reflect;2.11.2!scala-reflect.jar(src)
+[debug] 	[NOT REQUIRED] org.scala-lang#scala-reflect;2.11.2!scala-reflect.jar
+[debug] 	[NOT REQUIRED] org.scala-lang#scala-library;2.11.4!scala-library.jar
+[debug] 	[NOT REQUIRED] org.scala-lang#scala-library;2.11.4!scala-library.jar(src)
+[debug] 	[NOT REQUIRED] org.scala-lang#scala-reflect;2.11.4!scala-reflect.jar
+[debug] 	[NOT REQUIRED] org.scala-lang#scala-reflect;2.11.4!scala-reflect.jar(src)
+[debug] 	[NOT REQUIRED] com.lihaoyi#utest_2.11;0.4.3!utest_2.11.jar
+[debug] 	[NOT REQUIRED] com.lihaoyi#utest_2.11;0.4.3!utest_2.11.jar(src)
+[debug] 	[NOT REQUIRED] org.scala-sbt#test-interface;1.0!test-interface.jar
+[debug] 	[NOT REQUIRED] org.scala-sbt#test-interface;1.0!test-interface.jar(src)
+[debug] 	[NOT REQUIRED] org.scalamacros#paradise_2.11.2;2.1.0!paradise_2.11.2.jar(src)
+[debug] 	[NOT REQUIRED] org.scala-lang#scala-compiler;2.11.2!scala-compiler.jar(src)
+[debug] 	[NOT REQUIRED] org.scala-lang#scala-compiler;2.11.2!scala-compiler.jar
+[debug] 	[NOT REQUIRED] org.scala-lang.modules#scala-xml_2.11;1.0.2!scala-xml_2.11.jar(src)
+[debug] 	[NOT REQUIRED] org.scala-lang.modules#scala-xml_2.11;1.0.2!scala-xml_2.11.jar
+[debug] 	[NOT REQUIRED] org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2!scala-parser-combinators_2.11.jar(src)
+[debug] 	[NOT REQUIRED] org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2!scala-parser-combinators_2.11.jar
+[debug] 	[NOT REQUIRED] jline#jline;2.12!jline.jar(src)
+[debug] :: resolution report :: resolve 35ms :: artifacts dl 13ms
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT compile produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-compile.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT runtime produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-runtime.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT test produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-test.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT provided produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-provided.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT optional produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-optional.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT compile-internal produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-compile-internal.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT runtime-internal produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-runtime-internal.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT test-internal produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-test-internal.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT plugin produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-plugin.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT sources produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-sources.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT docs produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-docs.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT pom produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-pom.xml
+[debug] 	report for org.elasticsearch#rest-scala-core$sources_2.11;0.1-SNAPSHOT scala-tool produced in C:\cygwin64\home\Alex\personal-github\elasticsearch_scala_driver\rest_scala_core\target\resolution-cache\reports\org.elasticsearch-rest-scala-core$sources_2.11-scala-tool.xml
+[debug] 	resolve done (35ms resolve - 13ms download)

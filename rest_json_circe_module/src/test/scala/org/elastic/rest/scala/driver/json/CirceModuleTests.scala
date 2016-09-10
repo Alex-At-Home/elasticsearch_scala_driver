@@ -4,17 +4,15 @@ import utest._
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
-import org.elastic.rest.scala.driver.json.CirceJsonModule._
-import org.elastic.rest.scala.driver.json.CirceTypeModule._
 import io.circe.jawn._
 import io.circe._
 import io.circe.generic.JsonCodec
-import org.elastic.rest.scala.driver.ResourceOperations.RestReadable
-import org.elastic.rest.scala.driver.RestBase.BaseDriverOp
-import org.elastic.rest.scala.driver.utils.MockRestDriver
 import org.elastic.rest.scala.driver.RestBase
 import org.elastic.rest.scala.driver.RestBase._
 import org.elastic.rest.scala.driver.ResourceOperations._
+import org.elastic.rest.scala.driver.utils.MockRestDriver
+import org.elastic.rest.scala.driver.json.CirceTypeModule._
+import org.elastic.rest.scala.driver.json.CirceJsonModule._
 
 import scala.concurrent.duration.Duration
 

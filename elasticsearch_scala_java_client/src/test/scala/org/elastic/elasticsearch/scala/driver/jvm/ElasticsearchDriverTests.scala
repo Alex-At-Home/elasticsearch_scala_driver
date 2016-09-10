@@ -10,9 +10,9 @@ import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
 import org.elastic.elasticsearch.driver.utils.ServerUtils
 import org.elastic.elasticsearch.scala.driver.versions.Versions
+import org.elastic.rest.scala.driver.RestBase._
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback
 import utest._
-import org.elastic.rest.scala.driver.RestBase._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration

@@ -4,6 +4,7 @@ import io.circe.{Decoder, Encoder}
 import io.circe.jawn._
 import io.circe.syntax._
 import org.elastic.rest.scala.driver.RestBase._
+
 import scala.collection.JavaConverters._
 import scala.reflect.runtime.universe._
 

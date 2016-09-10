@@ -4,7 +4,7 @@ import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
 import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.{BulkIndexOps, ElasticsearchInfo}
 import org.elastic.rest.scala.driver.ResourceOperations._
-import org.elastic.rest.scala.driver.RestBase.RestResource
+import org.elastic.rest.scala.driver.RestBase._
 
 /**
   * Misc Resources:

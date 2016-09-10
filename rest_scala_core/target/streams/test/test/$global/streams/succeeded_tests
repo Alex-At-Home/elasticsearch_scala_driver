@@ -1,0 +1,5 @@
+#Successful Tests
+#Sat Sep 10 17:11:55 EDT 2016
+org.elastic.rest.scala.driver.RestResourcesTests=1473541915564
+org.elastic.rest.scala.driver.RestBaseTests=1473541915585
+org.elastic.rest.scala.driver.util.MockRestDriverTests=1473541915555

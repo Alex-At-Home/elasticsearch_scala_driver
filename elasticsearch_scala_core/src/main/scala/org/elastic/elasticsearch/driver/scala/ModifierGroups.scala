@@ -1,8 +1,7 @@
 package org.elastic.elasticsearch.driver.scala
 
 import org.elastic.elasticsearch.driver.scala.Modifiers._
-import org.elastic.rest.scala.driver.RestBase
-import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, RestResource}
+import org.elastic.rest.scala.driver.RestBase._
 
 /**
   * Groups of modifiers used in the Elasticsearch DSL

@@ -43,9 +43,34 @@ object MyBuild extends Build {
 
   lazy val root = Project("root", file("."))
     .aggregate(
-      elasticsearch_scala_core, elasticsearch_scala_java_client, elasticsearch_scala_js_client,
-      rest_json_circe_module
+      rest_scala_core, rest_json_circe_module,
+      elasticsearch_scala_core, elasticsearch_scala_java_client, elasticsearch_scala_js_client
     )
+
+  lazy val rest_scala_core: Project = Project(
+    "rest_scala_core",
+    file("rest_scala_core"),
+    settings = buildSettings ++ Seq(
+      name := "REST Scala Core",
+      version := esScalaDriverVersion,
+      libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.11.2",
+      libraryDependencies += utestJvmDeps,
+      testFrameworks += new TestFramework("utest.runner.Framework")
+    )
+  )
+
+  lazy val rest_json_circe_module: Project = Project(
+    "rest_json_circe_module",
+    file("rest_json_circe_module"),
+    settings = buildSettings ++ Seq(
+      name := "REST JSON - CIRCE module",
+      version := esScalaDriverVersion,
+      libraryDependencies += utestJvmDeps,
+      libraryDependencies ++= circeDeps,
+      testFrameworks += new TestFramework("utest.runner.Framework")
+    )
+  ).dependsOn(rest_scala_core)
+
 
   lazy val elasticsearch_scala_core: Project = Project(
     "elasticsearch_scala_core",
@@ -57,7 +82,7 @@ object MyBuild extends Build {
       libraryDependencies += utestJvmDeps,
       testFrameworks += new TestFramework("utest.runner.Framework")
     )
-  )
+  ).dependsOn(rest_scala_core)
 
   lazy val elasticsearch_scala_java_client: Project = Project(
     "elasticsearch_scala_java_client",
@@ -78,18 +103,6 @@ object MyBuild extends Build {
     settings = buildSettings ++ Seq(
       name := "Elasticsearch Scala Js Client",
       version := esScalaDriverVersion
-    )
-  ).dependsOn(elasticsearch_scala_core)
-
-  lazy val rest_json_circe_module: Project = Project(
-    "rest_json_circe_module",
-    file("rest_json_circe_module"),
-    settings = buildSettings ++ Seq(
-      name := "REST JSON - CIRCE module",
-      version := esScalaDriverVersion,
-      libraryDependencies += utestJvmDeps,
-      libraryDependencies ++= circeDeps,
-      testFrameworks += new TestFramework("utest.runner.Framework")
     )
   ).dependsOn(elasticsearch_scala_core)
 

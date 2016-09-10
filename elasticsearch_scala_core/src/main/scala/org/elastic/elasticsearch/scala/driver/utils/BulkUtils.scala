@@ -1,8 +1,8 @@
 package org.elastic.elasticsearch.scala.driver.utils
 
 import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon.{`/$index/$type/$id/_update`, `/$index/$type/$id`, `/$index/$type`, `/$uri`}
+import org.elastic.rest.scala.driver.RestBase._
 import org.elastic.rest.scala.driver.RestBase
-import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, RestRequestException}
 
 /**
   * Utility methods to add a nice custom typed API for bulk operations

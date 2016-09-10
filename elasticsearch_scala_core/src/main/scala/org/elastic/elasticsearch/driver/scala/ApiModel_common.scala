@@ -2,8 +2,7 @@ package org.elastic.elasticsearch.driver.scala
 
 import org.elastic.elasticsearch.driver.scala.OperationGroups._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
-import org.elastic.rest.scala.driver.RestBase
-import org.elastic.rest.scala.driver.RestBase.RestResource
+import org.elastic.rest.scala.driver.RestBase._
 
 /**
   * A set of DSLs representing the Elasticsearch resources

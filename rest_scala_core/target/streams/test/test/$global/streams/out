@@ -1,0 +1,21 @@
+[0m[[0mdebug[0m] [0mRunning TaskDef(org.elastic.rest.scala.driver.RestBaseTests, utest.runner.Framework$$anon$1@6b208eea, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(org.elastic.rest.scala.driver.RestResourcesTests, utest.runner.Framework$$anon$1@6b208eea, false, [SuiteSelector])[0m
+[0m[[0mdebug[0m] [0mRunning TaskDef(org.elastic.rest.scala.driver.util.MockRestDriverTests, utest.runner.Framework$$anon$1@6b208eea, false, [SuiteSelector])[0m
+[0m[[0minfo[0m] [0m-----------------------------------Results-----------------------------------[0m
+[0m[[0minfo[0m] [0morg.elastic.rest.scala.driver.RestBaseTests		[32mSuccess[0m[0m
+[0m[[0minfo[0m] [0m    Check modifiers work		[32mSuccess[0m[0m
+[0m[[0minfo[0m] [0m    Check the location generator works		[32mSuccess[0m[0m
+[0m[[0minfo[0m] [0m    Check JSON serialization		[32mSuccess[0m[0m
+[0m[[0minfo[0m] [0m    Check JSON de-serialization		[32mSuccess[0m[0m
+[0m[[0minfo[0m] [0morg.elastic.rest.scala.driver.RestResourcesTests		[32mSuccess[0m[0m
+[0m[[0minfo[0m] [0m    Test all resources		[32mSuccess[0m[0m
+[0m[[0minfo[0m] [0morg.elastic.rest.scala.driver.util.MockRestDriverTests		[32mSuccess[0m[0m
+[0m[[0minfo[0m] [0m    Basic mock functionality		[32mSuccess[0m[0m
+[0m[[0minfo[0m] [0m[0m
+[0m[[0minfo[0m] [0mTests: 9[0m
+[0m[[0minfo[0m] [0mPassed: 9[0m
+[0m[[0minfo[0m] [0mFailed: 0[0m
+[0m[[0mdebug[0m] [0mPassed tests:[0m
+[0m[[0mdebug[0m] [0m	org.elastic.rest.scala.driver.RestBaseTests[0m
+[0m[[0mdebug[0m] [0m	org.elastic.rest.scala.driver.RestResourcesTests[0m
+[0m[[0mdebug[0m] [0m	org.elastic.rest.scala.driver.util.MockRestDriverTests[0m

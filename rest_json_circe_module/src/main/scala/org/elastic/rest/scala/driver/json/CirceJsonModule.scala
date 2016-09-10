@@ -1,8 +1,8 @@
 package org.elastic.rest.scala.driver.json
 
-import org.elastic.rest.scala.driver.RestBase._
 import io.circe._
 import io.circe.jawn._
+import org.elastic.rest.scala.driver.RestBase._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
