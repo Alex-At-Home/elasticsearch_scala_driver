@@ -3,7 +3,6 @@ import Keys._
 
 object BuildSettings {
 
-  val paradiseVersion   = "2.0.1"
   val scalaBuildVersion = "2.11.2"
 
   val buildSettings = Defaults.coreDefaultSettings ++ Seq(
@@ -12,8 +11,10 @@ object BuildSettings {
     scalaVersion := scalaBuildVersion,
     crossScalaVersions := Seq("2.10.2", "2.10.3", "2.10.4", "2.11.0", "2.11.1"),
     resolvers += Resolver.sonatypeRepo("snapshots"),
-    resolvers += Resolver.sonatypeRepo("releases")
+    resolvers += Resolver.sonatypeRepo("releases"),
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
   )
+
 }
 
 object MyBuild extends Build {
@@ -41,7 +42,10 @@ object MyBuild extends Build {
   val esScalaDriverVersion = "0.1-SNAPSHOT"
 
   lazy val root = Project("root", file("."))
-    .aggregate(elasticsearch_scala_core, elasticsearch_scala_java_client, elasticsearch_scala_js_client)
+    .aggregate(
+      elasticsearch_scala_core, elasticsearch_scala_java_client, elasticsearch_scala_js_client,
+      rest_json_circe_module
+    )
 
   lazy val elasticsearch_scala_core: Project = Project(
     "elasticsearch_scala_core",
@@ -84,7 +88,8 @@ object MyBuild extends Build {
       name := "REST JSON - CIRCE module",
       version := esScalaDriverVersion,
       libraryDependencies += utestJvmDeps,
-      libraryDependencies ++= circeDeps
+      libraryDependencies ++= circeDeps,
+      testFrameworks += new TestFramework("utest.runner.Framework")
     )
   ).dependsOn(elasticsearch_scala_core)
 

@@ -4,10 +4,11 @@ import utest._
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
-import org.elastic.rest.scala.driver.json.CirceModule._
+import org.elastic.rest.scala.driver.json.CirceJsonModule._
+import org.elastic.rest.scala.driver.json.CirceTypeModule._
 import io.circe.jawn._
 import io.circe._
-import io.circe.generic.semiauto._
+import io.circe.generic.JsonCodec
 import org.elastic.rest.scala.driver.ResourceOperations.RestReadable
 import org.elastic.rest.scala.driver.RestBase.BaseDriverOp
 import org.elastic.rest.scala.driver.utils.MockRestDriver
@@ -15,7 +16,6 @@ import org.elastic.rest.scala.driver.RestBase
 import org.elastic.rest.scala.driver.RestBase._
 import org.elastic.rest.scala.driver.ResourceOperations._
 
-import scala.reflect.runtime.universe._
 import scala.concurrent.duration.Duration
 
 object CirceModuleTests extends TestSuite {
@@ -48,17 +48,9 @@ object CirceModuleTests extends TestSuite {
       }
       implicit val mockDriver = new MockRestDriver(handler)
 
-      CirceModule.decoderRegistry.putIfAbsent(
-        weakTypeTag[TestDataModel.TestRead].tpe.toString,
-        deriveDecoder[TestDataModel.TestRead].asInstanceOf[Decoder[_]]
-      )
       Await.result(TestApi.`/typed`().read().exec(), Duration("1 second")) ==>
         TestDataModel.TestRead("get")
 
-      CirceModule.encoderRegistry.putIfAbsent(
-        weakTypeTag[TestDataModel.TestWrite].tpe.toString,
-        deriveEncoder[TestDataModel.TestWrite].asInstanceOf[Encoder[_]]
-      )
       Await.result(TestApi.`/typed`().write(TestDataModel.TestWrite("write")).execJ(),
         Duration("1 second")) ==>
           parse("""{ "test": "written" }""").getOrElse(Json.Null)
@@ -66,8 +58,8 @@ object CirceModuleTests extends TestSuite {
   }
 }
 object TestDataModel {
-  case class TestRead(testRead: String)
-  case class TestWrite(testWrite: String)
+  @JsonCodec case class TestRead(testRead: String)
+  @JsonCodec case class TestWrite(testWrite: String)
 }
 object TestApi {
   case class `/`()
