@@ -1,6 +1,0 @@
-[0m[[0minfo[0m] [0m-----------Starting Suite org.elastic.rest.scala.driver.RestBaseTests-----------[0m
-[0m[[0minfo[0m] [0morg.elastic.rest.scala.driver.RestBaseTests.Check modifiers work		[32mSuccess[0m[0m
-[0m[[0minfo[0m] [0morg.elastic.rest.scala.driver.RestBaseTests.Check the location generator works		[32mSuccess[0m[0m
-[0m[[0minfo[0m] [0morg.elastic.rest.scala.driver.RestBaseTests.Check JSON serialization		[32mSuccess[0m[0m
-[0m[[0minfo[0m] [0morg.elastic.rest.scala.driver.RestBaseTests.Check JSON de-serialization		[32mSuccess[0m[0m
-[0m[[0minfo[0m] [0morg.elastic.rest.scala.driver.RestBaseTests		[32mSuccess[0m[0m
