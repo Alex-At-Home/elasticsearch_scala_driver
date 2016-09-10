@@ -7,25 +7,62 @@ import org.elastic.rest.scala.driver.RestBase._
 
 import scala.collection.JavaConverters._
 import scala.reflect.runtime.universe._
+import scala.reflect.runtime._
 
 /** Integration for CIRCE with REST drivers
   * to decide which JSON lib to use for typed on a case by case....
-  * TODO: OK new plan, will just split into CirceJsonModule and CirceTypeModule, you need
   */
 object CirceTypeModule {
 
-  val encoderRegistry =
+  // These have to be at the front for some reason
+  // See below for the implicits
+
+  //TODO scaladocs
+
+  val encoderRegistry: scala.collection.concurrent.Map[String, Encoder[_]] =
     new java.util.concurrent.ConcurrentHashMap[String, Encoder[_]]().asScala
-  val decoderRegistry =
+  val decoderRegistry: scala.collection.concurrent.Map[String, Decoder[_]] =
     new java.util.concurrent.ConcurrentHashMap[String, Decoder[_]]().asScala
+
+  def generatedXcoder[T]
+  (picker: universe.Type => Boolean)
+  (implicit ct: universe.WeakTypeTag[T]) = {
+    val companionMirror =
+      currentMirror.reflectModule(ct.tpe.typeSymbol.companion.asModule)
+
+    ct.tpe.companion.members.toList
+      .filter(_.isImplicit)
+      .map(_.asMethod)
+      .filter(_.isMethod)
+      .filter(m => picker(m.returnType))
+      .map { t => currentMirror
+        .reflect(companionMirror.instance)
+        .reflectMethod(t).apply()
+      }
+  }
+
+  def getGeneratedDecoder[T](implicit ct: universe.WeakTypeTag[T]) = {
+    generatedXcoder[T](t => t <:< typeOf[Decoder[_]])
+      .head.asInstanceOf[Decoder[T]]
+  }
+
+  def getGeneratedEncoder[T](implicit ct: universe.WeakTypeTag[T]) = {
+    generatedXcoder[T](t => t <:< typeOf[Encoder[_]])
+      .head.asInstanceOf[Encoder[T]]
+  }
+
+  // Implicits
 
   /** Typed inputs */
   implicit val typedToStringHelper = new TypedToStringHelper() {
     override def fromTyped[T](t: T)(implicit ct: WeakTypeTag[T]): String = t match {
       case custom: CustomTypedToString => custom.fromTyped
       case _ =>
-        //TODO lazily build encoder registry
-        t.asJson(encoderRegistry(ct.tpe.toString).asInstanceOf[Encoder[T]]).noSpaces
+        //(lazily build a registry of encoders)
+        val encoder = encoderRegistry
+          .getOrElseUpdate(ct.tpe.toString, getGeneratedEncoder[T])
+
+        t.asJson(encoder.asInstanceOf[Encoder[T]]).noSpaces
     }
   }
 
@@ -37,9 +74,11 @@ object CirceTypeModule {
         null
       }.asInstanceOf[T]
       else { // normal cases
-        //TODO lazily build decoder registry
+        //(lazily build a registry of decoders)
+        val decoder = decoderRegistry
+          .getOrElseUpdate(ct.tpe.toString, getGeneratedDecoder[T])
 
-        decode[T](s)(decoderRegistry(ct.tpe.toString).asInstanceOf[Decoder[T]])
+        decode[T](s)(decoder.asInstanceOf[Decoder[T]])
           .leftMap({ err =>
             throw RestServerException(200, s"JSON serialization error: $err", Option(s)) }
           ).toOption.get
