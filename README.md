@@ -8,17 +8,18 @@ TODO
 
 This is a small library designed to make it easy to build clients/drivers for (JSON) REST-based services:
 * Almost exclusively declarative, no client-specific business logic
-* Optional typing, natively supports strings and "bring-your-own-JSON" (`*`)
+* Optional typing, natively supports strings and ("bring-your-own") JSON (`*`)
    * (`*`) This currently comes with some caveats, see below under TODO_LINK
 * Versionable
 * "Bring-your-own-HTTP-client"
+* Runs in JVM Scala or scalajs
 
 Note that the underlying idea is that these clients map very tightly to the REST endpoints exposed by the target service. This has two implications:
 * To understand a service, you only need to understand the REST interface (vs both the REST interface and the scala/java/whatever API)
    * The counterpoint is that you could argue that manipulating REST-like resources is not a very idiomatic (/good) way of writing code, which is fair. If the examples below don't convince you this is a good idea, then this is may not be the library for you, which is fine!
 * Taking this approach makes it far easier to define and maintain the API, which is of course the whole point of this library!
 
-## Some examples
+## Simple example
 
 Let's say you have a fairly standard REST service:
 * `POST` JSON to `/database/users` to create a new user
@@ -42,7 +43,7 @@ object ApiModel {
     extends RestReadable[PrettyModifierGroup]
     with RestWritable[BaseDriverOp]
     with RestDeletable[BaseDriverOp]
-    with  RestResource
+    with RestResource
 
   case class `/database/users/_synchronize`()
     extends RestNoDataWritable[BaseDriverOp]
@@ -62,11 +63,62 @@ And that's it! Then you can use it as follows:
   
   val implicit driver = ??? // see below
   val createRequest = `/database/users`.send(""" { "name": "Alex" } """)
-  val createReply: Future[String] = createRequest.execS() //or execJ to get JSON
+  val createReply: Future[String] = createRequest.execS() //or execJ to get JSON, see below
   // {"name":"Alex"}
   val getRequest = `/database/users/$userId`("Alex").pretty(true)
-  val getReply = createReply.flatMap(_ => getRequest.execS())
+  val getReply: Future[String] = createReply.flatMap(_ => getRequest.execS()) // (or execJ)
   // {\n\t"name": "Alex"\n}
 ```
+
+## JSON
+
+The REST driver supports any JSON library, with a simple connector (see below). Support for CIRCE (TODO_LINK) is provided. 
+
+For returning the REST response in JSON directly, import all the classes in the desired JSON connector (eg `import org.elastic.rest.scala.driver.json.CirceJsonModule._`), and then:
+* call the implicit `execJ` on the `BaseDriverOp` that is returned from the `read()`/`write(...)`/`send(...)`/`delete()`/etc calls to return a `Future[J]` where `J` is eg `JObject` in CIRCE (TODO_LINK), TODO other examples
+* When sending data (eg in `write()` or `send()` calls, simply pass an object of type `J` (eg TODO) instead of a String.
+
+eg:
+
+```
+import org.elastic.rest.scala.driver.json.CirceJsonModule._
+TODO examples
+```
+
+_(Of course the default string input/output can be used together with a JSON library with no connector with your own implicits etc)_
+
+## Typed API calls
+
+TODO
+
+## Summary of the API
+
+### Resources
+
+TODO
+
+### Modifiers
+
+TODO
+
+### Headers
+
+TODO
+
+# Advanced Topics
+
+## Custom typed APIs
+
+TODO
+
+## Versioning
+
+TODO
+
+## Building JSON connectors
+
+TODO
+
+## Building REST connectors
 
 TODO
