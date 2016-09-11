@@ -55,10 +55,25 @@ object CirceModuleTests extends TestSuite {
     }
   }
 }
-object TestDataModel {
+
+/** Test object containing example data model for `TestApi`
+  * (sidenote: annotating `TestDataModel` doesn't make `TestDataModelComponent` visible)
+  */
+object TestDataModel extends TestDataModelComponent{
   @JsonCodec case class TestRead(testRead: String)
   @JsonCodec case class TestWrite(testWrite: String)
 }
+
+/**Illustrates the case where sub-components are used to partition
+  * the code
+  */
+trait TestDataModelComponent {
+  //TODO: my x-coder case doesn't work if this is a trait, need to add test case and fix
+  @JsonCodec case class OtherTestRead(testRead: String)
+}
+
+/** Sample API for testing CIRCE integration
+  */
 object TestApi {
   case class `/`()
     extends RestReadable[BaseDriverOp]
