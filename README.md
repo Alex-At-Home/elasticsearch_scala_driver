@@ -44,6 +44,10 @@ object ApiModel {
     with RestDeletable[BaseDriverOp]
     with  RestResource
 
+  case class `/database/users/_synchronize`()
+    extends RestNoDataWritable[BaseDriverOp]
+    with RestResource
+
   trait PrettyModifierGroup extends PrettyModifier with BaseDriverOp
   trait PrettyModifier extends Modifier {
     def pretty(b: Boolean) = ???
@@ -54,7 +58,15 @@ object ApiModel {
 And that's it! Then you can use it as follows:
 
 ```
-  TODO
+  import ApiModel
+  
+  val implicit driver = ??? // see below
+  val createRequest = `/database/users`.send(""" { "name": "Alex" } """)
+  val createReply: Future[String] = createRequest.execS() //or execJ to get JSON
+  // {"name":"Alex"}
+  val getRequest = `/database/users/$userId`("Alex").pretty(true)
+  val getReply = createReply.flatMap(_ => getRequest.execS())
+  // {\n\t"name": "Alex"\n}
 ```
 
 TODO
