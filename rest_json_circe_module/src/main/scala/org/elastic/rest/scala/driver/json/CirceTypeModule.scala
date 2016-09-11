@@ -4,6 +4,7 @@ import io.circe.{Decoder, Encoder}
 import io.circe.jawn._
 import io.circe.syntax._
 import org.elastic.rest.scala.driver.RestBase._
+import org.elastic.rest.scala.driver.utils.NoJsonHelpers
 
 import scala.collection.JavaConverters._
 import scala.reflect.runtime.universe._
@@ -17,13 +18,21 @@ object CirceTypeModule {
   // These have to be at the front for some reason
   // See below for the implicits
 
-  //TODO scaladocs
-
+  /** A lazily constructed map of auto-generated encoders */
   val encoderRegistry: scala.collection.concurrent.Map[String, Encoder[_]] =
     new java.util.concurrent.ConcurrentHashMap[String, Encoder[_]]().asScala
+
+  /** A lazily constructed map of auto-generated decoders */
   val decoderRegistry: scala.collection.concurrent.Map[String, Decoder[_]] =
     new java.util.concurrent.ConcurrentHashMap[String, Decoder[_]]().asScala
 
+  /** Looks inside a case class to find an auto-generated encoder/decoder
+    *
+    * @param picker Decoder/Encoder check
+    * @param ct Weak Type Tag of case class
+    * @tparam T case class
+    * @return List of matching encoder/decoder instances
+    */
   def generatedXcoder[T]
   (picker: universe.Type => Boolean)
   (implicit ct: universe.WeakTypeTag[T]) = {
@@ -41,11 +50,27 @@ object CirceTypeModule {
       }
   }
 
+  /** Finds the decoder inside a case class
+    * (which must have been annotated with @JsonCodec
+    * or at least have a companion object containing an implicit decoder)
+    *
+    * @param ct Weak Type Tag of case class
+    * @tparam T case class
+    * @return A decoder to use and cache
+    */
   def getGeneratedDecoder[T](implicit ct: universe.WeakTypeTag[T]) = {
     generatedXcoder[T](t => t <:< typeOf[Decoder[_]])
       .head.asInstanceOf[Decoder[T]]
   }
 
+  /** Finds the encoder inside a case class
+    * (which must have been annotated with @JsonCodec
+    * or at least have a companion object containing an implicit encoder)
+    *
+    * @param ct Weak Type Tag of case class
+    * @tparam T case class
+    * @return An encoder to use and cache
+    */
   def getGeneratedEncoder[T](implicit ct: universe.WeakTypeTag[T]) = {
     generatedXcoder[T](t => t <:< typeOf[Encoder[_]])
       .head.asInstanceOf[Encoder[T]]
@@ -69,10 +94,9 @@ object CirceTypeModule {
   /** Typed outputs */
   implicit val stringToTypedHelper = new StringToTypedHelper() {
     override def toType[T](s: String)(implicit ct: WeakTypeTag[T]): T = {
-      if (ct.tpe <:< typeOf[CustomStringToTyped]) {
-        //TODO will assume that the type has a constructor that takes an "s"
-        null
-      }.asInstanceOf[T]
+      if (ct.tpe <:< typeOf[CustomStringToTyped])
+        NoJsonHelpers.createCustomTyped(s)
+
       else { // normal cases
         //(lazily build a registry of decoders)
         val decoder = decoderRegistry
