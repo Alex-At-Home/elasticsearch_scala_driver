@@ -36,27 +36,27 @@ object ApiModel {
   import org.elastic.rest.scala.RestResources._
 
   case class `/database/users`() 
-    extends RestSendable[BaseDriverOp]
+    extends RestSendable[BaseDriverOp] // provides send(String)/send[J](J), for POSTs
     with RestResource
 
   case class `/database/users/$userId`(userId: String) 
-    extends RestReadable[PrettyModifierGroup]
-    with RestWritable[BaseDriverOp]
-    with RestDeletable[BaseDriverOp]
+    extends RestReadable[PrettyModifierGroup] // provides read(), read().pretty(Boolean) for GETs
+    with RestWritable[BaseDriverOp] // provides write(String)/write[J](J) for PUTs
+    with RestDeletable[BaseDriverOp] // provides delete() for DELETEs
     with RestResource
 
   case class `/database/users/_synchronize`()
-    extends RestNoDataWritable[BaseDriverOp]
+    extends RestNoDataSendable[BaseDriverOp] // provides send() 
     with RestResource
 
-  trait PrettyModifierGroup extends PrettyModifier with BaseDriverOp
-  trait PrettyModifier extends Modifier {
+  trait PrettyModifierGroup extends PrettyModifier with BaseDriverOp // combination of Modifiers
+  trait PrettyModifier extends Modifier { // example Modifier, get composed in modifier groups as above
     def pretty(b: Boolean) = ???
   }
 }
 ```
 
-And that's it! Then you can use it as follows:
+And that's it! See below (TODO_LINK) for more details on the API. Then you can use it as follows:
 
 ```
   import ApiModel
@@ -89,7 +89,40 @@ _(Of course the default string input/output can be used together with a JSON lib
 
 ## Typed API calls
 
-TODO
+It is possible to declare any of the REST resources as optionally typed in either their input or their output. 
+
+* For resources with no input data (such as `Readable[M]`, `Checkable[M]`, etc), the typed variant has a `T` on the end, and an type extra parameter for the type, eg `ReadableT[M, O]` (after `read()`, then an extra method `exec()` returns a future `O`)
+* For resources with both input and output data (such as `Writable[M]` and `Sendable[M]`), there are 3 typed variants:
+   * `TU` with one extra type parameter, for typed input and untyped output, eg `WritableTU[M, I]`, with the extra method  `write(I)` that returns a future String/JSON object via `execJ()`/`execS()`
+   * `UT` withone extra type parameter, for untyped input and typed output, eg `SendableUT[M, O]`, where `write(String)` and `write[J](J)` can in addition return a future `O` via `exec()`
+
+The typed variants require that a JSON module (see below TODO_LINK) is imported for its implicts
+
+So extending the example above:
+
+```
+object DataModel {
+  case class DatabaseRecord(name: String, age: Option[Int])
+}
+object ApiModel {
+//...
+  case class `/database/users/$userId`(userId: String) 
+    extends RestReadableT[PrettyModifierGroup, DatabaseRecord]
+    with RestWritableTT[BaseDriverOp, DatabaseRecord, DatabaseRecord]
+    with RestDeletable[BaseDriverOp]
+    with RestResource
+//...
+}    
+```
+
+And then:
+
+```
+import org.elastic.rest.scala.json.CirceTypeModule._
+
+val newRecord = DatabaseRecord("Alex", Some(21))
+val updatedRecord: Future[DatabaseRecord] = `/database/users/$userId`("Alex").write(newRecord).exec()
+```
 
 ## Summary of the API
 
