@@ -48,7 +48,7 @@ object CirceTypeModule {
 
         // From: http://stackoverflow.com/questions/17012294/recovering-a-singleton-instance-via-reflection-from-sealed-super-trait-when-typ
         // Getting closer
-        val classSymbol = pre.typeSymbol.asClass.asClass
+        val classSymbol = pre.typeSymbol.asClass
         val compSymbol = classSymbol.companionSymbol // (note using companion here fails)
         val moduleSymbol = compSymbol.asModule
         val moduleMirror = currentMirror.reflectModule(moduleSymbol)
