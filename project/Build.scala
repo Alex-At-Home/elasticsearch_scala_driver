@@ -9,7 +9,7 @@ object BuildSettings {
     organization := "org.elasticsearch",
     scalacOptions ++= Seq(),
     scalaVersion := scalaBuildVersion,
-    crossScalaVersions := Seq("2.11.4", "2.11.5", "2.11.6", "2.11.7", "2.11.8"),
+    crossScalaVersions := Seq(),
     resolvers += Resolver.sonatypeRepo("snapshots"),
     resolvers += Resolver.sonatypeRepo("releases"),
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
@@ -44,7 +44,11 @@ object MyBuild extends Build {
 
   val esScalaDriverVersion = "0.1-SNAPSHOT"
 
-  lazy val root = Project("root", file("."))
+  lazy val root = Project(
+    "root",
+    file("."),
+    settings = buildSettings
+  )
     .aggregate(
       rest_scala_core,
       rest_json_circe_module,

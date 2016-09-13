@@ -36,8 +36,28 @@ object CirceTypeModule {
   def generatedXcoder[T]
   (picker: universe.Type => Boolean)
   (implicit ct: universe.WeakTypeTag[T]) = {
+
     val companionMirror =
-      currentMirror.reflectModule(ct.tpe.typeSymbol.companion.asModule)
+      scala.util.Try { //(easy case, the inner class is in an object)
+        currentMirror.reflectModule(ct.tpe.typeSymbol.companion.asModule)
+      }
+      .getOrElse { //(difficult case, the inner class is in a trait)
+        // From: http://stackoverflow.com/questions/18056107/reflection-getting-module-mirror-from-inner-class-mixed-into-a-singleton-object
+        // (doesn't give you everything though because can't trivially get access to the module instance, see next SO post!)
+        val TypeRef(pre, _, _) = ct.tpe
+
+        // From: http://stackoverflow.com/questions/17012294/recovering-a-singleton-instance-via-reflection-from-sealed-super-trait-when-typ
+        // Getting closer
+        val classSymbol = pre.typeSymbol.asClass.asClass
+        val compSymbol = classSymbol.companionSymbol // (note using companion here fails)
+        val moduleSymbol = compSymbol.asModule
+        val moduleMirror = currentMirror.reflectModule(moduleSymbol)
+
+        // Now we can get an instance of the outer type
+        val outerTypeInstance = currentMirror.reflect(moduleMirror.instance)
+        // And create an instance mirror from that:
+        outerTypeInstance.reflectModule(ct.tpe.typeSymbol.companion.asModule)
+      }
 
     ct.tpe.companion.members.toList
       .filter(_.isImplicit)

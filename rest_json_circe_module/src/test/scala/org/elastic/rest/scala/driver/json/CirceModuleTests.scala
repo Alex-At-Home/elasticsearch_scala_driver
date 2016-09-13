@@ -39,8 +39,8 @@ object CirceModuleTests extends TestSuite {
     "Test typed" - {
       val handler: PartialFunction[BaseDriverOp, Future[String]] = {
         case BaseDriverOp(TestApi.`/typed`(), RestBase.PUT,
-        Some("""{"testWrite":"write"}"""), List(), List()) =>
-          Future.successful("""{ "test": "written" }""")
+          Some("""{"testWrite":"write"}"""), List(), List()) =>
+            Future.successful("""{ "test": "written" }""")
         case BaseDriverOp(TestApi.`/typed`(), RestBase.GET, _, List(), List()) =>
           Future.successful("""{ "testRead": "get" }""")
       }
@@ -52,6 +52,24 @@ object CirceModuleTests extends TestSuite {
       Await.result(TestApi.`/typed`().write(TestDataModel.TestWrite("write")).execJ(),
         Duration("1 second")) ==>
           parse("""{ "test": "written" }""").getOrElse(Json.Null)
+    }
+    "Test typed extensions" - {  // (originally found classes inside a trait that the base model extends didn't work)
+
+      val handler: PartialFunction[BaseDriverOp, Future[String]] = {
+        case BaseDriverOp(TestApi.`/data_model`(), RestBase.PUT,
+          Some("""{"testWrite":"write"}"""), List(), List()) =>
+            Future.successful("""{ "test": "written" }""")
+        case BaseDriverOp(TestApi.`/data_model`(), RestBase.GET, _, List(), List()) =>
+          Future.successful("""{ "testRead": "get" }""")
+      }
+      implicit val mockDriver = new MockRestDriver(handler)
+
+      Await.result(TestApi.`/data_model`().read().exec(), Duration("1 second")) ==>
+        TestDataModel.OtherTestRead("get")
+
+      Await.result(TestApi.`/data_model`().write(TestDataModel.OtherTestWrite("write")).execJ(),
+        Duration("1 second")) ==>
+        parse("""{ "test": "written" }""").getOrElse(Json.Null)
     }
   }
 }
@@ -68,13 +86,13 @@ object TestDataModel extends TestDataModelComponent{
   * the code
   */
 trait TestDataModelComponent {
-  //TODO: my x-coder case doesn't work if this is a trait, need to add test case and fix
   @JsonCodec case class OtherTestRead(testRead: String)
+  @JsonCodec case class OtherTestWrite(testWrite: String)
 }
 
 /** Sample API for testing CIRCE integration
   */
-object TestApi {
+object TestApi extends TestApiExtensions {
   case class `/`()
     extends RestReadable[BaseDriverOp]
     with RestWritable[BaseDriverOp]
@@ -84,4 +102,11 @@ object TestApi {
     extends RestReadableT[BaseDriverOp, TestDataModel.TestRead]
       with RestWritableTU[BaseDriverOp, TestDataModel.TestWrite]
       with RestResource
+}
+trait TestApiExtensions {
+  case class `/data_model`()
+    extends RestReadableT[BaseDriverOp, TestDataModel.OtherTestRead]
+      with RestWritableTU[BaseDriverOp, TestDataModel.OtherTestWrite]
+      with RestResource
+
 }
