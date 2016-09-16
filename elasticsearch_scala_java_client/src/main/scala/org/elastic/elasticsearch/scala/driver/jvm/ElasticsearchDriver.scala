@@ -1,12 +1,17 @@
 package org.elastic.elasticsearch.scala.driver.jvm
 
-import org.apache.http.HttpHost
+import java.security.KeyStore
+import javax.net.ssl.SSLContext
+
+import org.apache.http.{HttpHost, HttpRequest}
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 import org.apache.http.client.config.RequestConfig.Builder
+import org.apache.http.impl.auth.BasicScheme
 import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
 import org.apache.http.impl.nio.reactor.IOReactorConfig
-import org.apache.http.message.BasicHeader
+import org.apache.http.message.{BasicHeader, BasicHttpRequest}
+import org.apache.http.protocol.BasicHttpContext
 import org.elastic.rest.scala.driver.RestBase._
 import org.elasticsearch.client.RestClientBuilder.{HttpClientConfigCallback, RequestConfigCallback}
 import org.elasticsearch.client.{ResponseException, ResponseListener, RestClient, RestClientBuilder}
@@ -17,25 +22,29 @@ import scala.concurrent.duration.Duration
 /** The Elasticsearch driver for the JVM
   * Run `start()` to provide a client that can be used to execute resource operations
   * @param hostPorts A list of endpoints in the format "host:port"
+  * @param ssl If true (default: false) then will attempt to connect over SSL
   * @param connectTimeout The connect timeout (human readable format, eg "1 second")
   * @param socketTimeout The socket timeout (human readable format, eg "10 seconds")
   * @param retryTimeout The retry timeout (human readable format, eg "10 seconds")
   * @param numThreads The number of threads
   * @param basicAuth Basic authentication pair (user, password)
   * @param defaultHeaders A set of default headers applied to every request
-  * @param advancedConfig Advanced configuration for the underlying REST client
+  * @param advancedConfig Advanced configuration for the underlying REST client, expressed as a mapping
+  *                       from `HttpAsyncClientBuilder ` to itself, enabled the chained `setXxx(...)` calls
+  *                       to be performed
   */
 case class ElasticsearchDriver
   (hostPorts: List[String] = List("localhost:9200"),
+   ssl: Boolean = false,
    connectTimeout: String = "1 second",
    socketTimeout: String = "10 seconds",
    retryTimeout: String = "10 seconds",
    numThreads: Int = 1,
    basicAuth: Option[(String, String)] = None,
    defaultHeaders: List[String] = List(),
-   advancedConfig: List[RestClientBuilder.HttpClientConfigCallback] = List())
+   advancedConfig: List[HttpAsyncClientBuilder => HttpAsyncClientBuilder] = List())
 {
-  /** Creates a new drive with different or appended host:ports
+  /** Creates a new driver with different or appended host:ports
     *
     * @param newHostPorts The new host:port
     * @param overwrite Whether to overwrite the existing settings, or append to them
@@ -46,6 +55,15 @@ case class ElasticsearchDriver
       if (overwrite) newHostPorts
       else hostPorts ++ newHostPorts
     this.copy(hostPorts = newConfig)
+  }
+
+  /** Change the SSL status
+    *
+    * @param ssl Whether to connect over SSL
+    * @return A new copy of the driver with the updated settings
+    */
+  def withSsl(ssl: Boolean): ElasticsearchDriver = {
+    this.copy(ssl = ssl)
   }
 
   /** Change the connect timeout
@@ -112,7 +130,7 @@ case class ElasticsearchDriver
     * @return A new copy of the driver with the updated settings
     */
   def withAdvancedConfig
-    (newAdvancedConfig: List[RestClientBuilder.HttpClientConfigCallback], overwrite: Boolean = true)
+    (newAdvancedConfig: List[HttpAsyncClientBuilder => HttpAsyncClientBuilder], overwrite: Boolean = true)
     : ElasticsearchDriver =
     {
       val newConfig =
@@ -126,6 +144,29 @@ case class ElasticsearchDriver
     * @return A started ES driver
     */
   def start(): StartedElasticsearchDriver = new StartedElasticsearchDriver(this)
+}
+
+case class MutableStartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriver {
+
+  private var runningEsDriver = new StartedElasticsearchDriver(esDriver)
+
+  /** Creates a new unstarted `ElasticsearchDriver` with these settings that can be reconfigured
+    * @return An unstarted `ElasticsearchDriver` instance
+    */
+  def createCopy: ElasticsearchDriver = runningEsDriver.createCopy
+
+  /** Executes the designated operation
+    * @param baseDriverOp The operation to execute
+    * @return A future returning the raw reply or throws `RequestException(code, body, message)`
+    */
+  override def exec(baseDriverOp: BaseDriverOp): Future[String] = runningEsDriver.exec(baseDriverOp)
+
+  /** Change in-place this driver to connect to the new settings object
+    * @param esDriver Contains a configuration set for an Elasticsearch connection
+    */
+  def changeSettings(esDriver: ElasticsearchDriver): Unit = {
+    runningEsDriver = new StartedElasticsearchDriver(esDriver)
+  }
 }
 
 /** A started Elasticsearch Driver that can execute resource operations
@@ -177,7 +218,7 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriv
     val headers = (baseDriverOp.headers ++ esDriver.defaultHeaders).map { s =>
       val decomp = s.split(":", 2)
       new BasicHeader(decomp(0), decomp(1))
-    }
+    } ++ basicAuth
 
     restClient.performRequest(
       baseDriverOp.op,
@@ -187,16 +228,61 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriv
     promise.future
   }
 
-  /** The underlying Elasticsearch REST client */
+  val basicAuth = esDriver.basicAuth.map { auth =>
+    val userPass = new UsernamePasswordCredentials(auth._1, auth._2)
+    new BasicScheme().authenticate(userPass, new BasicHttpRequest("GET", "/"), new BasicHttpContext())
+  }.toList
+
+    /** The underlying Elasticsearch REST client */
   private [this] val restClient: RestClient = {
+    // Advanced building configuration
+    val clientBuilderOps = for {
+      noClientBuilder <- Some((clientBuilder: HttpAsyncClientBuilder) => clientBuilder)
+
+      // SSL
+      applySsl <- Some(noClientBuilder).map { chain =>
+        if (esDriver.ssl) {
+          chain andThen ((clientBuilder: HttpAsyncClientBuilder) => {
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(null, null, null) //(need to get working as per https://issues.apache.org/jira/browse/HTTPCLIENT-1211)
+            clientBuilder.setSSLContext(sslContext)
+          })
+        }
+        else chain
+      }
+
+      // Thread count
+      applyThreadCount <- Some(applySsl).map { chain =>
+        if (esDriver.numThreads > 1) {
+          chain andThen ((clientBuilder: HttpAsyncClientBuilder) =>
+            clientBuilder.setDefaultIOReactorConfig(
+              IOReactorConfig.custom().setIoThreadCount(esDriver.numThreads).build())
+            )
+        }
+        else chain
+      }
+
+      // Basic auth, handled via headers above, can't get setDefaultCredentialsProvider to work
+
+      // Advanced options
+      applyAdvancedConfig <- Some(applyThreadCount).map { chain =>
+        esDriver.advancedConfig.foldLeft(chain) { (acc, v) =>
+          acc andThen v
+        }
+      }
+
+    } yield applyAdvancedConfig
+
     // Build the client is startNow is set:
     val client = for {
       _ <- Some()
       // URL
       hostPorts = esDriver.hostPorts.map(_.split(":", 2)).map { case Array(host, port) =>
-        new HttpHost(host, port.toInt)
+        new HttpHost(host, port.toInt, if (esDriver.ssl) "https" else "http")
       }
       fromUrl <- Some(RestClient.builder(hostPorts:_*))
+
+      // SSL handled below, under Client builder ops
 
       // Connect and socket timeouts
       fromTimeouts <- Some(fromUrl).map { builder =>
@@ -214,30 +300,27 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriv
       fromRetryTimeout <- Some(fromTimeouts).map(
         _.setMaxRetryTimeoutMillis(Duration(esDriver.retryTimeout).toMillis.toInt))
 
-      fromNumThreads <- Some(fromRetryTimeout).filter(_ => esDriver.numThreads > 1).orElse {
-        Some(fromRetryTimeout.setHttpClientConfigCallback(new HttpClientConfigCallback {
-          override def customizeHttpClient(httpClientBuilder: HttpAsyncClientBuilder): HttpAsyncClientBuilder =
-            httpClientBuilder.setDefaultIOReactorConfig(
-              IOReactorConfig.custom().setIoThreadCount(esDriver.numThreads).build())
-        }))
+      // Thread count handled below, under Client builder ops
+
+      // Basic auth handled below, under Client builder ops
+
+      // Advanced config handled below, under Client builder ops
+
+      // Client builder ops:
+
+      finalConfig <- Some(fromRetryTimeout).map { currClient =>
+        clientBuilderOps.map { ops =>
+          currClient.setHttpClientConfigCallback(
+            new HttpClientConfigCallback {
+              override def customizeHttpClient(httpClientBuilder: HttpAsyncClientBuilder): HttpAsyncClientBuilder = {
+                ops(httpClientBuilder)
+              }
+            }
+          )
+        }.getOrElse(currClient)
       }
 
-      // Basic auth
-      fromBasicAuth <- esDriver.basicAuth.map { auth => {
-        val credentialsProvider = new BasicCredentialsProvider()
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(auth._1, auth._2))
-        fromNumThreads.setHttpClientConfigCallback(new HttpClientConfigCallback {
-          override def customizeHttpClient(httpClientBuilder: HttpAsyncClientBuilder): HttpAsyncClientBuilder =
-            httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
-        })
-      }
-      }.orElse(Some(fromNumThreads))
-
-      // Advanced config
-      fromAdvancedConfig <- Some(fromBasicAuth).map { builder =>
-        esDriver.advancedConfig.foldLeft(builder) { (acc, v) => acc.setHttpClientConfigCallback(v) }
-      }
-    } yield fromAdvancedConfig
+    } yield finalConfig
 
     client.map(_.build()).get
   }

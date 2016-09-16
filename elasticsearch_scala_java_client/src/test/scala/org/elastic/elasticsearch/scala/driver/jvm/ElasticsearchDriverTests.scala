@@ -8,6 +8,7 @@ import UrlParsing._
 import HttpMethod._
 import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
+import org.apache.http.message.BasicHeader
 import org.elastic.elasticsearch.driver.utils.ServerUtils
 import org.elastic.elasticsearch.scala.driver.versions.Versions
 import org.elastic.rest.scala.driver.RestBase._
@@ -23,11 +24,14 @@ object ElasticsearchDriverTests extends TestSuite {
   val tests = this {
     "Test ElasticsearchDriver builder operations" - {
       val driver = ElasticsearchDriver()
-      val base = ElasticsearchDriver(List("localhost:9200"), "1 second", "10 seconds", "10 seconds", 1, None, List())
+      val base = ElasticsearchDriver(
+        List("localhost:9200"), ssl = false, "1 second", "10 seconds", "10 seconds", 1, None, List())
       driver ==> base
       driver.withNewHostPorts(List("host1:9999")) ==> base.copy(hostPorts = List("host1:9999"))
       driver.withNewHostPorts(List("host2:8888"), overwrite = false) ==>
         base.copy(hostPorts = List("localhost:9200", "host2:8888"))
+      driver.withSsl(false) ==> base
+      driver.withSsl(true) ==> base.copy(ssl = true)
       driver.withConnectTimeout("2 seconds") ==> base.copy(connectTimeout = "2 seconds")
       driver.withSocketTimeout("3 seconds") ==> base.copy(socketTimeout = "3 seconds")
       driver.withRetryTimeout("4 seconds") ==> base.copy(retryTimeout = "4 seconds")
@@ -53,10 +57,7 @@ object ElasticsearchDriverTests extends TestSuite {
         override def customizeHttpClient(httpClientBuilder: HttpAsyncClientBuilder): HttpAsyncClientBuilder =
           httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
       }
-      val basePlusConfig = driver.withAdvancedConfig(List(a), overwrite = true)
-      basePlusConfig ==> base.copy(advancedConfig = List(a))
-      basePlusConfig.withAdvancedConfig(List(b), overwrite = true) ==> base.copy(advancedConfig = List(b))
-      basePlusConfig.withAdvancedConfig(List(b), overwrite = false) ==> base.copy(advancedConfig = List(a, b))
+      //TODO test advanced config a bit later as part of basic auth testing
     }
     "Can read/write to/from an HTTP server" - {
 
@@ -64,13 +65,15 @@ object ElasticsearchDriverTests extends TestSuite {
       class TestService(context: ServerContext) extends HttpService(context) {
         def handle = {
           case request @ Get on Root if request.head.query.isEmpty =>
+            println("HEADERS " + request.head.headers + " .. " + request.head.url)
             val hasDefaultHeader = request.head.headers.firstValue("x-default").contains("test1")
             val hasRequestHeader = request.head.headers.firstValue("x-request").contains("test2")
-            Callback.successful(request.ok(s"rx:/ $hasDefaultHeader $hasRequestHeader"))
+            val basicAuth = request.head.headers.firstValue("Authorization").map(" " + _).getOrElse("")
+            Callback.successful(request.ok(s"rx:/ $hasDefaultHeader $hasRequestHeader$basicAuth"))
           case request @ Get on Root if request.head.query.isDefined =>
             Callback.successful(request.ok(s"rx:/${request.head.query.get}"))
 
-            //TODO other methods
+            //TODO other methods as needed
         }
       }
 
@@ -123,14 +126,49 @@ object ElasticsearchDriverTests extends TestSuite {
           retVal ==> "404"
         }
 
-        //TODO check all method/body comments (read-data, write, write-no-body, delete, delete-body, check)
+        // Other driver options
+
+        // Check that thread count at least doesn't break anything...
+        {
+          val threadDriver = driver.createCopy.withThreads(2).start()
+          val futureResult = threadDriver.exec(Versions.latest.`/`().read())
+          val retVal = Await.result(futureResult, Duration("1 second"))
+          retVal ==> "rx:/ false false"
+        }
+        // Check SSL (should at make it fail!)
+        {
+          val sslDriver = driver.createCopy.withSsl(true).start()
+          val futureResult = sslDriver.exec(Versions.latest.`/`().read())
+          val retVal = scala.util.Try { Await.ready(futureResult, Duration("1 second")) }
+          retVal.isFailure ==> true
+        }
+        // Check basic auth:
+        {
+          val authDriver = driver.createCopy.withBasicAuth("user", "pass").start()
+          val futureResult = authDriver.exec(Versions.latest.`/`().read())
+          val retVal = Await.result(futureResult, Duration("1 second"))
+          retVal ==> "rx:/ false false Basic dXNlcjpwYXNz"
+        }
+        // Check advanced options
+        {
+          import scala.collection.JavaConversions._
+          val authDriver = driver.createCopy.withAdvancedConfig(
+            List(client => client.setDefaultHeaders(List(new BasicHeader("x-default", "test1")))))
+            .start()
+          val futureResult = authDriver.exec(Versions.latest.`/`().read())
+          val retVal = Await.result(futureResult, Duration("1 second"))
+          retVal ==> "rx:/ true false"
+        }
+
+        // Method coverage
         Versions.latest.`/$uri`("test_index")
 
-        //TODO: check auth
+        //TODO check all method/body comments (read-data, write, write-no-body, delete, delete-body, check)
       }
       finally {
         server.die()
       }
     }
+    //TODO: test all the timeouts
   }
 }

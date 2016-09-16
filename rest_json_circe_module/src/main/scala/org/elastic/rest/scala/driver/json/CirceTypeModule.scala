@@ -60,9 +60,9 @@ object CirceTypeModule {
       }
 
     ct.tpe.companion.members.toList
+      .filter(_.isMethod)
       .filter(_.isImplicit)
       .map(_.asMethod)
-      .filter(_.isMethod)
       .filter(m => picker(m.returnType))
       .map { t => currentMirror
         .reflect(companionMirror.instance)
