@@ -78,7 +78,7 @@ object ApiModel {
     with RestResource
 
   trait PrettyModifierGroup extends PrettyModifier with BaseDriverOp 
-  trait PrettyModifier extends Modifier { 
+  trait PrettyModifier extends Modifier { self: BaseDriverOp =>
     def pretty(b: Boolean) = self.withModifier(this.getModifier(b))
   }
 }
