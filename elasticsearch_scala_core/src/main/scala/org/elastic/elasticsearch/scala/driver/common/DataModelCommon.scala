@@ -9,15 +9,13 @@ object DataModelCommon {
 
   /** The return type from '/', information about Elasticsearch
     *
-    * @param status The status code of the request (200 is success)
     * @param name The name of the replying node within the cluster
     * @param cluster_name The name of the cluster
     * @param version Version info about the cluster build
     * @param tag_line "You know, for search"
     */
   case class ElasticsearchInfo
-    (status: Int,
-     name: String,
+    (name: String,
      cluster_name: String,
      version: ElasticsearchInfo.VersionInfo,
      tag_line: String

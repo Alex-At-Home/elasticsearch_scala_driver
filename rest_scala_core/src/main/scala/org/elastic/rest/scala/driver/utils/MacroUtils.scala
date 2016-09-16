@@ -110,8 +110,6 @@ object MacroUtils {
           .asInstanceOf[this.type]
         override def withHeader(h: String): this.type = Internal(resource, op, body, mods, h :: headers)
           .asInstanceOf[this.type]
-
-          //TODO: add typed exec
       }
       Internal($self, $opType, $body, $modifiers, $headers)
     """

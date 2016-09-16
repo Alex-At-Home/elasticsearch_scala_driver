@@ -3,6 +3,8 @@ package org.elastic.rest.scala.driver
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.runtime.universe._
 
+//TODO have a version of exec/S/J that waits N seconds and returns the future
+
 /**
   * The base operations for the Elasticsearch DSL
   */
@@ -196,7 +198,7 @@ object RestBase {
       * @param h The new header
       * @return The updated driver operation
       */
-    protected def withHeader(h: String): this.type = null //TODO: remove this once the old modifiers have been removed
+    protected def withHeader(h: String): this.type = null //TODO: remove this "=null" once the old modifiers have been removed
 
     /** Add a generic string modifier to the driver operation
       *

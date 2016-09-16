@@ -18,6 +18,7 @@ object ShellMain {
   def main(args: Array[String]): Unit = {
     val startup =
       """
+        |      import scala.concurrent.ExecutionContext.Implicits.global
         |      import org.elastic.rest.scala.driver.ResourceOperations._
         |      import org.elastic.rest.scala.driver.RestBase._
         |      import org.elastic.rest.scala.driver.utils.MockRestDriver

@@ -1,5 +1,7 @@
 import sbt._
 import Keys._
+import sbtassembly.AssemblyKeys._
+import sbtassembly.{MergeStrategy, PathList}
 
 object BuildSettings {
 
@@ -14,7 +16,6 @@ object BuildSettings {
     resolvers += Resolver.sonatypeRepo("releases"),
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
   )
-
 }
 
 object MyBuild extends Build {
@@ -126,6 +127,13 @@ object MyBuild extends Build {
       libraryDependencies += ammoniteDeps,
       libraryDependencies += utestJvmDeps,
       testFrameworks += new TestFramework("utest.runner.Framework")
+      ,
+      assemblyMergeStrategy in assembly := {
+        case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+        case x => MergeStrategy.first
+      },
+      assemblyJarName in assembly := "elasticsearch_shell.jar",
+      mainClass in assembly := Some("org.elastic.elasticsearch.scala.driver.jvm.ShellMain")
     )
   )
   .dependsOn(rest_json_circe_module, elasticsearch_scala_java_client)

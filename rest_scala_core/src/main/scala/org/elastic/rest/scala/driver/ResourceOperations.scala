@@ -5,6 +5,8 @@ import org.elastic.rest.scala.driver.utils.MacroUtils
 
 import scala.language.experimental.macros
 
+//TODO documentation link?
+
 /**
   * Contains the base operations that, associated with the modifiers, can be executed against the
   * REST resources

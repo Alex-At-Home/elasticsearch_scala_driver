@@ -1,23 +1,23 @@
 package org.elastic.elasticsearch.scala.driver.jvm
 
-import java.security.KeyStore
 import javax.net.ssl.SSLContext
 
-import org.apache.http.{HttpHost, HttpRequest}
-import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
+import org.apache.http.HttpHost
+import org.apache.http.auth.UsernamePasswordCredentials
 import org.apache.http.client.config.RequestConfig.Builder
 import org.apache.http.impl.auth.BasicScheme
-import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
 import org.apache.http.impl.nio.reactor.IOReactorConfig
 import org.apache.http.message.{BasicHeader, BasicHttpRequest}
 import org.apache.http.protocol.BasicHttpContext
 import org.elastic.rest.scala.driver.RestBase._
 import org.elasticsearch.client.RestClientBuilder.{HttpClientConfigCallback, RequestConfigCallback}
-import org.elasticsearch.client.{ResponseException, ResponseListener, RestClient, RestClientBuilder}
+import org.elasticsearch.client.{ResponseException, ResponseListener, RestClient}
 
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.duration.Duration
+
+//TODO: remove password from toString....
 
 /** The Elasticsearch driver for the JVM
   * Run `start()` to provide a client that can be used to execute resource operations
