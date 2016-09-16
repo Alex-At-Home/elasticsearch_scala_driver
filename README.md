@@ -25,7 +25,7 @@ res3: util.Try[ElasticsearchInfo] = Success(
 In sbt simply run:
 
 ```
-sbt elasticsearch_scala_shell/assembly
+elasticsearch_scala_shell/assembly
 ```
 
 This will generate `<PROJECT_HOME>/elasticsearch_scala_shell/target/scala-2.11/elasticsearch_shell.jar`
