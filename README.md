@@ -5,9 +5,9 @@ TODO
 ## Running the shell (example)
 
 ```
-#bash> jar -jar elasticsearch_shell.jar
+#bash> java -jar elasticsearch_shell.jar
 @ latest.`/`().read()
-@ implicit val  driver = (new ElasticsearchDriver()).withNewHostPorts(List("localhost:9200"), true).withBasicAuth("user", "password").start()
+@ implicit val driver = (new ElasticsearchDriver()).withNewHostPorts(List("localhost:9200"), true).withBasicAuth("user", "password").start()
 @ res0.exec()
 @ res2.value.get
 res3: util.Try[ElasticsearchInfo] = Success(
