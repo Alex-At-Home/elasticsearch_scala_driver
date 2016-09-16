@@ -90,7 +90,7 @@ object MyBuild extends Build {
       name := "REST Scala JS Client",
       version := esScalaDriverVersion
     )
-  ).dependsOn(elasticsearch_scala_core)
+  ).dependsOn(rest_scala_core)
 
   lazy val elasticsearch_scala_core: Project = Project(
     "elasticsearch_scala_core",
@@ -102,7 +102,7 @@ object MyBuild extends Build {
       libraryDependencies += utestJvmDeps,
       testFrameworks += new TestFramework("utest.runner.Framework")
     )
-  ).dependsOn(rest_scala_core)
+  ).dependsOn(rest_scala_core).dependsOn(rest_json_circe_module)
 
   lazy val elasticsearch_scala_java_client: Project = Project(
     "elasticsearch_scala_java_client",

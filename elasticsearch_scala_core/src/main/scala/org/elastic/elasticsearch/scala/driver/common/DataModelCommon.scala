@@ -1,5 +1,8 @@
 package org.elastic.elasticsearch.scala.driver.common
 
+import io.circe.jawn._
+import io.circe._
+import io.circe.generic.JsonCodec
 import org.elastic.elasticsearch.scala.driver.utils.BulkUtils
 import org.elastic.rest.scala.driver.RestBase._
 
@@ -12,13 +15,13 @@ object DataModelCommon {
     * @param name The name of the replying node within the cluster
     * @param cluster_name The name of the cluster
     * @param version Version info about the cluster build
-    * @param tag_line "You know, for search"
+    * @param tagline "You know, for search"
     */
-  case class ElasticsearchInfo
+  @JsonCodec case class ElasticsearchInfo
     (name: String,
      cluster_name: String,
      version: ElasticsearchInfo.VersionInfo,
-     tag_line: String
+     tagline: String
     )
 
   /** Version within ElasticsearchInfo */
@@ -32,7 +35,7 @@ object DataModelCommon {
       * @param build_snapshot Build snapshot info
       * @param lucene_version Underying Lucene version
       */
-    case class VersionInfo
+    @JsonCodec case class VersionInfo
     (
       number: String,
       build_hash: String,
