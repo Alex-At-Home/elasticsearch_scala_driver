@@ -64,22 +64,22 @@ object ApiModel {
   import org.elastic.rest.scala.RestResources._
 
   case class `/database/users`() 
-    extends RestSendable[BaseDriverOp] // provides send(String)/send[J](J), for POSTs
+    extends RestSendable[BaseDriverOp] 
     with RestResource
 
   case class `/database/users/$userId`(userId: String) 
-    extends RestReadable[PrettyModifierGroup] // provides read(), read().pretty(Boolean) for GETs
-    with RestWritable[BaseDriverOp] // provides write(String)/write[J](J) for PUTs
-    with RestDeletable[BaseDriverOp] // provides delete() for DELETEs
+    extends RestReadable[PrettyModifierGroup] 
+    with RestWritable[BaseDriverOp] 
+    with RestDeletable[BaseDriverOp] 
     with RestResource
 
   case class `/database/users/_synchronize`()
-    extends RestNoDataSendable[BaseDriverOp] // provides send() 
+    extends RestNoDataSendable[BaseDriverOp] 
     with RestResource
 
-  trait PrettyModifierGroup extends PrettyModifier with BaseDriverOp // combination of Modifiers
-  trait PrettyModifier extends Modifier { // example Modifier, get composed in modifier groups as above
-    def pretty(b: Boolean) = ???
+  trait PrettyModifierGroup extends PrettyModifier with BaseDriverOp 
+  trait PrettyModifier extends Modifier { 
+    def pretty(b: Boolean) = self.withModifier(this.getModifier(b))
   }
 }
 ```
