@@ -3,6 +3,7 @@ package org.elastic.rest.scala.driver.utils
 import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, RestDriver, RestServerException}
 
 import scala.concurrent.Future
+import scala.concurrent.duration.Duration
 
 /** A mock driver that you pass the list of handlers into.
   * Note that BaseDriverOp can be decomposed as
@@ -18,5 +19,6 @@ class MockRestDriver
      Future.failed(RestServerException(404, "Resource not found", None))
    }
 
-  def exec(op: BaseDriverOp): Future[String] = (handler orElse fallback)(op)
+  override def exec(op: BaseDriverOp): Future[String] = (handler orElse fallback)(op)
+  override def timeout: Duration = Duration("5 seconds")
 }

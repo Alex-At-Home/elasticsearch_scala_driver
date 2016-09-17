@@ -64,11 +64,10 @@ object CirceModuleTests extends TestSuite {
       }
       implicit val mockDriver = new MockRestDriver(handler)
 
-      Await.result(TestApi.`/data_model`().read().exec(), Duration("1 second")) ==>
+      TestApi.`/data_model`().read().get() ==>
         TestDataModel.OtherTestRead("get")
 
-      Await.result(TestApi.`/data_model`().write(TestDataModel.OtherTestWrite("write")).execJ(),
-        Duration("1 second")) ==>
+      TestApi.`/data_model`().write(TestDataModel.OtherTestWrite("write")).getJ(Duration("1 second")) ==>
         parse("""{ "test": "written" }""").getOrElse(Json.Null)
     }
   }

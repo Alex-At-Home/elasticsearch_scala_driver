@@ -19,8 +19,13 @@ object CirceJsonModule {
   }
 
   /** JSON outputs */
-  implicit class StringToJsonHelper(op: BaseDriverOp) {
-    def execJ()(implicit driver: RestDriver): Future[io.circe.Json] = {
+  implicit class StringToCirceHelper(op: BaseDriverOp) extends StringToJsonHelper[Json] {
+    /** Actually executes the operation (async)
+      *
+      * @param driver The driver which executes the operation
+      * @return A future containing the result of the operation as JSON
+      */
+    def execJ()(implicit driver: RestDriver): Future[Json] = {
       driver.exec(op)
         .map(s => toJson(s))
     }

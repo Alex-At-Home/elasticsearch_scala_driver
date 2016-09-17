@@ -1,9 +1,8 @@
 package org.elastic.rest.scala.driver
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.reflect.runtime.universe._
-
-//TODO have a version of exec/S/J that waits N seconds and returns the future
 
 /**
   * The base operations for the Elasticsearch DSL
@@ -35,7 +34,7 @@ object RestBase {
       */
     protected implicit val ct: WeakTypeTag[T]
 
-    /** Actually executes the operation
+    /** Actually executes the operation (aysnc)
       *
       * @param stringToTypedHelper An implicit helper to convert the op return to a type
       * @param driver The driver which executes the operation
@@ -50,6 +49,23 @@ object RestBase {
       )
       : Future[T] =
         self.execS().map(stringToTypedHelper.toType(_)(ct))
+
+    /** Actually executes the operation (sync)
+      *
+      * @param timeout Optionally, the amount of time to wait before failing
+      * @param stringToTypedHelper An implicit helper to convert the op return to a type
+      * @param driver The driver which executes the operation
+      * @param ec The execution context for futures
+      * @return The result of the operation as a type
+      */
+    def get
+      (timeout: Duration = null)
+      (implicit stringToTypedHelper: StringToTypedHelper,
+       driver: RestDriver,
+       ec: ExecutionContext)
+    : T =
+      Await.result(this.exec(), Option(timeout).getOrElse(driver.timeout))
+
   }
 
   /** Case classes that want a custom overwrite should inherit this trait and implement
@@ -104,10 +120,9 @@ object RestBase {
     def toType[T](s: String)(implicit ct: WeakTypeTag[T]): T
   }
 
-  /**
-    * A trait to be implemented and used as an implicit to define how to go from JSON to string
+  /** A trait to be implemented and used as an implicit to define how to go from JSON to string
     * (defaults to `j.toString`)
- *
+    *
     * @tparam J The json object type in this library
     */
   trait JsonToStringHelper[J] {
@@ -118,6 +133,30 @@ object RestBase {
       * @return The JSON
       */
     def fromJson(j: J): String = j.toString
+  }
+
+  /** A trait to be implemented as an implicit class to provide the implicit methods `execJ`
+    * and `getJ`. Note different to `JsonToStringHelper` in that you declare this as an implicit class
+    * vs `JsonToStringHelper` which you declare as an implicit value
+    *
+    * @tparam J The JSON type
+    */
+  trait StringToJsonHelper[J] {
+    /** Actually executes the operation (async)
+      *
+      * @param driver The driver which executes the operation
+      * @return A future containing the result of the operation as a JSON object
+      */
+    def execJ()(implicit driver: RestDriver): Future[J]
+
+    /** Actually executes the operation (sync)
+      *
+      * @param timeout Optionally, the amount of time to wait before failing
+      * @param driver The driver which executes the operation
+      * @return A future containing the result of the operation as a JSON object
+      */
+    def getJ(timeout: Duration = null)(implicit driver: RestDriver): J =
+      Await.result(this.execJ(), Option(timeout).getOrElse(driver.timeout))
   }
 
   /**
@@ -147,12 +186,17 @@ object RestBase {
     * - JS version, based on TODO
     */
   trait RestDriver {
-    /** Executes the designated operation
+    /** Executes the designated operation asynchronously
       *
       * @param baseDriverOp The operation to execute
       * @return A future returning the raw reply or throws `RequestException(code, body, message)`
       */
     def exec(baseDriverOp: BaseDriverOp): Future[String]
+
+    /** The default request-reply timeout for `getJ`, `getS` and `get`
+      * @return The default request-reply timeout for `getJ`, `getS` and `get`
+      */
+    def timeout: Duration
   }
 
   val DELETE = "DELETE"
@@ -214,22 +258,30 @@ object RestBase {
       */
     def h(h: String): this.type = withHeader(h)
 
-    /**
-      * Actually executes the operation
- *
+    /** Actually executes the operation (async)
+      *
       * @param driver The driver which executes the operation
       * @return A future containing the result of the operation as a string
       */
     def execS()(implicit driver: RestDriver): Future[String] = driver.exec(this)
 
+    /** Actually executes the operation (sync)
+      *
+      * @param timeout Optionally, the amount of time to wait before failing
+      * @param driver The driver which executes the operation
+      * @return A future containing the result of the operation as a string
+      */
+    def getS(timeout: Duration = null)(implicit driver: RestDriver): String =
+      Await.result(this.execS(), Option(timeout).getOrElse(driver.timeout))
+
     /** Retrieves the URL (including params) for the operation on the resource with the modifiers
- *
+      *
       * @return The URL (including params) for the operation on the resource with the modifiers
       */
     def getUrl: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") + mods.reverse.mkString("&")
 
     /** Retrieves the URL (no params) for the operation on the resource with the modifiers
- *
+      *
       * @return The URL (no params) for the operation on the resource with the modifiers
       */
     def getPath: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") + mods.reverse.mkString("&")

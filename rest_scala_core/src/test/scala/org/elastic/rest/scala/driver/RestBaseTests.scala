@@ -9,9 +9,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
-/**
-  * Created by Alex on 9/10/2016.
-  */
 object RestBaseTests extends TestSuite {
 
   val tests = this {
@@ -71,12 +68,12 @@ object RestBaseTests extends TestSuite {
       //TODO: keep one, move all the others to RestResourcesTest
       // Read with data
       {
-        val res = Await.result(`/$resource`("test").read(MockJson("test")).execS(), Duration("1 second"))
+        val res = `/$resource`("test").read(MockJson("test")).getS(Duration("1 second"))
         res ==> "GET: test"
       }
       // Write
       {
-        val res = Await.result(`/$resource`("test").write(MockJson("test")).execS(), Duration("1 second"))
+        val res = `/$resource`("test").write(MockJson("test")).getS(Duration("1 second"))
         res ==> "PUT: test"
       }
       // Delete with data
