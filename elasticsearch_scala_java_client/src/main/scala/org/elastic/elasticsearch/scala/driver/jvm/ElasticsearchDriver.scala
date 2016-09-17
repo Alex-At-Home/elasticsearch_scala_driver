@@ -148,6 +148,8 @@ case class ElasticsearchDriver
 
 case class MutableStartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriver {
 
+  override def timeout: Duration = Duration(esDriver.socketTimeout)
+
   private var runningEsDriver = new StartedElasticsearchDriver(esDriver)
 
   /** Creates a new unstarted `ElasticsearchDriver` with these settings that can be reconfigured
@@ -172,6 +174,8 @@ case class MutableStartedElasticsearchDriver(esDriver: ElasticsearchDriver) exte
 /** A started Elasticsearch Driver that can execute resource operations
   */
 class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriver {
+
+  override def timeout: Duration = Duration(esDriver.socketTimeout)
 
   /** Creates a new unstarted `ElasticsearchDriver` with these settings that can be reconfigured
     * @return An unstarted `ElasticsearchDriver` instance

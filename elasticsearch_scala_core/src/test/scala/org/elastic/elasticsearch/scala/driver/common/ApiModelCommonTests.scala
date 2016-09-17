@@ -138,7 +138,8 @@ object ApiModelCommonTests extends TestSuite {
       implicit val stringToTypedHelper = new StringToTypedHelper() {
         override def toType[T](s: String)(implicit ct: WeakTypeTag[T]): T = {
           if (ct.tpe =:= typeOf[ElasticsearchInfo]) {
-            ElasticsearchInfo(200, s, s, ElasticsearchInfo.VersionInfo("", "", "", build_snapshot = true, ""), "You know, for search")
+            ElasticsearchInfo(
+              s, s, ElasticsearchInfo.VersionInfo("", "", "", build_snapshot = true, ""), "You know, for search")
           }.asInstanceOf[T]
           else throw RestRequestException(s"Internal logic error: toType $ct vs ElasticsearchInfo")
         }
