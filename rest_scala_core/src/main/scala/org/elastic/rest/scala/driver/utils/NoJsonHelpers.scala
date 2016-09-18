@@ -21,8 +21,33 @@ object NoJsonHelpers {
     }
   }
 
+  /** Handles getting at a class wtihin an object...
+    * ...where the class is embedded in that object via a trait
+    *
+    * @param ct The type tag of the end class (ie inside an object)
+    * @tparam T The type of the object being retrieved
+    * @return A module mirror containing the end class
+    */
+  def getOuterInstanceMirror[T](ct: universe.WeakTypeTag[T]): scala.reflect.runtime.universe.InstanceMirror = {
+    // From: http://stackoverflow.com/questions/18056107/reflection-getting-module-mirror-from-inner-class-mixed-into-a-singleton-object
+    // (doesn't give you everything though because can't trivially get access to the module instance, see next SO post!)
+    val TypeRef(pre, _, _) = ct.tpe
+
+    // From: http://stackoverflow.com/questions/17012294/recovering-a-singleton-instance-via-reflection-from-sealed-super-trait-when-typ
+    // Getting closer
+    val classSymbol = pre.typeSymbol.asClass
+    val compSymbol = classSymbol.companionSymbol // (note using companion here fails)
+    val moduleSymbol = compSymbol.asModule
+    val moduleMirror = currentMirror.reflectModule(moduleSymbol)
+
+    // Now we can get an instance of the outer type
+    currentMirror.reflect(moduleMirror.instance)
+  }
+
   /** Given a class with a single constructor taking a string,
     * creates an instance of the class
+    *
+    * TODO: needs to handle trait version, see `CirceTypeModule` example
     *
     * @param s The input to the ctor
     * @param ct The weak type tag of the custom typed output object
@@ -37,8 +62,12 @@ object NoJsonHelpers {
         .head
 
     val ctorMirror =
-      currentMirror
-        .reflectClass(ct.tpe.typeSymbol.asClass)
+      scala.util.Try { currentMirror.reflectClass(ct.tpe.typeSymbol.asClass) }
+        .getOrElse {
+          val moduleMirror = getOuterInstanceMirror(ct)
+          val instanceMirror = currentMirror.reflect(moduleMirror.instance)
+          instanceMirror.reflectClass(ct.tpe.typeSymbol.asClass)
+        }
         .reflectConstructor(ctor)(s)
 
     ctorMirror.asInstanceOf[T]

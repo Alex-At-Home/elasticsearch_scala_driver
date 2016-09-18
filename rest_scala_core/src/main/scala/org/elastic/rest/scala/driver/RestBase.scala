@@ -82,10 +82,14 @@ object RestBase {
   /** Classes that want a custom overwrite as return types should inherit this trait
     * and implement `toType`, typically still use a JSON library, eg to wrap a JSON element
     *  and provide helpers
+    *
+    *  This is a pure trait, used by type handlers (like `CirceTypeModule` to decide when to override using
+    *  standard JSON processing; all children of it must support a constructor with a single string arg
+    *  (ie the response from the REST driver)
+    *
+    *  Type handlers (like `CirceTypeModule`) should use `NoJsonHelpers.createCustomTyped(s)`
     */
-  trait CustomStringToTyped {
-    //TODO: not sure how to do this? Assume there is a ctor that takes a pure string
-  }
+  trait CustomStringToTyped
 
   /** A trait to be implemented and used as an implicit to define how to go from a typed object
     * (eg case class) to a string, normally via JSON unless derived from `CustomTypedToString`
@@ -209,6 +213,8 @@ object RestBase {
     * gets mixed in with different traits derived from `Modifier`
     * Gets a concrete case class for each set of such `Modifier`s which are then
     * mixed into the the `RestResource` instances
+    *
+    * TODO: should we have a streaming version that returns an `InputStream[String/Byte[]]`?
     */
   trait BaseDriverOp {
     /** The resource that is being operated upon

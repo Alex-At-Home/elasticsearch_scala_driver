@@ -35,7 +35,7 @@ object ResourceOperations {
       * @return The driver operation
       */
     @MacroUtils.OpType("POST")
-    def write[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D =
+    def send[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D =
       macro MacroUtils.materializeOpImpl_JBody[D, J]
   }
 
@@ -68,7 +68,7 @@ object ResourceOperations {
       * @return The driver operation
       */
     @MacroUtils.OpType("POST")
-    override def write[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D with TypedOperation[O] =
+    override def send[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D with TypedOperation[O] =
       macro MacroUtils.materializeOpImpl_JBody_TypedOutput[D, J, O]
 
     /** Creates a driver operation

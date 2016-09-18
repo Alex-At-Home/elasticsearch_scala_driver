@@ -26,9 +26,11 @@ object SampleResources {
     */
   case class `/$resource`(uri: String) extends RestResource
     with RestReadable[NoParams] with RestWithDataReadable[NoParams] with RestCheckable[NoParams]
-    with RestWritable[NoParams] with RestNoDataWritable[NoParams]
+    with RestSendable[NoParams] with RestWritable[NoParams] with RestNoDataWritable[NoParams]
     with RestDeletable[NoParams] with RestWithDataDeletable[NoParams]
   {
     override lazy val location = uri
   }
+
+  //TODO have typed versions
 }

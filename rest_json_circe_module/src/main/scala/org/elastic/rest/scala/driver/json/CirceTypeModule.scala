@@ -40,23 +40,11 @@ object CirceTypeModule {
     val companionMirror =
       scala.util.Try { //(easy case, the inner class is in an object)
         currentMirror.reflectModule(ct.tpe.typeSymbol.companion.asModule)
-      }
-      .getOrElse { //(difficult case, the inner class is in a trait)
-        // From: http://stackoverflow.com/questions/18056107/reflection-getting-module-mirror-from-inner-class-mixed-into-a-singleton-object
-        // (doesn't give you everything though because can't trivially get access to the module instance, see next SO post!)
-        val TypeRef(pre, _, _) = ct.tpe
-
-        // From: http://stackoverflow.com/questions/17012294/recovering-a-singleton-instance-via-reflection-from-sealed-super-trait-when-typ
-        // Getting closer
-        val classSymbol = pre.typeSymbol.asClass
-        val compSymbol = classSymbol.companionSymbol // (note using companion here fails)
-        val moduleSymbol = compSymbol.asModule
-        val moduleMirror = currentMirror.reflectModule(moduleSymbol)
-
-        // Now we can get an instance of the outer type
-        val outerTypeInstance = currentMirror.reflect(moduleMirror.instance)
-        // And create an instance mirror from that:
-        outerTypeInstance.reflectModule(ct.tpe.typeSymbol.companion.asModule)
+      }.getOrElse {
+        //(difficult case, the inner class is in a trait)
+        val outerMirror = NoJsonHelpers.getOuterInstanceMirror(ct)
+        // Create an instance mirror for T from the outer module:
+        outerMirror.reflectModule(ct.tpe.typeSymbol.companion.asModule)
       }
 
     ct.tpe.companion.members.toList
@@ -114,9 +102,9 @@ object CirceTypeModule {
   /** Typed outputs */
   implicit val stringToTypedHelper = new StringToTypedHelper() {
     override def toType[T](s: String)(implicit ct: WeakTypeTag[T]): T = {
-      if (ct.tpe <:< typeOf[CustomStringToTyped])
+      if (ct.tpe <:< typeOf[CustomStringToTyped]) {
         NoJsonHelpers.createCustomTyped(s)
-
+      }
       else { // normal cases
         //(lazily build a registry of decoders)
         val decoder = decoderRegistry
