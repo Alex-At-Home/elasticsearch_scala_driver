@@ -65,7 +65,11 @@ object RestBaseTests extends TestSuite {
       implicit val myStringToJsonHelper = new JsonToStringHelper[MockJson] {
         override def fromJson(j: MockJson): String = j match { case MockJson(s) => s }
       }
+      implicit class DummyStringToJsonHelper(op: BaseDriverOp) extends StringToJsonHelper[MockJson] {
+        def execJ()(implicit driver: RestDriver): Future[MockJson] = driver.exec(op).map(MockJson)
+      }
       //TODO: keep one, move all the others to RestResourcesTest
+      //TODO: some execJ tests
       // Read with data
       {
         val res = `/$resource`("test").read(MockJson("test")).getS(Duration("1 second"))
