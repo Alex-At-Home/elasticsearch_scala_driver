@@ -6,8 +6,7 @@ import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.{BulkIndexO
 import org.elastic.rest.scala.driver.RestResources._
 import org.elastic.rest.scala.driver.RestBase._
 
-/**
-  * Misc Resources:
+/** Misc Resources:
   *  - (0) Root
   *  - (0) Indexes and Types
   *  - (1) Document

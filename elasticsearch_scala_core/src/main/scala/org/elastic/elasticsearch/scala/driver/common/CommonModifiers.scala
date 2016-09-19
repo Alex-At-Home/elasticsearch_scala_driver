@@ -3,7 +3,7 @@ package org.elastic.elasticsearch.scala.driver.common
 import org.elastic.rest.scala.driver.RestBase._
 
 /**
-  * Modifiers for Elasticearch resources
+  * Modifiers for Elasticearch resources - apply across most API categories
   */
 object CommonModifiers {
 
@@ -11,15 +11,73 @@ object CommonModifiers {
 
   /** (modifier - see method for details) */
   trait Pretty extends Modifier { self: BaseDriverOp =>
-    /** Controls the format of the response if returned as a string, else ignored
+    /** Controls the format of the response (newlines/indendation) if returned as a string, else ignored
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_pretty_results]]
       *
-      * @param b The prettiness
+      * @param b The prettiness (newlines/indendation)
       * @return The updated driver operation
       */
     def pretty(b: Boolean = true): this.type = self.withModifier(this.getModifier(b))
   }
 
+  /** (modifier - see method for details) */
+  trait Human extends Modifier { self: BaseDriverOp =>
+    /** Controls returning statistics as human readable strings instead of numbers
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_human_readable_output]]
+      *
+      * @param b Whether to return statistics as human readable stats
+      * @return The updated driver operation
+      */
+    def human(b: Boolean = true): this.type = self.withModifier(this.getModifier(b))
+  }
+
+  /** (modifier - see method for details) */
+  trait Case extends Modifier { self: BaseDriverOp =>
+    /** Controls returning JSON in `camelCase` instead of `snake_case`
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_result_casing]]
+      *
+      * @param b Whether to return JSON in camel case
+      * @return The updated driver operation
+      */
+    def `case`(b: Boolean = true): this.type = self.withModifier(this.getModifier(b))
+  }
+
+  /** (modifier - see method for details) */
+  trait FilterPath extends Modifier { self: BaseDriverOp =>
+    /** Removes unspecified fields from the JSON path
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_response_filtering]]
+      *
+      * @param filterPath A list of fields to include (supports `*` and `**` for wildcarding)
+      * @return The updated driver operation
+      */
+    def filter_path(filterPath: String*): this.type = self.withModifier(this.getModifier(filterPath))
+  }
+
+  /** (modifier - see method for details) */
+  trait FlatSettings extends Modifier { self: BaseDriverOp =>
+    /** Controls whether to return fields in flat mode (the fields themselves are returned in dot notation)
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_flat_settings]]
+      *
+      * @param b Whether to return the settings in flat mode
+      * @return The updated driver operation
+      */
+    def flat_settings(b: Boolean = true): this.type = self.withModifier(this.getModifier(b))
+  }
+
   // Control over write operations
+
+  /** (modifier - see method for details) */
+  trait Source extends Modifier { self: BaseDriverOp =>
+    /** Allows to post bodies for `POST` or `PUT` in the query params
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_request_body_in_query_string]]
+      *
+      * NOTE: not using this since it's more for libs that don't support bodies
+      *
+      * @param node The body to `POST`/`PUT`
+      * @return The updated driver operation
+      */
+    def source(node: String): this.type = self.withModifier(this.getModifier(node))
+  }
 
   /** (modifier - see method for details) */
   trait Routing extends Modifier { self: BaseDriverOp =>
@@ -146,16 +204,15 @@ object CommonModifiers {
   */
 object CommonModifierGroups {
 
-  //TODO: support common modifiers from here:
-  //https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html
-
   import CommonModifiers._
 
   /** No modifiers are supported for these parameters */
   trait NoParams extends BaseDriverOp
 
-  /** The standard set available to all ES resource */
-  trait StandardParams extends Pretty with BaseDriverOp
+  /** The standard set available to all ES resource
+    * See [[https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html]]
+    */
+  trait StandardParams extends Pretty with Human with Case with FilterPath with FlatSettings with BaseDriverOp
 
   /** Parameters controlling index operations */
   trait IndexWriteParams extends Version with OpType with Routing with Parent with Timeout with StandardParams
@@ -166,7 +223,7 @@ object CommonModifierGroups {
   /** Parameters controlling the data returned from document access */
   trait DocumentReadParams extends SourceBase with SourceInclude with SourceExclude with Fields with StandardParams
 
-  //TODO: this has changed in 2.4
+  //TODO: this has changed in 2.4, good test for versioning...
   /** Parameters controlling the data returned from document access */
   trait UpdateByQueryParams extends Conflict with StandardParams
 

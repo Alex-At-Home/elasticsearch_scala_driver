@@ -2,6 +2,7 @@ package org.elastic.elasticsearch.scala.driver.common
 
 import org.elastic.elasticsearch.driver.scala.ApiModel_common._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon._
+import org.elastic.elasticsearch.scala.driver.common.ApiModelSearch._
 
 /**
   * Contains a hierarchical model of the API resources
@@ -837,6 +838,19 @@ object ApiModelNavigationTree {
       */
     def _suggest = `/_all/$types/_suggest`(types:_*)
   }
+
+  // 0.3.1 Search navigation
+
+  case class `tree:/_search`() {
+    /**
+      * An intermediate result to use templates to search
+      *
+      * @return Templated search resource
+      */
+    def template = `/_search/template`()
+  }
+
+  //TODO: add docs from here?
 
   // 0.3.2 Search Templates
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template.html
