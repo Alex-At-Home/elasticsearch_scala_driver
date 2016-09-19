@@ -1,13 +1,13 @@
 package org.elastic.rest.scala.driver
 
 import org.elastic.rest.scala.driver.RestBase._
-import org.elastic.rest.scala.driver.util.SampleResources.`/$resource`
+import org.elastic.rest.scala.driver.util.SampleResources._
 import org.elastic.rest.scala.driver.utils.MockRestDriver
 import utest._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object RestBaseTests extends TestSuite {
 
@@ -26,7 +26,6 @@ object RestBaseTests extends TestSuite {
       ModTest().getListModifier(List("x", "y")) ==> "getListModifier=x,y"
     }
     "Check the location generator works" - {
-      case class `/`() extends RestResource
       case class `/$list`(list: Seq[String]) extends RestResource
       case class `/test/$variable/test2/$anotherVariable`
         (variable: String, anotherVariable: String) extends RestResource
@@ -44,11 +43,6 @@ object RestBaseTests extends TestSuite {
       }
       implicit val mockDriver = new MockRestDriver(handler)
 
-      case class MockJson(s: String)
-      implicit class StringToJsonHelper(op: BaseDriverOp) {
-        def execJ()(implicit driver: RestDriver): Future[MockJson] =
-          driver.exec(op).map(s => MockJson(s))
-      }
       val res = Await.result(`/$resource`("test").read().execJ(), Duration("1 second"))
       res ==> MockJson("""{"index":"test"}""")
     }
@@ -58,53 +52,160 @@ object RestBaseTests extends TestSuite {
           Future.successful(s"$method: $s")
         case BaseDriverOp(`/$resource`(index), method @ _, None, List(), List()) =>
           Future.successful(s"$method")
+
+        case BaseDriverOp(`/$resource_ut`(index), method @ _, None, List(), List()) =>
+          Future.successful(s"$method")
+        case BaseDriverOp(`/$resource_ut`(index), method @ _, Some(s @ _), List(), List()) =>
+          Future.successful(s"$method: $s")
+
+        case BaseDriverOp(`/$resource_tu`(index), method @ _, Some(s @ _), List(), List()) =>
+          Future.successful(s"$method: $s")
+
+        case BaseDriverOp(`/$resource_tt`(index), method @ _, Some(s @ _), List(), List()) =>
+          Future.successful(s"$method: $s")
       }
       implicit val mockDriver = new MockRestDriver(handler)
 
-      case class MockJson(s: String)
-      implicit val myStringToJsonHelper = new JsonToStringHelper[MockJson] {
-        override def fromJson(j: MockJson): String = j match { case MockJson(s) => s }
-      }
-      implicit class DummyStringToJsonHelper(op: BaseDriverOp) extends StringToJsonHelper[MockJson] {
-        def execJ()(implicit driver: RestDriver): Future[MockJson] = driver.exec(op).map(MockJson)
-      }
-      //TODO: keep one, move all the others to RestResourcesTest
-      //TODO: some execJ tests
+      // Coverage test for BaseDriverOps and related (getS / execS / getJ / execJ / get / exec)
+
       // Read with data
       {
-        val res = `/$resource`("test").read(MockJson("test")).getS(Duration("1 second"))
-        res ==> "GET: test"
+        val expected = "GET: test"
+        val res_ss = `/$resource`("test").read("test").getS(Duration("1 second"))
+        res_ss ==> expected
+        val res_js = `/$resource`("test").read(MockJson("test")).getS(Duration("1 second"))
+        res_js ==> expected
+        val res_sj = Await.result(`/$resource`("test").read("test").execS(), Duration("1 second"))
+        res_sj ==> expected
+        val res_jj = Await.result(`/$resource`("test").read(MockJson("test")).execJ(), Duration("1 second"))
+        res_jj.s ==> expected
+        val res_st = `/$resource_ut`("test").read("test").get(Duration("1 second"))
+        res_st.s ==> expected
+        val res_jt = Await.result(`/$resource_ut`("test").read(MockJson("test")).exec(), Duration("1 second"))
+        res_jt.s ==> expected
+        val res_ts = `/$resource_tt`("test").read(InWrapper("test")).getS(Duration("1 second"))
+        res_ts ==> expected
+        val res_tj = `/$resource_tt`("test").read(InWrapper("test")).getJ(Duration("1 second"))
+        res_tj.s ==> expected
+        val res_tt = `/$resource_tt`("test").read(InWrapper("test")).get(Duration("1 second"))
+        res_tt.s ==> expected
+      }
+      // Send
+      {
+        val expected = "POST: test"
+        val res_ss = `/$resource`("test").send("test").getS(Duration("1 second"))
+        res_ss ==> expected
+        val res_js = `/$resource`("test").send(MockJson("test")).getS(Duration("1 second"))
+        res_js ==> expected
+        val res_sj = Await.result(`/$resource`("test").send("test").execS(), Duration("1 second"))
+        res_sj ==> expected
+        val res_jj = Await.result(`/$resource`("test").send(MockJson("test")).execJ(), Duration("1 second"))
+        res_jj.s ==> expected
+        val res_st = `/$resource_ut`("test").send("test").get(Duration("1 second"))
+        res_st.s ==> expected
+        val res_jt = Await.result(`/$resource_ut`("test").send(MockJson("test")).exec(), Duration("1 second"))
+        res_jt.s ==> expected
+        val res_ts = `/$resource_tt`("test").send(InWrapper("test")).getS(Duration("1 second"))
+        res_ts ==> expected
+        val res_tj = `/$resource_tt`("test").send(InWrapper("test")).getJ(Duration("1 second"))
+        res_tj.s ==> expected
+        val res_tt = `/$resource_tt`("test").send(InWrapper("test")).get(Duration("1 second"))
+        res_tt.s ==> expected
       }
       // Write
       {
-        val res = `/$resource`("test").write(MockJson("test")).getS(Duration("1 second"))
-        res ==> "PUT: test"
+        val expected = "PUT: test"
+        val res_ss = `/$resource`("test").write("test").getS(Duration("1 second"))
+        res_ss ==> expected
+        val res_js = `/$resource`("test").write(MockJson("test")).getS(Duration("1 second"))
+        res_js ==> expected
+        val res_sj = Await.result(`/$resource`("test").write("test").execS(), Duration("1 second"))
+        res_sj ==> expected
+        val res_jj = Await.result(`/$resource`("test").write(MockJson("test")).execJ(), Duration("1 second"))
+        res_jj.s ==> expected
+        val res_st = `/$resource_ut`("test").write("test").get(Duration("1 second"))
+        res_st.s ==> expected
+        val res_jt = Await.result(`/$resource_ut`("test").write(MockJson("test")).exec(), Duration("1 second"))
+        res_jt.s ==> expected
+        val res_ts = `/$resource_tt`("test").write(InWrapper("test")).getS(Duration("1 second"))
+        res_ts ==> expected
+        val res_tj = `/$resource_tt`("test").write(InWrapper("test")).getJ(Duration("1 second"))
+        res_tj.s ==> expected
+        val res_tt = `/$resource_tt`("test").write(InWrapper("test")).get(Duration("1 second"))
+        res_tt.s ==> expected
       }
       // Delete with data
       {
-        val res = Await.result(`/$resource`("test").delete(MockJson("test")).execS(), Duration("1 second"))
-        res ==> "DELETE: test"
+        val expected = "DELETE: test"
+        val res_ss = `/$resource`("test").delete("test").getS(Duration("1 second"))
+        res_ss ==> expected
+        val res_js = `/$resource`("test").delete(MockJson("test")).getS(Duration("1 second"))
+        res_js ==> expected
+        val res_sj = Await.result(`/$resource`("test").delete("test").execS(), Duration("1 second"))
+        res_sj ==> expected
+        val res_jj = Await.result(`/$resource`("test").delete(MockJson("test")).execJ(), Duration("1 second"))
+        res_jj.s ==> expected
+        val res_st = `/$resource_ut`("test").delete("test").get(Duration("1 second"))
+        res_st.s ==> expected
+        val res_jt = Await.result(`/$resource_ut`("test").delete(MockJson("test")).exec(), Duration("1 second"))
+        res_jt.s ==> expected
+        val res_ts = `/$resource_tt`("test").delete(InWrapper("test")).getS(Duration("1 second"))
+        res_ts ==> expected
+        val res_tj = `/$resource_tt`("test").delete(InWrapper("test")).getJ(Duration("1 second"))
+        res_tj.s ==> expected
+        val res_tt = `/$resource_tt`("test").delete(InWrapper("test")).get(Duration("1 second"))
+        res_tt.s ==> expected
       }
       // (Check the operations without data while we're here)
       // Check
       {
-        val res = Await.result(`/$resource`("test").check().execS(), Duration("1 second"))
-        res ==> "HEAD"
+        val expected = "HEAD"
+        val res_s = Await.result(`/$resource`("test").check().execS(), Duration("1 second"))
+        val res_j = Await.result(`/$resource`("test").check().execJ(), Duration("1 second"))
+        val res_t = Await.result(`/$resource_ut`("test").check().exec(), Duration("1 second"))
+        res_s ==> expected
+        res_j.s ==> expected
+        res_t.s ==> expected
       }
       // Read
       {
-        val res = Await.result(`/$resource`("test").read().execS(), Duration("1 second"))
-        res ==> "GET"
+        val expected = "GET"
+        val res_s = Await.result(`/$resource`("test").read().execS(), Duration("1 second"))
+        val res_j = Await.result(`/$resource`("test").read().execJ(), Duration("1 second"))
+        val res_t = Await.result(`/$resource_ut`("test").read().exec(), Duration("1 second"))
+        res_s ==> expected
+        res_j.s ==> expected
+        res_t.s ==> expected
+      }
+      // Send
+      {
+        val expected = "POST"
+        val res_s = Await.result(`/$resource`("test").send().execS(), Duration("1 second"))
+        val res_j = Await.result(`/$resource`("test").send().execJ(), Duration("1 second"))
+        val res_t = Await.result(`/$resource_ut`("test").send().exec(), Duration("1 second"))
+        res_s ==> expected
+        res_j.s ==> expected
+        res_t.s ==> expected
       }
       // Write
       {
-        val res = Await.result(`/$resource`("test").write().execS(), Duration("1 second"))
-        res ==> "PUT"
+        val expected = "PUT"
+        val res_s = Await.result(`/$resource`("test").write().execS(), Duration("1 second"))
+        val res_j = Await.result(`/$resource`("test").write().execJ(), Duration("1 second"))
+        val res_t = Await.result(`/$resource_ut`("test").write().exec(), Duration("1 second"))
+        res_s ==> expected
+        res_j.s ==> expected
+        res_t.s ==> expected
       }
       // Delete
       {
-        val res = Await.result(`/$resource`("test").delete().execS(), Duration("1 second"))
-        res ==> "DELETE"
+        val expected = "DELETE"
+        val res_s = Await.result(`/$resource`("test").delete().execS(), Duration("1 second"))
+        val res_j = Await.result(`/$resource`("test").delete().execJ(), Duration("1 second"))
+        val res_t = Await.result(`/$resource_ut`("test").delete().exec(), Duration("1 second"))
+        res_s ==> expected
+        res_j.s ==> expected
+        res_t.s ==> expected
       }
     }
   }

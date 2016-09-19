@@ -5,98 +5,12 @@ import org.elastic.rest.scala.driver.utils.MacroUtils
 
 import scala.language.experimental.macros
 
-//TODO documentation link?
-//TODO: test cases
+//TODO include a trait that returns documentation (eg from embedded scaladoc)
 
 /** Contains the base operations that, associated with the modifiers, can be executed against the
   * REST resources
   */
-object ResourceOperations {
-
-  // Sendable
-
-  /** The base sendable resource (untyped in both input and output)
-    *
-    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
-    */
-  trait RestSendable[D <: BaseDriverOp] {
-    /** Creates a driver operation
-      *
-      * @param body The String data to write to the resource
-      * @return The driver operation
-      */
-    @MacroUtils.OpType("POST")
-    def send(body: String): D = macro MacroUtils.materializeOpImpl_Body[D]
-
-    /** Creates a driver operation
-      *
-      * @param body The JSON data to write to the resource
-      * @param jsonToStringHelper The implicit per-JSON-lib to generate
-      * @return The driver operation
-      */
-    @MacroUtils.OpType("POST")
-    def send[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D =
-      macro MacroUtils.materializeOpImpl_JBody[D, J]
-  }
-
-  /** The base sendable resource (typed input, untyped output)
-    *
-    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
-    * @tparam I The type of the input object
-    */
-  trait RestSendableTU[D <: BaseDriverOp, I] extends RestSendable[D] {
-    /** Creates a driver operation
-      *
-      * @param body The typed data to write to the resource
-      * @return The driver operation
-      */
-    @MacroUtils.OpType("POST")
-    def send(body: I)(implicit typeToStringHelper: TypedToStringHelper): D =
-      macro MacroUtils.materializeOpImpl_CBody[D, I]
-  }
-
-  /** The base sendable resource (untyped input, typed output)
-    *
-    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
-    * @tparam O The type of the output object
-    */
-  trait RestSendableUT[D <: BaseDriverOp, O] extends RestSendable[D] {
-    /** Creates a driver operation
-      *
-      * @param body The JSON data to write to the resource
-      * @param jsonToStringHelper The implicit per-JSON-lib to generate
-      * @return The driver operation
-      */
-    @MacroUtils.OpType("POST")
-    override def send[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D with TypedOperation[O] =
-      macro MacroUtils.materializeOpImpl_JBody_TypedOutput[D, J, O]
-
-    /** Creates a driver operation
-      *
-      * @param body The string data to write to the resource
-      * @return The driver operation
-      */
-    @MacroUtils.OpType("POST")
-    override def send(body: String): D with TypedOperation[O] =
-      macro MacroUtils.materializeOpImpl_Body_TypedOutput[D, O]
-  }
-
-  /** The base sendable resource (typed input, typed output)
-    *
-    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
-    * @tparam I The type of the input object
-    * @tparam O The type of the output object
-    */
-  trait RestSendableTT[D <: BaseDriverOp, I, O] extends RestSendableUT[D, O] {
-    /** Creates a driver operation
-      *
-      * @param body The data to write to the resource
-      * @return The driver operation
-      */
-    @MacroUtils.OpType("POST")
-    def send(body: I)(implicit typeToStringHelper: TypedToStringHelper): D with TypedOperation[O] =
-      macro MacroUtils.materializeOpImpl_CBody_TypedOutput[D, I, O]
-  }
+object RestResources {
 
   // Checking
 
@@ -124,7 +38,7 @@ object ResourceOperations {
       * @return The driver operation
       */
     @MacroUtils.OpType("HEAD")
-    override def check(): D = macro MacroUtils.materializeOpImpl_TypedOutput[D, O]
+    override def check(): D with TypedOperation[O] = macro MacroUtils.materializeOpImpl_TypedOutput[D, O]
   }
 
   // Readable
@@ -244,6 +158,22 @@ object ResourceOperations {
     @MacroUtils.OpType("GET")
     def read(body: I)(implicit typeToStringHelper: TypedToStringHelper): D with TypedOperation[O] =
       macro MacroUtils.materializeOpImpl_CBody_TypedOutput[D, I, O]
+  }
+
+  // Sendable
+
+  /** The base sendable resource (untyped in both input and output)
+    *
+    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
+    */
+  trait RestSendable[D <: BaseDriverOp] {
+    /** Creates a driver operation
+      *
+      * @param body The String data to write to the resource
+      * @return The driver operation
+      */
+    @MacroUtils.OpType("POST")
+    def send(body: String): D = macro MacroUtils.materializeOpImpl_Body[D]
 
     /** Creates a driver operation
       *
@@ -251,9 +181,97 @@ object ResourceOperations {
       * @param jsonToStringHelper The implicit per-JSON-lib to generate
       * @return The driver operation
       */
-    @MacroUtils.OpType("GET")
-    override def read[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D with TypedOperation[O] =
+    @MacroUtils.OpType("POST")
+    def send[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D =
       macro MacroUtils.materializeOpImpl_JBody[D, J]
+  }
+
+  /** The base sendable resource (typed input, untyped output)
+    *
+    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
+    * @tparam I The type of the input object
+    */
+  trait RestSendableTU[D <: BaseDriverOp, I] extends RestSendable[D] {
+    /** Creates a driver operation
+      *
+      * @param body The typed data to write to the resource
+      * @return The driver operation
+      */
+    @MacroUtils.OpType("POST")
+    def send(body: I)(implicit typeToStringHelper: TypedToStringHelper): D =
+      macro MacroUtils.materializeOpImpl_CBody[D, I]
+  }
+
+  /** The base sendable resource (untyped input, typed output)
+    *
+    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
+    * @tparam O The type of the output object
+    */
+  trait RestSendableUT[D <: BaseDriverOp, O] extends RestSendable[D] {
+    /** Creates a driver operation
+      *
+      * @param body The JSON data to write to the resource
+      * @param jsonToStringHelper The implicit per-JSON-lib to generate
+      * @return The driver operation
+      */
+    @MacroUtils.OpType("POST")
+    override def send[J](body: J)(implicit jsonToStringHelper: JsonToStringHelper[J]): D with TypedOperation[O] =
+      macro MacroUtils.materializeOpImpl_JBody_TypedOutput[D, J, O]
+
+    /** Creates a driver operation
+      *
+      * @param body The string data to write to the resource
+      * @return The driver operation
+      */
+    @MacroUtils.OpType("POST")
+    override def send(body: String): D with TypedOperation[O] =
+      macro MacroUtils.materializeOpImpl_Body_TypedOutput[D, O]
+  }
+
+  /** The base sendable resource (typed input, typed output)
+    *
+    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
+    * @tparam I The type of the input object
+    * @tparam O The type of the output object
+    */
+  trait RestSendableTT[D <: BaseDriverOp, I, O] extends RestSendableUT[D, O] {
+    /** Creates a driver operation
+      *
+      * @param body The data to write to the resource
+      * @return The driver operation
+      */
+    @MacroUtils.OpType("POST")
+    def send(body: I)(implicit typeToStringHelper: TypedToStringHelper): D with TypedOperation[O] =
+      macro MacroUtils.materializeOpImpl_CBody_TypedOutput[D, I, O]
+  }
+
+  // Sendable with no data
+
+  /** The base sendable type, for cases where no data is written (untyped output)
+    *
+    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
+    */
+  trait RestNoDataSendable[D <: BaseDriverOp] {
+    /** Creates a driver operation
+      *
+      * @return The driver operation
+      */
+    @MacroUtils.OpType("POST")
+    def send(): D = macro MacroUtils.materializeOpImpl[D]
+  }
+
+  /** The base sendable type, for cases where no data is written (typed output)
+    *
+    * @tparam D The group of modifier operations supported mixed into the `BaseDriverOp`
+    * @tparam O The type (case class) of the return operation
+    */
+  trait RestNoDataSendableT[D <: BaseDriverOp, O] extends RestNoDataSendable[D] { self: RestResource =>
+    /** Creates a typed driver operation
+      *
+      * @return The typed driver operation
+      */
+    @MacroUtils.OpType("POST")
+    override def send(): D with TypedOperation[O] = macro MacroUtils.materializeOpImpl_TypedOutput[D, O]
   }
 
   // Writable
@@ -395,7 +413,7 @@ object ResourceOperations {
       *
       * @return The typed driver operation
       */
-    @MacroUtils.OpType("PUT")
+    @MacroUtils.OpType("DELETE")
     override def delete(): D with TypedOperation[O] = macro MacroUtils.materializeOpImpl_TypedOutput[D, O]
   }
 

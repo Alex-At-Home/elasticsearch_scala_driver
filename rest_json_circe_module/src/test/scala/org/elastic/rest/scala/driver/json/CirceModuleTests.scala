@@ -9,7 +9,7 @@ import io.circe._
 import io.circe.generic.JsonCodec
 import org.elastic.rest.scala.driver.RestBase
 import org.elastic.rest.scala.driver.RestBase._
-import org.elastic.rest.scala.driver.ResourceOperations._
+import org.elastic.rest.scala.driver.RestResources._
 import org.elastic.rest.scala.driver.utils.MockRestDriver
 import org.elastic.rest.scala.driver.json.CirceTypeModule._
 import org.elastic.rest.scala.driver.json.CirceJsonModule._

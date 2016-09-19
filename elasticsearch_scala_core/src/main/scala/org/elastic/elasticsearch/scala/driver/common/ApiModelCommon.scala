@@ -3,7 +3,7 @@ package org.elastic.elasticsearch.scala.driver.common
 import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
 import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.{BulkIndexOps, ElasticsearchInfo}
-import org.elastic.rest.scala.driver.ResourceOperations._
+import org.elastic.rest.scala.driver.RestResources._
 import org.elastic.rest.scala.driver.RestBase._
 
 /**

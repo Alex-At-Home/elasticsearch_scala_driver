@@ -5,6 +5,8 @@ import org.elastic.rest.scala.driver.RestBase.{CustomTypedToString, RestRequestE
 import scala.reflect.runtime._
 import scala.reflect.runtime.universe._
 
+import scala.util.Try
+
 /**
   * Supports typed object for custom classes only, ie if no JSON library is used
   * for some reason
@@ -62,7 +64,7 @@ object NoJsonHelpers {
         .head
 
     val ctorMirror =
-      scala.util.Try { currentMirror.reflectClass(ct.tpe.typeSymbol.asClass) }
+      Try { currentMirror.reflectClass(ct.tpe.typeSymbol.asClass) }
         .getOrElse {
           val moduleMirror = getOuterInstanceMirror(ct)
           val instanceMirror = currentMirror.reflect(moduleMirror.instance)

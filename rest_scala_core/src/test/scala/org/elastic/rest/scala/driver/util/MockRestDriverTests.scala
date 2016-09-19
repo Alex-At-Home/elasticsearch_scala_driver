@@ -2,7 +2,7 @@ package org.elastic.rest.scala.driver.util
 
 import SampleResources._
 import org.elastic.rest.scala.driver.RestBase._
-import org.elastic.rest.scala.driver.ResourceOperations._
+import org.elastic.rest.scala.driver.RestResources._
 import org.elastic.rest.scala.driver.RestBase.BaseDriverOp
 import org.elastic.rest.scala.driver.utils.MockRestDriver
 import utest._
