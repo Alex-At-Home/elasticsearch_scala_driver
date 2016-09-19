@@ -25,19 +25,20 @@ object ElasticsearchDriverTests extends TestSuite {
     "Test ElasticsearchDriver builder operations" - {
       val driver = ElasticsearchDriver()
       val base = ElasticsearchDriver(
-        List("localhost:9200"), ssl = false, "1 second", "10 seconds", "10 seconds", 1, None, List())
+        List("http://localhost:9200"), "1 second", "10 seconds", "10 seconds", 1, None, List())
       driver ==> base
-      driver.withNewHostPorts(List("host1:9999")) ==> base.copy(hostPorts = List("host1:9999"))
-      driver.withNewHostPorts(List("host2:8888"), overwrite = false) ==>
-        base.copy(hostPorts = List("localhost:9200", "host2:8888"))
-      driver.withSsl(false) ==> base
-      driver.withSsl(true) ==> base.copy(ssl = true)
+      driver.withUrls("host1:9999") ==> base.copy(urls = List("host1:9999"))
+      driver.withNewUrls(overwrite = false, "host2:8888") ==>
+        base.copy(urls = List("http://localhost:9200", "host2:8888"))
       driver.withConnectTimeout("2 seconds") ==> base.copy(connectTimeout = "2 seconds")
       driver.withSocketTimeout("3 seconds") ==> base.copy(socketTimeout = "3 seconds")
       driver.withRetryTimeout("4 seconds") ==> base.copy(retryTimeout = "4 seconds")
       driver.withBasicAuth("u", "p") ==> base.copy(basicAuth = Some(("u", "p")))
       driver.withBasicAuth("u", "p").withoutBasicAuth() ==> base
       driver.withThreads(3) ==> base.copy(numThreads = 3)
+
+      //Check toString override
+      driver.withBasicAuth("u", "password").toString.contains("password") ==> false
 
       val h1 = "x-header1: val1"
       val h2 = "x-header2: val2"
@@ -65,7 +66,6 @@ object ElasticsearchDriverTests extends TestSuite {
       class TestService(context: ServerContext) extends HttpService(context) {
         def handle = {
           case request @ Get on Root if request.head.query.isEmpty =>
-            println("HEADERS " + request.head.headers + " .. " + request.head.url)
             val hasDefaultHeader = request.head.headers.firstValue("x-default").contains("test1")
             val hasRequestHeader = request.head.headers.firstValue("x-request").contains("test2")
             val basicAuth = request.head.headers.firstValue("Authorization").map(" " + _).getOrElse("")
@@ -82,7 +82,7 @@ object ElasticsearchDriverTests extends TestSuite {
       try {
         val driver =
           ElasticsearchDriver()
-            .withNewHostPorts(List(s"localhost:$port"))
+            .withUrls(s"localhost:$port")
             .start()
 
         val driver2 =
@@ -137,7 +137,7 @@ object ElasticsearchDriverTests extends TestSuite {
         }
         // Check SSL (should at make it fail!)
         {
-          val sslDriver = driver.createCopy.withSsl(true).start()
+          val sslDriver = driver.createCopy.withUrls(s"https://localhost:$port").start()
           val futureResult = sslDriver.exec(Versions.latest.`/`().read())
           val retVal = scala.util.Try { Await.ready(futureResult, Duration("1 second")) }
           retVal.isFailure ==> true
@@ -162,8 +162,6 @@ object ElasticsearchDriverTests extends TestSuite {
 
         // Method coverage
         Versions.latest.`/$uri`("test_index")
-
-        //TODO check all method/body comments (read-data, write, write-no-body, delete, delete-body, check)
       }
       finally {
         server.die()

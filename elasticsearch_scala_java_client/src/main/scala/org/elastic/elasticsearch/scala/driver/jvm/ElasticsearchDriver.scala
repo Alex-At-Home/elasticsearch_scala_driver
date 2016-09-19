@@ -17,12 +17,9 @@ import org.elasticsearch.client.{ResponseException, ResponseListener, RestClient
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.duration.Duration
 
-//TODO: remove password from toString....
-
 /** The Elasticsearch driver for the JVM
   * Run `start()` to provide a client that can be used to execute resource operations
-  * @param hostPorts A list of endpoints in the format "host:port"
-  * @param ssl If true (default: false) then will attempt to connect over SSL
+  * @param urls A list of URL endpoints in the format `"http://host:port"` or `"https://host:port"`
   * @param connectTimeout The connect timeout (human readable format, eg "1 second")
   * @param socketTimeout The socket timeout (human readable format, eg "10 seconds")
   * @param retryTimeout The retry timeout (human readable format, eg "10 seconds")
@@ -34,8 +31,7 @@ import scala.concurrent.duration.Duration
   *                       to be performed
   */
 case class ElasticsearchDriver
-  (hostPorts: List[String] = List("localhost:9200"),
-   ssl: Boolean = false,
+  (urls: List[String] = List("http://localhost:9200"),
    connectTimeout: String = "1 second",
    socketTimeout: String = "10 seconds",
    retryTimeout: String = "10 seconds",
@@ -44,27 +40,29 @@ case class ElasticsearchDriver
    defaultHeaders: List[String] = List(),
    advancedConfig: List[HttpAsyncClientBuilder => HttpAsyncClientBuilder] = List())
 {
+  override def toString =
+    scala.runtime.ScalaRunTime._toString(this)
+      .replace(basicAuth.toString, basicAuth.map(auth => (auth._1, "***********")).toString)
+
   /** Creates a new driver with different or appended host:ports
     *
-    * @param newHostPorts The new host:port
     * @param overwrite Whether to overwrite the existing settings, or append to them
+    * @param newUrls The new URLs to apply
     * @return A new copy of the driver with the updated settings
     */
-  def withNewHostPorts(newHostPorts: List[String], overwrite: Boolean = true): ElasticsearchDriver = {
+  def withNewUrls(overwrite: Boolean, newUrls: String*): ElasticsearchDriver = {
     val newConfig =
-      if (overwrite) newHostPorts
-      else hostPorts ++ newHostPorts
-    this.copy(hostPorts = newConfig)
+      if (overwrite) newUrls
+      else urls ++ newUrls
+    this.copy(urls = newConfig.toList)
   }
 
-  /** Change the SSL status
+  /** Creates a new driver with different host:ports
     *
-    * @param ssl Whether to connect over SSL
+    * @param newUrls The new URLs to overwrite
     * @return A new copy of the driver with the updated settings
     */
-  def withSsl(ssl: Boolean): ElasticsearchDriver = {
-    this.copy(ssl = ssl)
-  }
+  def withUrls(newUrls: String*): ElasticsearchDriver = withNewUrls(overwrite = true, newUrls:_*)
 
   /** Change the connect timeout
     *
@@ -148,8 +146,6 @@ case class ElasticsearchDriver
 
 case class MutableStartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriver {
 
-  override def timeout: Duration = Duration(esDriver.socketTimeout)
-
   private var runningEsDriver = new StartedElasticsearchDriver(esDriver)
 
   /** Creates a new unstarted `ElasticsearchDriver` with these settings that can be reconfigured
@@ -157,25 +153,33 @@ case class MutableStartedElasticsearchDriver(esDriver: ElasticsearchDriver) exte
     */
   def createCopy: ElasticsearchDriver = runningEsDriver.createCopy
 
-  /** Executes the designated operation
-    * @param baseDriverOp The operation to execute
-    * @return A future returning the raw reply or throws `RequestException(code, body, message)`
-    */
   override def exec(baseDriverOp: BaseDriverOp): Future[String] = runningEsDriver.exec(baseDriverOp)
 
+  override def timeout: Duration = Duration(esDriver.socketTimeout)
+
   /** Change in-place this driver to connect to the new settings object
-    * @param esDriver Contains a configuration set for an Elasticsearch connection
+    * @param newEsDriver Contains a configuration set for an Elasticsearch connection
+    * @return The started driver with the new settings (for chaining)
     */
-  def changeSettings(esDriver: ElasticsearchDriver): Unit = {
-    runningEsDriver = new StartedElasticsearchDriver(esDriver)
+  def changeSettings(newEsDriver: ElasticsearchDriver): this.type = {
+    runningEsDriver.close()
+    runningEsDriver = new StartedElasticsearchDriver(newEsDriver)
+    this
   }
+
+  /** Change in-place this driver to connect to the new settings object
+    * @param change The transform to apply to the existing driver settings
+    * @return The started driver with the new settings (for chaining)
+    */
+  def changeSettings(change: ElasticsearchDriver => ElasticsearchDriver): this.type = {
+    changeSettings(change(esDriver))
+  }
+
 }
 
 /** A started Elasticsearch Driver that can execute resource operations
   */
 class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriver {
-
-  override def timeout: Duration = Duration(esDriver.socketTimeout)
 
   /** Creates a new unstarted `ElasticsearchDriver` with these settings that can be reconfigured
     * @return An unstarted `ElasticsearchDriver` instance
@@ -191,10 +195,6 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriv
     */
   def rawClient(): RestClient = restClient
 
-  /** Executes the designated operation
-    * @param baseDriverOp The operation to execute
-    * @return A future returning the raw reply or throws `RequestException(code, body, message)`
-    */
   override def exec(baseDriverOp: BaseDriverOp): Future[String] = {
     val promise = Promise[String]
     val responseCallback = new ResponseListener() {
@@ -245,7 +245,7 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriv
 
       // SSL
       applySsl <- Some(noClientBuilder).map { chain =>
-        if (esDriver.ssl) {
+        if (esDriver.urls.exists(_.startsWith("https://"))) { // (any HTTPS endpoints)
           chain andThen ((clientBuilder: HttpAsyncClientBuilder) => {
             val sslContext = SSLContext.getInstance("TLS")
             sslContext.init(null, null, null) //(need to get working as per https://issues.apache.org/jira/browse/HTTPCLIENT-1211)
@@ -281,10 +281,10 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriv
     val client = for {
       _ <- Some()
       // URL
-      hostPorts = esDriver.hostPorts.map(_.split(":", 2)).map { case Array(host, port) =>
-        new HttpHost(host, port.toInt, if (esDriver.ssl) "https" else "http")
-      }
-      fromUrl <- Some(RestClient.builder(hostPorts:_*))
+      fromUrl <- Some(RestClient.builder(
+        esDriver.urls
+          .map(s => Some(s).filter(_.startsWith("http")).getOrElse(s"http://$s")) //(add "http://" to host:port)
+          .map(HttpHost.create):_*))
 
       // SSL handled below, under Client builder ops
 
@@ -328,6 +328,8 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriv
 
     client.map(_.build()).get
   }
+
+  override def timeout: Duration = Duration(esDriver.socketTimeout)
 }
 
 
