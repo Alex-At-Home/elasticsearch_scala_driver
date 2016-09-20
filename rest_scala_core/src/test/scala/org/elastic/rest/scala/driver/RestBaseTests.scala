@@ -15,15 +15,18 @@ object RestBaseTests extends TestSuite {
     "Check modifiers work" - {
 
       case class ModTest() extends Modifier {
-        def getStringModifier(s: String): String = this.getModifier(s)
+        def getStringModifier(s: String): String = Modifier.asString(this.getModifier(s))
 
-        def getBooleanModifier(b: Boolean): String = this.getModifier(b)
+        def getBooleanModifier(b: Boolean): String = Modifier.asString(this.getModifier(b))
 
-        def getListModifier(ss: List[String]): String = this.getModifier(ss)
+        def getListModifier(ss: List[String]): String = Modifier.asString(this.getModifier(ss))
+
+        def getSeqModifier(ss: String*): String = Modifier.asString(this.getModifier(ss))
       }
       ModTest().getStringModifier("x") ==> "getStringModifier=x"
       ModTest().getBooleanModifier(true) ==> "getBooleanModifier=true"
       ModTest().getListModifier(List("x", "y")) ==> "getListModifier=x,y"
+      ModTest().getSeqModifier("x", "y") ==> "getSeqModifier=x,y"
     }
     "Check the location generator works" - {
       case class `/$list`(list: Seq[String]) extends RestResource

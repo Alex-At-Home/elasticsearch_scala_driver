@@ -219,10 +219,9 @@ object SearchModifiers {
     def local(b: Boolean): this.type = self.withModifier(this.getModifier(b))
   }
 }
-/** Common groupings of modifiers relating to search resoources
+/** Common groupings of modifiers relating to search resources
   */
 object SearchModifierGroups {
-
   import SearchModifiers._
 
   /** Parameters controlling query operations - URI version */

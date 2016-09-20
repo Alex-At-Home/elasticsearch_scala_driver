@@ -173,13 +173,24 @@ object RestBase {
       * @param mod The value of the modifier
       * @return A string in the format "$key=$val"
       */
-    def getModifier(mod: Any): String = {
+    def getModifier(mod: Any): (String, Any) = {
       val methodName = Thread.currentThread().getStackTrace.apply(3).getMethodName
-      val paramVal = mod match {
-        case s: Seq[_] => s.mkString(",")
-        case toStr: AnyRef => toStr.toString
-      }
-      s"$methodName=$paramVal"
+      (methodName, mod)
+    }
+  }
+  /** Static util methods for `Modifier` */
+  object Modifier {
+    /** Converts a key,value pair into a URL parameter "k=v" format
+      * @param kv The contents of a modifier in (string, any) pair format
+      * @return A string representation in URL parameter format
+      */
+    def asString(kv: (String, Any)): String = kv match {
+      case (k, v) =>
+        val paramVal = v match {
+          case s: Seq[_] => s.mkString(",")
+          case toStr: AnyRef => toStr.toString
+        }
+        s"$k=$paramVal"
     }
   }
 
@@ -230,7 +241,7 @@ object RestBase {
     /** The set of modifications, typically filled in by the `Modifier` traits
       * (but modifiers can also be manually generated using `withModifier`)
       */
-    val mods: List[String]
+    val mods: List[(String, Any)]
 
     /** A set of per operation headers added to the request
       */
@@ -238,10 +249,10 @@ object RestBase {
 
     /** Add a generic string modifier to the driver operation
       *
-      * @param m The new modifier
+      * @param kv The key,value pair of the new modifier
       * @return The updated driver operation
       */
-    protected def withModifier(m: String): this.type
+    protected def withModifier(kv: (String, Any)): this.type
 
     /** Add a generic string header to the driver operation
       *
@@ -252,10 +263,11 @@ object RestBase {
 
     /** Add a generic string modifier to the driver operation
       *
-      * @param m The new modifier
+      * @param k The new modifier key
+      * @param v The new modifier value (should be AnyRef or List[AnyRef])
       * @return The updated driver operation
       */
-    def m(m: String): this.type = withModifier(m)
+    def m(k: String, v: Any): this.type = withModifier((k, v))
 
     /** Add a generic string header to the driver operation
       *
@@ -284,13 +296,15 @@ object RestBase {
       *
       * @return The URL (including params) for the operation on the resource with the modifiers
       */
-    def getUrl: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") + mods.reverse.mkString("&")
+    def getUrl: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") +
+      mods.map(Modifier.asString).reverse.mkString("&")
 
     /** Retrieves the URL (no params) for the operation on the resource with the modifiers
       *
       * @return The URL (no params) for the operation on the resource with the modifiers
       */
-    def getPath: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") + mods.reverse.mkString("&")
+    def getPath: String = resource.location + mods.headOption.map(_ => "?").getOrElse("") +
+      mods.map(Modifier.asString).reverse.mkString("&")
   }
   object BaseDriverOp {
     /** Extractor for `BaseDriverOp`

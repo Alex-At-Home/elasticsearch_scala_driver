@@ -1,12 +1,11 @@
 package org.elastic.elasticsearch.scala.driver.common
 
-import org.elastic.elasticsearch.driver.scala.ApiModel_common._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelSearch._
+import org.elastic.elasticsearch.scala.driver.common.ApiModelIndices._
 
 /**
-  * Contains a hierarchical model of the API resources
-  * TODO: replace the $s with actual fields index/field/type sort of thing
+  * Contains a hierarchical model of the Elasticsearch API resources
   */
 object ApiModelNavigationTree {
 
@@ -165,7 +164,7 @@ object ApiModelNavigationTree {
       *
       * @return A resource to manipulate index templates
       */
-    def _template = `/_template`()
+    def _template = `/tree:_template`()
 
     /**
       * A resource to retrieve cluster statistics
@@ -989,7 +988,6 @@ object ApiModelNavigationTree {
     def $(fields: String*) = `/_all/_mapping/$types/field/$fields`(types:_*)(fields:_*)
   }
 
-
   /**
     * Get the mapping for 1+ indexes and all types - intermediate step
     */
@@ -1302,5 +1300,97 @@ object ApiModelNavigationTree {
       * @return The term vectors resource
       */
     def _termvectors = `/$index/$type/$id/_termvectors`(index, `type`, id)
+  }
+
+  /**
+    * Intermediate step to various template operations
+    */
+  case class `tree:/_template`()
+  {
+    /**
+      * Returns the index template resource for this template
+      *
+      * @param template The template name
+      * @return The index template resource for this template
+      */
+    def $(template: String) = `/_template/$template`(template: String)
+
+    /**
+      * Returns the read index template resource for multiple indexes
+      *
+      * @param firstTemplate The 1st template name (must be 2+ across all params)
+      * @param secondTemplate The 2nd template name (must be 2+ across all params)
+      * @param otherTemplates The other templates name (must be 2+ across all params, ie 0+ here)
+      * @return The index template resource for this template
+      */
+    def $(firstTemplate: String, secondTemplate: String, otherTemplates: String*) =
+    `/_template/$templates`(Seq(firstTemplate, secondTemplate) ++ otherTemplates:_*)
+  }
+
+  // 0.3.8 Indices stats
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html
+
+  /**
+    * Intermediate step for navigating index statistics resources
+    */
+  trait `tree:/_stats`
+  {
+    /**
+      * Restricts the list to the specified statistics
+      *
+      * @param statsGroups The list of statistics groups
+      * @return The resource restricted to the set of specified stats groups
+      */
+    def $(statsGroups: String*) = `/_stats/$statsGroups`(statsGroups:_*)
+  }
+
+  /**
+    * Intermediate step for navigating index statistics resources
+    */
+  trait `tree:/_stats/$statsGroups`
+  {
+    def statsGroups: Seq[String]
+
+    /**
+      * Restricts the list to the specified fields
+      *
+      * @param fieldGroups The list of fields for these statistics groups
+      * @return The resource restricted to the set of specified stats groups
+      */
+    def $(fieldGroups: String*) = `/_stats/$statsGroups/$fieldGroups`(statsGroups, fieldGroups)
+  }
+
+  /**
+    * Intermediate step for navigating index statistics resources
+    */
+  trait `tree:/$indexes/_stats`
+  {
+    def indexes: Seq[String]
+
+    /**
+      * Restricts the list to the specified statistics
+      *
+      * @param statsGroups The list of statistics groups
+      * @return The resource restricted to the set of specified stats groups
+      */
+    def $(statsGroups: String*) = `/$indexes/_stats/$statsGroups`(indexes, statsGroups)
+  }
+
+  /**
+    * Intermediate step for navigating index statistics resources
+    */
+  trait `tree:/$indexes/_stats/$statsGroups`
+  {
+    def indexes: Seq[String]
+    def statsGroups: Seq[String]
+
+    /**
+      * Restricts the list to the specified fields
+      *
+      * @param fieldGroups The list of fields for these statistics groups
+      * @return The resource restricted to the set of specified stats groups
+      */
+    def $(fieldGroups: String*) =
+    `/$indexes/_stats/$statsGroups/$fieldGroups`(indexes, statsGroups, fieldGroups)
   }
 }

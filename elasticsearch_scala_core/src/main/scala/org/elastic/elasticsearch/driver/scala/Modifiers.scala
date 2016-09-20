@@ -355,33 +355,6 @@ object Modifiers {
 
   // Index and field stats modifiers
 
-  /**
-    * TODO
-    */
-  trait Groups extends Modifier { self: BaseDriverOp =>
-    def `?groups=`(groups: String*): this.type = self.withModifier(s"?groups=${groups.mkString(",")}")
-  }
-
-  /**
-    * TODO
-    */
-  trait Types extends Modifier { self: BaseDriverOp =>
-    def `?types=`(types: String*): this.type = self.withModifier(s"?types=${types.mkString(",")}")
-  }
-
-  /**
-    * Defines if (field or index) stats should be returned on a per index level or on a cluster wide level.
-    * Valid values are indices and cluster (default).
-    */
-  trait Level extends Modifier { self: BaseDriverOp =>
-    /**
-      * Defines if field stats should be returned on a per index level or on a cluster wide level.
-      * Valid values are indices and cluster (default).
- *
-      * @param level indices or cluster
-      */
-    def `?level=`(level: String): this.type = self.withModifier(s"?level=$level")
-  }
 
   // Recovery Modifiers
 

@@ -63,10 +63,10 @@ object MacroUtils {
     import c.universe._
     q"""
       case class Internal
-      (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+      (resource: RestResource, op: String, body: Option[String], mods: List[(String, Any)], headers: List[String])
         extends $ctt
       {
-        override def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods, headers)
+        override def withModifier(kv: (String, Any)): this.type = Internal(resource, op, body, kv :: mods, headers)
           .asInstanceOf[this.type]
         override def withHeader(h: String): this.type = Internal(resource, op, body, mods, h :: headers)
           .asInstanceOf[this.type]
@@ -100,13 +100,13 @@ object MacroUtils {
 
     q"""
       case class Internal
-      (resource: RestResource, op: String, body: Option[String], mods: List[String], headers: List[String])
+      (resource: RestResource, op: String, body: Option[String], mods: List[(String, Any)], headers: List[String])
         extends $ctt with TypedOperation[$cto]
       {
         override val ct: scala.reflect.runtime.universe.WeakTypeTag[$cto] =
           scala.reflect.runtime.universe.weakTypeTag[$cto]
 
-        override def withModifier(m: String): this.type = Internal(resource, op, body, m :: mods, headers)
+        override def withModifier(kv: (String, Any)): this.type = Internal(resource, op, body, kv :: mods, headers)
           .asInstanceOf[this.type]
         override def withHeader(h: String): this.type = Internal(resource, op, body, mods, h :: headers)
           .asInstanceOf[this.type]

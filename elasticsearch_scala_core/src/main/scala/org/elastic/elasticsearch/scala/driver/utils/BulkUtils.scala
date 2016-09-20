@@ -41,14 +41,23 @@ object BulkUtils {
   private def addBodyBlock(body: Option[String]) = body.map(b => s"\n$b").getOrElse("")
 
   /** Add modifiers to the JSON
-    * TODO: need ugh need to make mods be a list of String/Any and the only convert at the end?
     *
     * @param mods The list of modifiers
     * @return A list of JSON-ified mods
     */
-  private def addMods(mods: List[String]): List[String] = mods.map(_.split("=", 2)).flatMap {
-    case Array(key, value) => List(s""" "$key": "$value" """)
-    case _ => List()
+  private def addMods(mods: List[(String, Any)]): List[String] = mods.map {
+    case (key, value: List[_]) => s""" "$key": ${value.map(modValueToString)} """
+    case (key, other: Any) =>  s""" "$key": ${modValueToString(other)} """
+  }
+
+  /** JSON-ify a single value
+    *
+    * @param v A JSON-ifiable atomic type
+    * @return A JSON-ified string
+    */
+  private def modValueToString(v: Any): String = v match {
+    case s: String => s""""$s""""
+    case o: Any => s"""$o"""
   }
 
   /** Convert a list of strings into a block of JSON clauses
