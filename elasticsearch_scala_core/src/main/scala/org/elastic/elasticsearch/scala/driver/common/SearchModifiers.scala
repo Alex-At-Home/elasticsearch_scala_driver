@@ -194,26 +194,73 @@ object SearchModifiers {
     def terminate_after(n: Integer): this.type = self.withModifier(this.getModifier(n))
   }
 
+  // Query modifiers - shard information
 
+  /** (modifier - see method for details) */
+  trait Preference extends Modifier { self: BaseDriverOp =>
+    /** Controls on which shard the explain is executed.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-shards.html#_all_parameters]]
+      *
+      * @param preference Controls on which shard the explain is executed.
+      * @return The updated driver operation
+      */
+    def preference(preference: String): this.type = self.withModifier(this.getModifier(preference))
+  }
+
+  /** (modifier - see method for details) */
+  trait Local extends Modifier { self: BaseDriverOp =>
+    /** A boolean value whether to read the cluster state locally in order to determine where shards are allocated
+      * instead of using the Master node’s cluster state.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-shards.html#_all_parameters]]
+      *
+      * @param b Whether the cluster state is read locally
+      * @return The updated driver operation
+      */
+    def local(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+  }
 }
-/** Common groupings of modifiers
+/** Common groupings of modifiers relating to search resoources
   */
 object SearchModifierGroups {
+
   import SearchModifiers._
 
   /** Parameters controlling query operations - URI version */
   trait UriQueryParams
     extends Query with DefaultField with Analyzer with LowercaseExpandedTerms
-    with AnalyzeWildcard with DefaultOperator with Lenient with Explain
-    with SourceBase with SourceInclude with SourceExclude
-    with Fields with Sort with TrackScores with Timeout with TerminateAfter
-    with From with Size with SearchType
+      with AnalyzeWildcard with DefaultOperator with Lenient with Explain
+      with SourceBase with SourceInclude with SourceExclude
+      with Fields with Sort with TrackScores with Timeout with TerminateAfter
+      with From with Size with SearchType
       with StandardParams
 
   /** Parameters controlling query operations - standard (body) version */
   trait QueryParams
     extends Timeout with RequestCache with TerminateAfter
-    with From with Size with SearchType
-    with StandardParams
-}
+      with From with Size with SearchType
+      with StandardParams
 
+  /** Parameters controlling information about which shards are affected by a query */
+  trait QuerySearchShardsParams extends Routing with Preference with Local with StandardParams
+
+  /** Parameters controlling various other query resources (than the URI/body search ones) */
+  trait MiscQueryParams
+    extends Query with DefaultField with Analyzer with LowercaseExpandedTerms
+      with AnalyzeWildcard with DefaultOperator with Lenient
+      with StandardParams
+
+  /** Parameters controlling counting docs that match a query */
+  trait QueryCountParams
+    extends Query with DefaultField with Analyzer with LowercaseExpandedTerms
+      with AnalyzeWildcard with DefaultOperator with Lenient
+      with TerminateAfter
+      with StandardParams
+
+  /** Parameters controlling the query explain resources */
+  trait QueryExplainParams
+    extends Query with DefaultField with Analyzer with LowercaseExpandedTerms
+      with AnalyzeWildcard with DefaultOperator with Lenient
+      with SourceBase with SourceInclude with SourceExclude
+      with Fields with Routing with Parent with Preference
+      with StandardParams
+}

@@ -677,42 +677,42 @@ object ApiModelNavigationTree {
       *
       * @return The search resource
       */
-    def _search = `/$indexes/$types/_search`(indexes:_*)(types:_*)
+    def _search = `/$indexes/$types/_search`(indexes, types)
 
     /**
       * The multi search resource
       *
       * @return The multi search resource
       */
-    def _msearch = `/$indexes/$types/_msearch`(indexes:_*)(types:_*)
+    def _msearch = `/$indexes/$types/_msearch`(indexes, types)
 
     /**
       * The search-and-count resource
       *
       * @return The search and count resource
       */
-    def _count = `/$indexes/$types/_count`(indexes:_*)(types:_*)
+    def _count = `/$indexes/$types/_count`(indexes, types)
 
     /**
       * The query validation resource
       *
       * @return The query validation resource
       */
-    def _validate = `/$indexes/$types/_validate`(indexes:_*)(types:_*)
+    def _validate = `/$indexes/$types/_validate`(indexes, types)
 
     /**
       * The query explanation resource
       *
       * @return The query explanation resource
       */
-    def _explain = `/$indexes/$types/_explain`(indexes:_*)(types:_*)
+    def _explain = `/$indexes/$types/_explain`(indexes, types)
 
     /**
       * Suggests search terms over the specified indexes and types
       *
       * @return The suggest resource
       */
-    def _suggest = `/$indexes/$types/_suggest`(indexes:_*)(types:_*)
+    def _suggest = `/$indexes/$types/_suggest`(indexes, types)
   }
 
   trait `tree:/$index/$type`
@@ -754,41 +754,41 @@ object ApiModelNavigationTree {
       *
       * @return The search resource
       */
-    def _search = `/$indexes/$types/_search`(index)(`type`)
+    def _search = `/$indexes/$types/_search`(Seq(index), Seq(`type`))
 
     /**
       * The multi search resource
       *
       * @return The multi search resource
       */
-    def _msearch = `/$indexes/$types/_msearch`(index)(`type`)
+    def _msearch = `/$indexes/$types/_msearch`(Seq(index), Seq(`type`))
 
     /**
       * The search-and-count resource
       *
       * @return The search and count resource
       */
-    def _count = `/$indexes/$types/_count`(index)(`type`)
+    def _count = `/$indexes/$types/_count`(Seq(index), Seq(`type`))
 
     /**
       * The query validation resource
       *
       * @return The query validation resource
       */
-    def _validate = `/$indexes/$types/_validate`(index)(`type`)
+    def _validate = `/$indexes/$types/_validate`(Seq(index), Seq(`type`))
 
     /**
       * The query explanation resource
       *
       * @return The query explanation resource
       */
-    def _explain = `/$indexes/$types/_explain`(index)(`type`)
+    def _explain = `/$indexes/$types/_explain`(Seq(index), Seq(`type`))
     /**
       * The search suggest resource
       *
       * @return The search suggest resource
       */
-    def _suggest = `/$indexes/$types/_suggest`(index)(`type`)
+    def _suggest = `/$indexes/$types/_suggest`(Seq(index), Seq(`type`))
   }
 
   /**
@@ -850,8 +850,6 @@ object ApiModelNavigationTree {
     def template = `/_search/template`()
   }
 
-  //TODO: add docs from here?
-
   // 0.3.2 Search Templates
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template.html
 
@@ -859,6 +857,11 @@ object ApiModelNavigationTree {
     * Intermediate class to render search templates
     */
   case class `tree:/_render`() {
+    /**
+      * An intermediate result to use templates to search
+      *
+      * @return Templated search resource
+      */
     def template = `/_render/template`()
   }
 
@@ -922,7 +925,6 @@ object ApiModelNavigationTree {
 
   /**
     * Gets the mapping for all indexes and 1+ types - intermediate step
-    *
     */
   trait `tree:/_all/_mapping/$types`
   {
