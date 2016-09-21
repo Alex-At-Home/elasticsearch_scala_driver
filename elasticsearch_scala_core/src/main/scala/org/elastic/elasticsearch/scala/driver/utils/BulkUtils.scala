@@ -46,8 +46,10 @@ object BulkUtils {
     * @return A list of JSON-ified mods
     */
   private def addMods(mods: List[(String, Any)]): List[String] = mods.map {
-    case (key, value: List[_]) => s""" "$key": ${value.map(modValueToString)} """
-    case (key, other: Any) =>  s""" "$key": ${modValueToString(other)} """
+    case (key, value: List[_]) =>
+      s""" "$key": [ ${value.map(modValueToString).mkString(",")} ] """
+    case (key, other: Any) =>
+      s""" "$key": ${modValueToString(other)} """
   }
 
   /** JSON-ify a single value

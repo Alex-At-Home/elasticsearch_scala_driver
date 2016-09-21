@@ -164,7 +164,7 @@ object ApiModelNavigationTree {
       *
       * @return A resource to manipulate index templates
       */
-    def _template = `/tree:_template`()
+    def _template = new `tree:/_template`()
 
     /**
       * A resource to retrieve cluster statistics
@@ -840,7 +840,7 @@ object ApiModelNavigationTree {
 
   // 0.3.1 Search navigation
 
-  case class `tree:/_search`() {
+  class `tree:/_search`() {
     /**
       * An intermediate result to use templates to search
       *
@@ -1305,7 +1305,7 @@ object ApiModelNavigationTree {
   /**
     * Intermediate step to various template operations
     */
-  case class `tree:/_template`()
+  class `tree:/_template`
   {
     /**
       * Returns the index template resource for this template

@@ -20,7 +20,7 @@ object ApiModelCommonTests extends TestSuite {
 
       api.`/`().read().pretty(true).getUrl ==> "/?pretty=true"
 
-      api.`/$uri`("/a").read().m("param=val").getUrl ==> "/a?param=val"
+      api.`/$uri`("/a").read().m("param", "val").getUrl ==> "/a?param=val"
       api.`/$uri`("/a").read("TEST").getUrl ==> "/a"
       api.`/$uri`("/a").check().getUrl ==> "/a"
       api.`/$uri`("/a").write("TEST").getUrl ==> "/a"
@@ -90,13 +90,13 @@ object ApiModelCommonTests extends TestSuite {
       import NoJsonHelpers.NoJsonTypedToStringHelper
 
       val bulkOps = BulkIndexOps(List(
-        api.`/$index/$type`("index", "type").write("TEST1").m("param=tp"),
-        api.`/$index/$type/$id`("index", "type", "id").write("TEST2").m("param=tp"),
+        api.`/$index/$type`("index", "type").write("TEST1").m("param", "tp"),
+        api.`/$index/$type/$id`("index", "type", "id").write("TEST2").m("param", true),
         api.`/$index/$type/$id`("", "type", "id").write("TEST3"),
         api.`/$index/$type/$id`("index", "", "id").delete(),
         api.`/$index/$type/$id`("", "", "id").write("TEST5"),
-        api.`/$uri`("index").write("TEST6").m("param=tp"),
-        api.`/$index/$type/$id/_update`("index", "type", "id").write("TEST7").m("param=tp")
+        api.`/$uri`("index").write("TEST6").m("param", 3),
+        api.`/$index/$type/$id/_update`("index", "type", "id").write("TEST7").m("param", List("l1", "l2"))
       ))
 
       def formatVals(s: String) =
@@ -105,16 +105,16 @@ object ApiModelCommonTests extends TestSuite {
       val expected = formatVals(
         s"""{ "index": {  "_index": "index" ,  "_type": "type", "param": "tp"  } }
             |TEST1
-            |{ "index": {  "_index": "index" ,  "_type": "type", "_id": "id", "param": "tp"  } }
+            |{ "index": {  "_index": "index" ,  "_type": "type", "_id": "id", "param": true  } }
             |TEST2
             |{ "index": {  "_type": "type", "_id": "id"  } }
             |TEST3
             |{ "delete": {  "_index": "index", "_id": "id"  } }
             |{ "index": {  "_id": "id"  } }
             |TEST5
-            |{ "index": {  "_index": "index", "param": "tp"  } }
+            |{ "index": {  "_index": "index", "param": 3  } }
             |TEST6
-            |{ "update": {  "_index": "index", "_type": "type", "_id": "id", "param": "tp"  } }
+            |{ "update": {  "_index": "index", "_type": "type", "_id": "id", "param": ["l1", "l2"]  } }
             |TEST7
             |"""
           .stripMargin.stripSuffix("\n"))
@@ -130,7 +130,7 @@ object ApiModelCommonTests extends TestSuite {
       object latest extends ApiModelCommon
 
       val handler: PartialFunction[BaseDriverOp, Future[String]] = {
-        case BaseDriverOp(latest.`/`(), _, None, List("pretty=true"), _) =>
+        case BaseDriverOp(latest.`/`(), _, None, List(("pretty", true)), _) =>
           Future.successful("test_cluster")
       }
       implicit val mockDriver = new MockRestDriver(handler)

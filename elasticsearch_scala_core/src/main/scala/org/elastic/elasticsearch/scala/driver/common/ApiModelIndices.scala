@@ -6,9 +6,6 @@ import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
 import org.elastic.elasticsearch.scala.driver.common.IndicesModifierGroups._
 
-//TODO remove once done
-import org.elastic.elasticsearch.driver.scala.OperationGroups._
-
 /** Resources to monitor and manage indices in Elasticsearch
   */
 trait ApiModelIndices {
@@ -386,8 +383,7 @@ trait ApiModelIndices {
       with RestReadable[IndexStatsParams]
       with RestResource
 
-  /**
-    * Returns high level aggregation and index level stats for all indices and specific stats groups
+  /** Returns high level aggregation and index level stats for all indices and specific stats groups
     *
     * @param statsGroups The list of statistics groups
     */
@@ -396,8 +392,7 @@ trait ApiModelIndices {
       with RestReadable[IndexStatsParams]
       with RestResource
 
-  /**
-    * Returns high level aggregation and index level stats for all indices and specific stats groups
+  /** Returns high level aggregation and index level stats for all indices and specific stats groups
     * and with filtered fields
     *
     * @param statsGroups The list of statistics groups
@@ -407,8 +402,7 @@ trait ApiModelIndices {
     extends RestReadable[IndexStatsParams]
       with RestResource
 
-  /**
-    * Returns high level aggregation and index level stats for specified indices
+  /** Returns high level aggregation and index level stats for specified indices
     *
     * @param indexes The indexes over which to restrict the stats
     */
@@ -417,8 +411,7 @@ trait ApiModelIndices {
       with RestReadable[IndexStatsParams]
       with RestResource
 
-  /**
-    * Returns high level aggregation and index level stats for specified indices and specific stats groups
+  /** Returns high level aggregation and index level stats for specified indices and specific stats groups
     *
     * @param indexes The indexes over which to restrict the stats
     * @param statsGroups The list of statistics groups
@@ -428,8 +421,7 @@ trait ApiModelIndices {
       with RestReadable[IndexStatsParams]
       with RestResource
 
-  /**
-    * Returns high level aggregation and index level stats for specified indices and specific stats groups
+  /** Returns high level aggregation and index level stats for specified indices and specific stats groups
     * and with filtered fields
     *
     * @param indexes The indexes over which to restrict the stats
@@ -444,243 +436,256 @@ trait ApiModelIndices {
   // 3.9 Segments
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html
 
-  /**
-    * Provide low level segments information that a Lucene index (shard level) is built with.
+  /** Provide low level segments information that a Lucene index (shard level) is built with.
     * Allows to be used to provide more information on the state of a shard and an index, possibly optimization
     * information, data "wasted" on deletes, and so on.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html Docs]]
     */
   case class `/_segments`()
-    extends VerboseSimpleReadable
+    extends RestReadable[VerboseStandardParams]
       with RestResource
 
-  /**
-    * Provide low level segments information that a Lucene index (shard level) is built with.
+  /**  Provide low level segments information that a Lucene index (shard level) is built with.
     * Allows to be used to provide more information on the state of a shard and an index, possibly optimization
     * information, data "wasted" on deletes, and so on.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html Docs]]
     */
   case class `/_all/_segments`()
-    extends VerboseSimpleReadable
+    extends RestReadable[VerboseStandardParams]
       with RestResource
 
-  /**
-    * Provide low level segments information that a Lucene index (shard level) is built with.
+  /** Provide low level segments information that a Lucene index (shard level) is built with.
     * Allows to be used to provide more information on the state of a shard and an index, possibly optimization
     * information, data "wasted" on deletes, and so on.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html Docs]]
+    *
     * @param indexes The indexes over which to check the segment information
     */
   case class `/$indexes/_segments`(indexes: String*)
-    extends VerboseSimpleReadable
+    extends RestReadable[VerboseStandardParams]
       with RestResource
 
   // 3.10 Indices recovery
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html
 
-  /**
-    * The indices recovery API provides insight into on-going index shard recoveries.
+  /** The indices recovery API provides insight into on-going index shard recoveries.
     * Recovery status may be reported for specific indices, or cluster-wide.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html Docs]]
     */
   case class `/_recovery`()
-    extends IndexRecoveryReadable
+    extends RestReadable[IndexRecoveryParams]
       with RestResource
 
-  /**
-    * The indices recovery API provides insight into on-going index shard recoveries.
+  /** The indices recovery API provides insight into on-going index shard recoveries.
     * Recovery status may be reported for specific indices, or cluster-wide.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html Docs]]
     */
   case class `/_all/_recovery`()
-    extends IndexRecoveryReadable
+    extends RestReadable[IndexRecoveryParams]
       with RestResource
 
-  /**
-    * The indices recovery API provides insight into on-going index shard recoveries.
+  /** The indices recovery API provides insight into on-going index shard recoveries.
     * Recovery status may be reported for specific indices, or cluster-wide.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html Docs]]
+    *
     * @param indexes The indexes over which to check the segment information
     */
   case class `/$indexes/_recovery`(indexes: String*)
-    extends IndexRecoveryReadable
+    extends RestReadable[IndexRecoveryParams]
       with RestResource
 
   // 2.11 Shard stores
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-shards-stores.html
 
-  /**
-    * Provides store information for shard copies of indices. Store information reports on which nodes shard copies
+  /** Provides store information for shard copies of indices. Store information reports on which nodes shard copies
     * exist, the shard copy version, indicating how recent they are, and any exceptions encountered while opening
     * the shard index or from earlier engine failure.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-shards-stores.html Docs]]
     */
   case class `/_shard_stores`()
-    extends ShardStoreReadable
+    extends RestReadable[IndexShardStoreParams]
       with RestResource
 
-  /**
-    * Provides store information for shard copies of indices. Store information reports on which nodes shard copies
+  /** Provides store information for shard copies of indices. Store information reports on which nodes shard copies
     * exist, the shard copy version, indicating how recent they are, and any exceptions encountered while opening
     * the shard index or from earlier engine failure.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-shards-stores.html Docs]]
     */
   case class `/_all/_shard_stores`()
-    extends ShardStoreReadable
+    extends RestReadable[IndexShardStoreParams]
       with RestResource
 
-  /**
-    * Provides store information for shard copies of indices. Store information reports on which nodes shard copies
+  /** Provides store information for shard copies of indices. Store information reports on which nodes shard copies
     * exist, the shard copy version, indicating how recent they are, and any exceptions encountered while opening
     * the shard index or from earlier engine failure.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-shards-stores.html Docs]]
+    *
     * @param indexes The indexes over which to read the shards
     */
   case class `/$indexes/_shard_stores`(indexes: String*)
-    extends ShardStoreReadable
+    extends RestReadable[IndexShardStoreParams]
       with RestResource
 
   // 2.12 Clear cache
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html
 
-  /**
-    * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+  //TODO: not sure what to make of Specific caches can be cleaned explicitly by setting query, fielddata or request. needs to investigate further..
+
+  /** The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html Docs]]
     */
   case class `/_cache/clear`()
-    extends ShardStoreReadable
+    extends RestNoDataSendable[IndexCacheClearParams]
       with RestResource
 
-  /**
-    * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+  /** The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html Docs]]
     */
   case class `/_all/_cache/clear`()
-    extends ShardStoreReadable
+    extends RestNoDataSendable[IndexCacheClearParams]
       with RestResource
 
-  /**
-    * The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+  /** The clear cache API allows to clear either all caches or specific cached associated with one or more indices.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html Docs]]
+    *
     * @param indexes The indexes over which to read the shards
     */
   case class `/$indexes/_cache/clear`(indexes: String*)
-    extends ShardStoreReadable
+    extends RestNoDataSendable[IndexCacheClearParams]
       with RestResource
 
   // 2.13 Flush
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-flush.html
 
-  /**
-    * The flush API allows to flush one or more indices through an API. The flush process of an index basically frees
+  /** The flush API allows to flush one or more indices through an API. The flush process of an index basically frees
     * memory from the index by flushing data to the index storage and clearing the internal transaction log.
     * By default, Elasticsearch uses memory heuristics in order to automatically trigger flush operations as required
     * in order to clear memory.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-flush.html Docs]]
     */
   case class `/_flush`()
-    extends FlushNoDataWritable
+    extends RestNoDataSendable[IndexFlushParams]
       with RestResource
 
-  /**
-    * The flush API allows to flush one or more indices through an API. The flush process of an index basically frees
+  /** The flush API allows to flush one or more indices through an API. The flush process of an index basically frees
     * memory from the index by flushing data to the index storage and clearing the internal transaction log.
     * By default, Elasticsearch uses memory heuristics in order to automatically trigger flush operations as required
     * in order to clear memory.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-flush.html Docs]]
     */
   case class `/_all/_flush`()
-    extends FlushNoDataWritable
+    extends RestNoDataSendable[IndexFlushParams]
       with RestResource
 
-  /**
-    * The flush API allows to flush one or more indices through an API. The flush process of an index basically frees
+  /** The flush API allows to flush one or more indices through an API. The flush process of an index basically frees
     * memory from the index by flushing data to the index storage and clearing the internal transaction log.
     * By default, Elasticsearch uses memory heuristics in order to automatically trigger flush operations as required
     * in order to clear memory.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-flush.html Docs]]
+    *
     * @param indexes The indexes over which to read the shards
     */
   case class `/$indexes/_flush`(indexes: String*)
-    extends FlushNoDataWritable
+    extends RestNoDataSendable[IndexFlushParams]
       with RestResource
 
   // 2.14 Refresh
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-refresh.html
 
-  /**
-    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+  /** The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
     * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
     * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-refresh.html Docs]]
     */
   case class `/_refresh`()
-    extends SimpleNoDataWritable
+    extends RestNoDataSendable[StandardParams]
       with RestResource
 
-  /**
-    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+  /** The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
     * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
     * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-refresh.html Docs]]
     */
   case class `/_all/_refresh`()
-    extends SimpleNoDataWritable
+    extends RestNoDataSendable[StandardParams]
       with RestResource
 
   /**
     * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
     * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
     * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-refresh.html Docs]]
+    *
     * @param indexes The indexes over which to read the shards
     */
   case class `/$indexes/_refresh`(indexes: String*)
-    extends SimpleNoDataWritable
+    extends RestNoDataSendable[StandardParams]
       with RestResource
 
   // 2.15 Force Merge
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html
 
-  /**
-    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+  /** The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
     * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
     * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html Docs]]
     */
   case class `/_forcemerge`()
-    extends ForceMergeNoDataWritable
+    extends RestNoDataSendable[IndexForceMergeParams]
       with RestResource
 
-  /**
-    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+  /** The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
     * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
     * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html Docs]]
     */
   case class `/_all/_forcemerge`()
-    extends ForceMergeNoDataWritable
+    extends RestNoDataSendable[IndexForceMergeParams]
       with RestResource
 
-  /**
-    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+  /** The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
     * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
     * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html Docs]]
+    *
     * @param indexes The indexes over which to read the shards
     */
   case class `/$indexes/_forcemerge`(indexes: String*)
-    extends ForceMergeNoDataWritable
+    extends RestNoDataSendable[IndexForceMergeParams]
       with RestResource
 
   // 2.16 Upgrade
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-upgrade.html
 
-  /**
-    * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
+  /** The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
     * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
     * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-upgrade.html Docs]]
     */
   case class `/_upgrade`()
-    extends UpgradeNoDataWritable
+    extends RestNoDataSendable[IndexUpgradeParams]
       with RestResource
 
   /**
     * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
     * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
     * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-upgrade.html Docs]]
     */
   case class `/_all/_upgrade`()
-    extends UpgradeNoDataWritable
+    extends RestNoDataSendable[IndexUpgradeParams]
       with RestResource
 
   /**
     * The refresh API allows to explicitly refresh one or more index, making all operations performed since the last
     * refresh available for search. The (near) real-time capabilities depend on the index engine used. For example,
     * the internal one requires refresh to be called, but by default a refresh is scheduled periodically.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-upgrade.html Docs]]
+    *
     * @param indexes The indexes over which to read the shards
     */
   case class `/$indexes/_upgrade`(indexes: String*)
-    extends UpgradeNoDataWritable
+    extends RestNoDataSendable[IndexUpgradeParams]
       with RestResource
 }
 object ApiModelIndices extends ApiModelIndices
