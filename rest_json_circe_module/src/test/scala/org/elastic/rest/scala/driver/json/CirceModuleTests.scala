@@ -70,6 +70,22 @@ object CirceModuleTests extends TestSuite {
       TestApi.`/data_model`().write(TestDataModel.OtherTestWrite("write")).getJ(Duration("1 second")) ==>
         parse("""{ "test": "written" }""").getOrElse(Json.Null)
     }
+    "Test custom typed extensions" - {
+      val handler: PartialFunction[BaseDriverOp, Future[String]] = {
+        case BaseDriverOp(TestApi.`/custom_typed`(), RestBase.PUT,
+        Some("""{"testWrite":"write"}"""), List(), List()) =>
+          Future.successful("""{ "test": "written" }""")
+        case BaseDriverOp(TestApi.`/custom_typed`(), RestBase.GET, _, List(), List()) =>
+          Future.successful("""{ "testRead": "get" }""")
+      }
+      implicit val mockDriver = new MockRestDriver(handler)
+
+      TestApi.`/custom_typed`().read().get() ==> TestDataModel.TestWrapperRead("""{ "testRead": "get" }""")
+
+      TestApi.`/custom_typed`().write(TestDataModel.TestWrapperWrite("write")).getJ() ==>
+        parse("""{ "test": "written" }""").getOrElse(Json.Null)
+
+    }
   }
 }
 
@@ -87,6 +103,11 @@ object TestDataModel extends TestDataModelComponent{
 trait TestDataModelComponent {
   @JsonCodec case class OtherTestRead(testRead: String)
   @JsonCodec case class OtherTestWrite(testWrite: String)
+
+  case class TestWrapperWrite(s: String) extends CustomTypedToString {
+    def fromTyped: String = s"""{"testWrite":"$s"}"""
+  }
+  case class TestWrapperRead(s: String) extends CustomStringToTyped
 }
 
 /** Sample API for testing CIRCE integration
@@ -108,4 +129,8 @@ trait TestApiExtensions {
       with RestWritableTU[BaseDriverOp, TestDataModel.OtherTestWrite]
       with RestResource
 
+  case class `/custom_typed`()
+    extends RestReadableT[BaseDriverOp, TestDataModel.TestWrapperRead]
+      with RestWritableTU[BaseDriverOp, TestDataModel.TestWrapperWrite]
+      with RestResource
 }
