@@ -320,7 +320,8 @@ object RestBase {
   trait RestResource { self: Product =>
 
     /** Internal implementation to retrieve the location of the resource, the first time `location` is accessed
-      * Replaces $xxx with the correspodning case class parameter, in order
+      * Replaces $xxx with the corresponding case class parameter, in order
+      * TODO: handle a=$a in a segment, eg `/_all/_settings/name=$name/`
       *
       * @return The location of the resource
       */

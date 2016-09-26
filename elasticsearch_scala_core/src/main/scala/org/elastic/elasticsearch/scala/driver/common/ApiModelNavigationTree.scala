@@ -29,7 +29,7 @@ object ApiModelNavigationTree {
       * @param `index` The index
       * @return An intermediate or final step of the API model
       */
-    def $(index: String) = `/$uri`(index)
+    def $(index: String) = `/$index`(index)
 
     /**
       * Sub-resources that support multiple (>1) indexes
@@ -164,7 +164,7 @@ object ApiModelNavigationTree {
       *
       * @return A resource to manipulate index templates
       */
-    def _template = new `tree:/_template`()
+    def _template = `/_template`()
 
     /**
       * A resource to retrieve cluster statistics
@@ -207,6 +207,13 @@ object ApiModelNavigationTree {
       * @return An intermediate step to retrieve cache resources
       */
     def _flush = `/_flush`()
+
+    /**
+      * A resource to refresh one or more indices
+      *
+      * @return A resource to refresh one or more indices
+      */
+    def _refresh = `/_refresh`()
 
     /**
       * A resource to force the merging of segments within indexes
@@ -358,6 +365,13 @@ object ApiModelNavigationTree {
       * @return An intermediate step to retrieve cache resources
       */
     def _flush = `/$indexes/_flush`(Seq(index) ++ otherIndexes:_*)
+
+    /**
+      * A resource to refresh one or more indices
+      *
+      * @return A resource to refresh one or more indices
+      */
+    def _refresh = `/$indexes/_refresh`(Seq(index) ++ otherIndexes:_*)
 
     /**
       * A resource to force the merging of segments within indexes
@@ -551,6 +565,13 @@ object ApiModelNavigationTree {
     def _flush = `/$indexes/_flush`(index)
 
     /**
+      * A resource to refresh one or more indices
+      *
+      * @return A resource to refresh one or more indices
+      */
+    def _refresh = `/$indexes/_refresh`(index)
+
+    /**
       * A resource to force the merging of segments within indexes
       *
       * @return A resource to force the merging of segments within indexes
@@ -650,6 +671,13 @@ object ApiModelNavigationTree {
     def _flush = `/_all/_flush`()
 
     /**
+      * A resource to refresh one or more indices
+      *
+      * @return A resource to refresh one or more indices
+      */
+    def _refresh = `/_all/_refresh`()
+
+    /**
       * A resource to force the merging of segments within indexes
       *
       * @return A resource to force the merging of segments within indexes
@@ -718,7 +746,16 @@ object ApiModelNavigationTree {
   {
     def index: String
     def `type`: String
+
     // Navigation
+
+    /**
+      * A resource for indexing new documents
+      *
+      * @param id The id of the document
+      * @return The resource for indexing new documents
+      */
+    def $(id: String) = `/$index/$type/$id`(index, `type`, id)
 
     /**
       * The multi-get resource
@@ -959,7 +996,7 @@ object ApiModelNavigationTree {
       * @param fields The set of fields for which to retrieve the mapping
       * @return The get field mapping resource
       */
-    def $(fields: String*) = `/_mapping/$types/field/$fields`(types:_*)(fields:_*)
+    def $(fields: String*) = `/_mapping/$types/field/$fields`(types, fields)
   }
   /**
     * an intermediate step leading to the get field mapping resources
@@ -985,7 +1022,7 @@ object ApiModelNavigationTree {
       * @param fields The set of fields for which to retrieve the mapping
       * @return The get field mapping resource
       */
-    def $(fields: String*) = `/_all/_mapping/$types/field/$fields`(types:_*)(fields:_*)
+    def $(fields: String*) = `/_all/_mapping/$types/field/$fields`(types, fields)
   }
 
   /**
@@ -1038,7 +1075,7 @@ object ApiModelNavigationTree {
       * @param fields The set of fields for which to retrieve the mapping
       * @return The get field mapping resource
       */
-    def $(fields: String*) = `/$indexes/_mapping/field/$fields`(indexes:_*)(fields:_*)
+    def $(fields: String*) = `/$indexes/_mapping/field/$fields`(indexes, fields)
   }
   /**
     * an intermediate step leading to the get field mapping resources
@@ -1053,7 +1090,7 @@ object ApiModelNavigationTree {
       * @param fields The set of fields for which to retrieve the mapping
       * @return The get field mapping resource
       */
-    def $(fields: String*) = `/$indexes/_mapping/$types/field/$fields`(indexes:_*)(types:_*)(fields:_*)
+    def $(fields: String*) = `/$indexes/_mapping/$types/field/$fields`(indexes, types, fields)
   }
 
   // 0.3.4 Index aliases
@@ -1069,7 +1106,7 @@ object ApiModelNavigationTree {
       * @param aliases The specified alias names
       * @return The check/retrieve _alias resource for the specified aliases
       */
-    def $(aliases: String) = `/_alias/$aliases`(aliases)
+    def $(aliases: String*) = `/_alias/$aliases`(aliases:_*)
     /**
       * Returns the check/retrieve _alias resource for all aliases
       *
@@ -1090,7 +1127,7 @@ object ApiModelNavigationTree {
       * @param alias The specified single alias name
       * @return The check/retrieve/delete/write _alias resource for the specified aliases
       */
-    def $(alias: String) = `/$indexes/_alias/$alias`(indexes:_*)(alias)
+    def $(alias: String) = `/$indexes/_alias/$alias`(indexes, alias)
     /**
       * Returns the check/retrieve _alias resource for the specified aliases
       *
@@ -1100,7 +1137,7 @@ object ApiModelNavigationTree {
       * @return
       */
     def $(firstAlias: String, secondAlias: String, otherAliases: String*) =
-      `/$indexes/_alias/$aliases`(indexes:_*)(Seq(firstAlias, secondAlias) ++ otherAliases:_*)
+      `/$indexes/_alias/$aliases`(indexes, Seq(firstAlias, secondAlias) ++ otherAliases)
 
     /**
       * Returns the check/retrieve _alias resource for all aliases
@@ -1226,7 +1263,7 @@ object ApiModelNavigationTree {
       * @param name The filter glob string vs index names
       * @return The filtered resource for getting the index settings
       */
-    def $(name: String) = `/$indexes/_settings/name=$name`(indexes:_*)(name)
+    def $(name: String) = `/$indexes/_settings/name=$name`(indexes, name)
   }
 
   // 0.2.12 Clear cache

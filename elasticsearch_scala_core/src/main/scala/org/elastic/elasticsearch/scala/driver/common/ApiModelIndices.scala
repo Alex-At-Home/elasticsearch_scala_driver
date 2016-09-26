@@ -115,7 +115,7 @@ trait ApiModelIndices {
     *
     * @param indexes The indexes over which the field mappings are retrieved
     */
-  case class `/$indexes/_mapping/field/$fields`(indexes: String*)(fields: String*)
+  case class `/$indexes/_mapping/field/$fields`(indexes: Seq[String], fields: Seq[String])
     extends RestReadable[StandardParams]
       with RestResource
 
@@ -125,7 +125,8 @@ trait ApiModelIndices {
     * @param indexes The indexes over which the field mappings are retrieved
     * @param types The types over which the field mappings are retrieved
     */
-  case class `/$indexes/_mapping/$types/field/$fields`(indexes: String*)(types: String*)(fields: String*)
+  case class `/$indexes/_mapping/$types/field/$fields`
+  (indexes: Seq[String], types: Seq[String], fields: Seq[String])
     extends RestReadable[StandardParams]
       with RestResource
 
@@ -141,7 +142,7 @@ trait ApiModelIndices {
     *
     * @param types The types over which the field mappings are retrieved
     */
-  case class `/_mapping/$types/field/$fields`(types: String*)(fields: String*)
+  case class `/_mapping/$types/field/$fields`(types: Seq[String], fields: Seq[String])
     extends RestReadable[StandardParams]
       with RestResource
 
@@ -157,7 +158,7 @@ trait ApiModelIndices {
     *
     * @param types The types over which the field mappings are retrieved
     */
-  case class `/_all/_mapping/$types/field/$fields`(types: String*)(fields: String*)
+  case class `/_all/_mapping/$types/field/$fields`(types: Seq[String], fields: Seq[String])
     extends RestReadable[StandardParams]
       with RestResource
 
@@ -176,7 +177,7 @@ trait ApiModelIndices {
     *
     * @param aliases The names of the aliases (including globs)
     */
-  case class `/_alias/$aliases`(aliases: String)
+  case class `/_alias/$aliases`(aliases: String*)
     extends RestReadable[StandardParams]
       with RestCheckable[StandardParams]
       with RestResource
@@ -195,7 +196,7 @@ trait ApiModelIndices {
     * @param indexes The list of indexes (including globs)
     * @param alias The specific alias
     */
-  case class `/$indexes/_alias/$alias`(indexes: String*)(alias: String)
+  case class `/$indexes/_alias/$alias`(indexes: Seq[String], alias: String)
     extends RestReadable[StandardParams]
       with RestCheckable[StandardParams]
       with RestNoDataWritable[StandardParams]
@@ -208,7 +209,7 @@ trait ApiModelIndices {
     * @param indexes The list of indexes (including globs)
     * @param aliases The names of the aliases (including globs)
     */
-  case class `/$indexes/_alias/$aliases`(indexes: String*)(aliases: String*)
+  case class `/$indexes/_alias/$aliases`(indexes: Seq[String], aliases: Seq[String])
     extends RestReadable[StandardParams]
       with RestCheckable[StandardParams]
       with RestDeletable[StandardParams]
@@ -279,6 +280,9 @@ trait ApiModelIndices {
   case class `/_settings/name=$name`(name: String)
     extends RestReadable[StandardParams]
       with RestResource
+  {
+    override lazy val location: String = s"/_settings/name=$name"
+  }
 
   /** Read or Update the settings for the entire cluster
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-settings.html Read Docs]]
@@ -298,6 +302,9 @@ trait ApiModelIndices {
   case class `/_all/_settings/name=$name`(name: String)
     extends RestReadable[StandardParams]
       with RestResource
+  {
+    override lazy val location: String = s"/_all/_settings/name=$name"
+  }
 
   /** Read or Update the settings for one or more clusters
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-settings.html Read Docs]]
@@ -317,9 +324,12 @@ trait ApiModelIndices {
     * @param indexes The indexes to read
     * @param name The filter glob string vs index names
     */
-  case class `/$indexes/_settings/name=$name`(indexes: String*)(name: String)
+  case class `/$indexes/_settings/name=$name`(indexes: Seq[String], name: String)
     extends RestReadable[StandardParams]
       with RestResource
+  {
+    override lazy val location: String = s"/${indexes.mkString(",")}/_settings/name=$name"
+  }
 
   // 3.6 Analyze
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-analyze.html
@@ -384,6 +394,7 @@ trait ApiModelIndices {
       with RestResource
 
   /** Returns high level aggregation and index level stats for all indices and specific stats groups
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html Docs]]
     *
     * @param statsGroups The list of statistics groups
     */
@@ -394,6 +405,7 @@ trait ApiModelIndices {
 
   /** Returns high level aggregation and index level stats for all indices and specific stats groups
     * and with filtered fields
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html Docs]]
     *
     * @param statsGroups The list of statistics groups
     * @param fieldGroups The list of fields for these statistics groups
@@ -403,6 +415,7 @@ trait ApiModelIndices {
       with RestResource
 
   /** Returns high level aggregation and index level stats for specified indices
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html Docs]]
     *
     * @param indexes The indexes over which to restrict the stats
     */
@@ -412,6 +425,7 @@ trait ApiModelIndices {
       with RestResource
 
   /** Returns high level aggregation and index level stats for specified indices and specific stats groups
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html Docs]]
     *
     * @param indexes The indexes over which to restrict the stats
     * @param statsGroups The list of statistics groups
@@ -423,6 +437,7 @@ trait ApiModelIndices {
 
   /** Returns high level aggregation and index level stats for specified indices and specific stats groups
     * and with filtered fields
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html Docs]]
     *
     * @param indexes The indexes over which to restrict the stats
     * @param statsGroups The list of statistics groups

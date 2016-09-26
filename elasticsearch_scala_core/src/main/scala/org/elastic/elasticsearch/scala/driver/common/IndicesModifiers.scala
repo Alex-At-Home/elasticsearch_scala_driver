@@ -159,10 +159,10 @@ object IndicesModifiers {
       * Defaults to simply checking if a merge needs to execute, and if so, executes it.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html]]
       *
-      * @param b Whether the only ongoing recoveries are displayed (default: false)
+      * @param n The number of segments to merge to. To fully merge the index, set it to 1.
       * @return The updated driver operation
       */
-    def max_num_segments(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    def max_num_segments(n: Integer): this.type = self.withModifier(this.getModifier(n))
   }
 
   /** (modifier - see method for details) */
