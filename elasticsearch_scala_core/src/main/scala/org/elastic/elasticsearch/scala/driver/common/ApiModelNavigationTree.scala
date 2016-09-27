@@ -3,6 +3,7 @@ package org.elastic.elasticsearch.scala.driver.common
 import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelSearch._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelIndices._
+import org.elastic.elasticsearch.scala.driver.common.ApiModelCluster._
 
 /**
   * Contains a hierarchical model of the Elasticsearch API resources
@@ -228,6 +229,13 @@ object ApiModelNavigationTree {
       * @return A resource to upgrade indices to higher versions of Lucene
       */
     def _upgrade = `/_upgrade`()
+
+    /**
+      * An intermediate resource to obtain cluster-related metadata
+      *
+      * @return An intermediate resource to obtain cluster-related metadata
+      */
+    def _cluster = `tree:/_cluster`()
   }
 
   /**
@@ -1429,5 +1437,109 @@ object ApiModelNavigationTree {
       */
     def $(fieldGroups: String*) =
     `/$indexes/_stats/$statsGroups/$fieldGroups`(indexes, statsGroups, fieldGroups)
+  }
+
+  // 0.4 Cluster navigation
+
+  /**
+    * An intermediate resource to obtain cluster-related metadata
+    */
+  case class `tree:/_cluster`() {
+
+    /**
+      * Obtain a cluster health resource
+      * @return a cluster health resource
+      */
+    def health = `/_cluster/health`()
+
+    /**
+      * Obtain a cluster state resource
+      * @return a cluster state resource
+      */
+    def state = `/_cluster/state`()
+
+    /**
+      * Obtain a cluster stats resource
+      * @return a cluster stats resource
+      */
+    def stats = `/_cluster/stats`()
+
+    /**
+      * Obtain a cluster pending tasks resource
+      * @return a cluster pending tasks resource
+      */
+    def pending_tasks = `/_cluster/pending_tasks`()
+
+    /**
+      * Obtain a cluster reroute resource
+      * @return a cluster reroute resource
+      */
+    def reroute = `/_cluster/reroute`()
+
+    /**
+      * Obtain a cluster settings resource
+      * @return a cluster settings resource
+      */
+    def settings = `/_cluster/settings`()
+  }
+
+  /**
+    * An intermediate resource to obtain cluster-related metadata
+    */
+  trait `tree:/_cluster/health` {
+
+    /**
+      * Obtain a cluster health resource for the specified indexes
+      * @param indexes The specified indexes over which to obtain cluster health information
+      * @return a cluster health resource for the specified indexes
+      */
+    def $(indexes: String*) = `/_cluster/health/$indexes`(indexes)
+  }
+
+  /**
+    * An intermediate resource to obtain cluster-related metadata
+    */
+  trait `tree:/_cluster/state` {
+
+    /**
+      * Obtain an intermediate resource to get cluster state related information
+      * @param metrics A comma separated list of `"version"`, `"master_node"`, `"nodes"`, `"routing_table"`, `"metadata"`,
+      *                `"blocks"`
+      * @return an intermediate cluster state resource for the specified metrics
+      */
+    def $(metrics: String*) = `/_cluster/state/$metrics`(metrics)
+
+    /**
+      * Obtain an intermediate resource to get cluster state related information
+      * @return an intermediate cluster state resource for all metrics
+      */
+    def _all = `tree:/_cluster/state/_all`()
+  }
+
+  /**
+    * An intermediate resource to obtain cluster-related metadata
+    */
+  case class `tree:/_cluster/state/_all`() {
+
+    /**
+      * Obtain a resource to get cluster state related information
+      * @param indexes The indexes over which to restrict the state request
+      * @return a cluster health resource for the specified indexes, all metrics
+      */
+    def $(indexes: String*) = `/_cluster/state/_all/$indexes`(indexes)
+  }
+
+  /**
+    * An intermediate resource to obtain cluster-related metadata
+    */
+  trait `tree:/_cluster/state/$metrics` {
+    def metrics: Seq[String]
+
+    /**
+      * Obtain a resource to get cluster state related information
+      * @param indexes The indexes over which to restrict the state request
+      * @return a cluster health resource for the specified metrics and indexes
+      */
+    def $(indexes: String*) = `/_cluster/state/$metrics/$indexes`(metrics, indexes)
   }
 }

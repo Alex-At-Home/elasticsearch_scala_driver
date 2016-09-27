@@ -47,18 +47,6 @@ object IndicesModifiers {
     def types(types: String*): this.type = self.withModifier(this.getModifier(types))
   }
 
-  /** (modifier - see method for details) */
-  trait Level extends Modifier { self: BaseDriverOp =>
-    /** Defines if field stats should be returned on a per index level or on a cluster wide level.
-      * Valid values are indices and cluster (default).
-      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html#indices-stats]]
-      *
-      * @param level indices or cluster
-      * @return The updated driver operation
-      */
-    def level(level: String): this.type = self.withModifier(this.getModifier(level))
-  }
-
   // Segments modifiers
 
   /** (modifier - see method for details) */
@@ -206,7 +194,7 @@ object IndicesModifiers {
 
 }
 
-/** Common groupings of modifiers relating to search resources
+/** Common groupings of modifiers relating to index resources
   */
 object IndicesModifierGroups {
   import IndicesModifiers._

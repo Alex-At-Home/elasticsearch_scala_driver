@@ -126,6 +126,7 @@ object CommonModifiers {
     /** A search timeout, bounding the search request to be executed within the specified time value and bail with the
       * hits accumulated up to that point when expired. Defaults to no timeout.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html#timeout Docs]]
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-health.html#request-params Cluster Health]]
       *
       * @param timeout The timeout
       * @return The updated driver operation
@@ -195,6 +196,53 @@ object CommonModifiers {
       * @return The updated driver operation
       */
     def conflict(op: String): this.type = self.withModifier(this.getModifier(op))
+  }
+
+  // Cluster/index statistics
+
+  /** (modifier - see method for details) */
+  trait Level extends Modifier { self: BaseDriverOp =>
+    /** Defines if various stats (cluster health. fields) should be returned on a per index level or on a
+      * cluster wide level.
+      * Valid values are "shards", "indices "and "cluster" (default).
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-health.html#request-params Cluster Health Stats]]
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html#indices-stats Index Stats]]
+      *
+      * @param level "shards", "indices" or "cluster"
+      * @return The updated driver operation
+      */
+    def level(level: String): this.type = self.withModifier(this.getModifier(level))
+  }
+
+  // Cluster/search modifiers
+
+  /** (modifier - see method for details) */
+  trait Local extends Modifier { self: BaseDriverOp =>
+    /** A boolean value whether to read the cluster state locally in order to determine where shards are allocated
+      * instead of using the Master node’s cluster state.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-shards.html#_all_parameters Search resources]]
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-health.html#request-params Cluster resources]]
+      *
+      * @param b Whether the cluster state is read locally
+      * @return The updated driver operation
+      */
+    def local(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+  }
+
+  /** (modifier - see method for details) */
+  trait Explain extends Modifier { self: BaseDriverOp =>
+    /**
+      * For search - For each hit, contain an explanation of how scoring of the hits was computed.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html#_parameters_3]]
+      *
+      * For cluster stats - If the explain parameter is specified, a detailed explanation of why the commands could or
+      * could not be executed is returned.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-reroute.html]]
+      *
+      * @param b For each hit, whether to return an explanation of the request.
+      * @return The updated driver operation
+      */
+    def explain(b: Boolean): this.type = self.withModifier(this.getModifier(b))
   }
 
 }

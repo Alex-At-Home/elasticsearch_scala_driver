@@ -93,18 +93,6 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Explain extends Modifier { self: BaseDriverOp =>
-    /**
-      * For each hit, contain an explanation of how scoring of the hits was computed.
-      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html#_parameters_3]]
-      *
-      * @param b For each hit, contain an explanation of how scoring of the hits was computed.
-      * @return The updated driver operation
-      */
-    def explain(b: Boolean): this.type = self.withModifier(this.getModifier(b))
-  }
-
-  /** (modifier - see method for details) */
   trait Sort extends Modifier { self: BaseDriverOp =>
     /**
       * Sorting to perform. Can either be in the form of fieldName, or fieldName:asc/fieldName:desc. The fieldName can
@@ -205,18 +193,6 @@ object SearchModifiers {
       * @return The updated driver operation
       */
     def preference(preference: String): this.type = self.withModifier(this.getModifier(preference))
-  }
-
-  /** (modifier - see method for details) */
-  trait Local extends Modifier { self: BaseDriverOp =>
-    /** A boolean value whether to read the cluster state locally in order to determine where shards are allocated
-      * instead of using the Master node’s cluster state.
-      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-shards.html#_all_parameters]]
-      *
-      * @param b Whether the cluster state is read locally
-      * @return The updated driver operation
-      */
-    def local(b: Boolean): this.type = self.withModifier(this.getModifier(b))
   }
 }
 /** Common groupings of modifiers relating to search resources
