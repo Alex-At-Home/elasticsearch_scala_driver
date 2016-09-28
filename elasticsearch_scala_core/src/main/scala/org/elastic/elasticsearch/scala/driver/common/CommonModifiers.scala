@@ -175,8 +175,9 @@ object CommonModifiers {
   }
   /** (modifier - see method for details) */
   trait Fields extends Modifier { self: BaseDriverOp =>
-    /** Which fields from the document index to include
-      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#get-fields Docs]]
+    /** Which fields from the document index or node statistics to include
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#get-fields Index docs]]
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-stats.html#field-data Node stats docs]]
       *
       * @param fields Which fields from the document index to include
       * @return The updated driver operation
@@ -243,6 +244,22 @@ object CommonModifiers {
       * @return The updated driver operation
       */
     def explain(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+  }
+
+  // Index and node statistics
+
+  /** (modifier - see method for details) */
+  trait Groups extends Modifier { self: BaseDriverOp =>
+    /**  You can include statistics for custom groups by adding an extra groups parameter (search operations can be
+      * associated with one or more groups). The groups parameter accepts a comma separated list of group names.
+      * Use _all to return statistics for all groups
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html#indices-stats Index stats docs]]
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-stats.html#field-data Node stats docs]]
+      *
+      * @param groups The set of statistics groups for which to return statistics
+      * @return The updated driver operation
+      */
+    def groups(groups: String*): this.type = self.withModifier(this.getModifier(groups))
   }
 
 }

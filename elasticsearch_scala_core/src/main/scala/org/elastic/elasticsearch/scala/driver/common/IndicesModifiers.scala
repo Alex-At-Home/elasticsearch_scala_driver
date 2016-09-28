@@ -24,19 +24,6 @@ object IndicesModifiers {
   // Index statistics
 
   /** (modifier - see method for details) */
-  trait Groups extends Modifier { self: BaseDriverOp =>
-    /**  You can include statistics for custom groups by adding an extra groups parameter (search operations can be
-      * associated with one or more groups). The groups parameter accepts a comma separated list of group names.
-      * Use _all to return statistics for all groups
-      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html#indices-stats]]
-      *
-      * @param groups The set of statistics groups for which to return statistics
-      * @return The updated driver operation
-      */
-    def groups(groups: String*): this.type = self.withModifier(this.getModifier(groups))
-  }
-
-  /** (modifier - see method for details) */
   trait Types extends Modifier { self: BaseDriverOp =>
     /** The types over which to filter statistics
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html#indices-stats]]

@@ -236,6 +236,13 @@ object ApiModelNavigationTree {
       * @return An intermediate resource to obtain cluster-related metadata
       */
     def _cluster = `tree:/_cluster`()
+
+    /**
+      * An intermediate resource to obtain cluster-node-related metadata
+      *
+      * @return An intermediate resource to obtain cluster-node-related metadata
+      */
+    def _nodes = `/_nodes`()
   }
 
   /**
@@ -1542,4 +1549,111 @@ object ApiModelNavigationTree {
       */
     def $(indexes: String*) = `/_cluster/state/$metrics/$indexes`(metrics, indexes)
   }
+
+  // 0.5 Node navigation
+
+  /**
+    * An intermediate resource to obtain cluster-node-related metadata
+    */
+  trait `tree:/_nodes` {
+
+    /**
+      * Get a resource to retrieve node statistics
+      * @return A resource to retrieve node statistics
+      */
+    def stats = `/_nodes/stats`()
+
+    /**
+      * Get an intermediate step to get a resource to retrieve node info and statistics for specified nodes
+      * @param nodes The list of nodes to which to restrict the stats request [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster.html (Node formats)]]
+      * @return An intermediate step to get a resource to retrieve node statistics or info for specified nodes
+      */
+    def $(nodes: String*) = `/_nodes/$nodes`(nodes)
+
+    /**
+      * Get an intermediate step to get a resource to retrieve node info over all nodes (specified info groups)
+      * @return intermediate step to get a resource to retrieve node info over all nodes (specified info groups)
+      */
+    def _all = `tree:/_nodes/_all`()
+
+    /**
+      * Get a resource for analyzing hot threads in nodes
+      * @return A resource for analyzing hot threads in nodes
+      */
+    def hot_threads = `/_nodes/hot_threads`()
+  }
+
+  /**
+    * An intermediate resource to obtain cluster-node-related metadata
+    */
+  case class `tree:/_nodes/_all`() {
+
+    /**
+      * Get a resource to retrieve node info over the all nodes, specified info groups
+      * @param infoGroups The info groups to obtain
+      *                    Groups: `settings`, `os`, `process`, `jvm`, `thread_pool`, `transport`,
+      *                    `http` and `plugins`
+      * @return A resource to retrieve node statistics over the specified nodes
+      */
+    def $(infoGroups: String*) = `/_nodes/_all/$infoGroups`(infoGroups)
+  }
+
+  /**
+    * An intermediate resource to obtain cluster-node-related metadata
+    */
+  trait `tree:/_nodes/stats` {
+
+    /**
+      * Returns a resource to get the specified node statistics only
+      * @param statsGroups The statistics groups to obtain
+      *                    Groups: `indices`, `os`, `process`, `jvm`, `transport`, `http`,
+      *                    `fs`, `breaker` and `thread_pool`
+      * @return The resource to obtain the node statistics
+      */
+    def $(statsGroups: String*) = `/_nodes/stats/$statsGroups`(statsGroups)
+  }
+
+  /**
+    * An intermediate resource to obtain cluster-node-related metadata
+    */
+  trait `tree:/_nodes/$nodes` {
+    def nodes: Seq[String]
+    /**
+      * Get a resource to retrieve node statistics over the specified nodes
+      * @return A resource to retrieve node statistics over the specified nodes
+      */
+    def stats = `/_nodes/$nodes/stats`(nodes)
+
+    /**
+      * Get a resource to retrieve node info over the specified nodes and info groups
+      * @param infoGroups The info groups to obtain
+      *                    Groups: `settings`, `os`, `process`, `jvm`, `thread_pool`, `transport`,
+      *                    `http` and `plugins`
+      * @return A resource to retrieve node statistics over the specified nodes
+      */
+    def $(infoGroups: String*) = `/_nodes/$nodes/$infoGroups`(nodes, infoGroups)
+
+    /**
+      * Get a resource for analyzing hot threads in nodes
+      * @return A resource for analyzing hot threads in nodes
+      */
+    def hot_threads = `/_nodes/$nodes/hot_threads`()
+  }
+
+  /**
+    * An intermediate resource to obtain cluster-node-related metadata
+    */
+  trait `tree:/_nodes/$nodes/stats` {
+    def nodes: Seq[String]
+
+    /**
+      * Returns a resource to get the specified node statistics only
+      * @param statsGroups The statistics groups to obtain
+      *                    Groups: `indices`, `os`, `process`, `jvm`, `transport`, `http`,
+      *                    `fs`, `breaker` and `thread_pool`
+      * @return The resource to obtain the node statistics
+      */
+    def $(statsGroups: String*) = `/_nodes/$nodes/stats/$statsGroups`(nodes, statsGroups)
+  }
+
 }

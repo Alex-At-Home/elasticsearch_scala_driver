@@ -124,8 +124,129 @@ trait ApiModelCluster {
       with RestWritable[StandardParams]
       with RestResource
 
-  // 4.7 Node statistics
+  // 5) Node specific metadata
+
+  // 5.1) Node statistics
+  // https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-stats.html
+
+  /** The cluster nodes stats API allows to retrieve one or more (or all) of the cluster nodes statistics.
+    * All statistics, all nodes
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-stats.html Docs]]
+    */
+  case class `/_nodes/stats`()
+    extends `tree:/_nodes/stats`
+      with RestReadable[NodeStatsParams]
+      with RestResource
+
+  /** The cluster nodes stats API allows to retrieve one or more (or all) of the cluster nodes statistics.
+    * Specified statistics groups, all nodes.
+    * Groups: `indices`, `os`, `process`, `jvm`, `transport`, `http`, `fs`, `breaker` and `thread_pool`
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-stats.html Docs]]
+    * @param statsGroups The statistics groups to obtain
+    *                    Groups: `indices`, `os`, `process`, `jvm`, `transport`, `http`,
+    *                    `fs`, `breaker` and `thread_pool`
+    */
+  case class `/_nodes/stats/$statsGroups`(statsGroups: String*)
+    extends RestReadable[NodeStatsParams]
+      with RestResource
+
+  /** The cluster nodes stats API allows to retrieve one or more (or all) of the cluster nodes statistics.
+    * All statistics, specified nodes
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-stats.html Docs]]
+    * @param nodes The list of nodes to which to restrict the stats request
+    *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster.html (Node formats)]]
+    */
+  case class `/_nodes/$nodes/stats`(nodes: String*)
+    extends `tree:/_nodes/$nodes/stats`
+      with RestReadable[NodeStatsParams]
+      with RestResource
+
+  /** The cluster nodes stats API allows to retrieve one or more (or all) of the cluster nodes statistics.
+    * Specified statistics groups, specified nodes.
+    * Groups: `indices`, `os`, `process`, `jvm`, `transport`, `http`, `fs`, `breaker` and `thread_pool`
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-stats.html Docs]]
+    * @param nodes The list of nodes to which to restrict the stats request
+    *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster.html (Node formats)]]
+    * @param statsGroups The statistics groups to obtain
+    *                    Groups: `indices`, `os`, `process`, `jvm`, `transport`, `http`,
+    *                    `fs`, `breaker` and `thread_pool`
+    */
+  case class `/_nodes/$nodes/stats/$statsGroups`(nodes: Seq[String], statsGroups: Seq[String])
+    extends RestReadable[NodeStatsParams]
+      with RestResource
+
+  // 5.2) Nodes Info
+  // https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-info.html
+
+  /** The cluster nodes info API allows to retrieve one or more (or all) of the cluster nodes information.
+    * All info, all nodes
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-info.html Docs]]
+    */
+  case class `/_nodes`()
+    extends `tree:/_nodes`
+      with RestReadable[StandardParams]
+      with RestResource
+
+  /** The cluster nodes info API allows to retrieve one or more (or all) of the cluster nodes information.
+    * Specified info groups, all nodes.
+    * Groups: `settings`, `os`, `process`, `jvm`, `thread_pool`, `transport`, `http` and `plugins`
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-info.html Docs]]
+    * @param infoGroups The info groups to obtain
+    *                    Groups: `settings`, `os`, `process`, `jvm`, `thread_pool`, `transport`,
+    *                    `http` and `plugins`
+    */
+  case class `/_nodes/_all/$infoGroups`(infoGroups: String*)
+    extends RestReadable[StandardParams]
+      with RestResource
+
+  /** The cluster nodes info API allows to retrieve one or more (or all) of the cluster nodes information.
+    * All info, specified nodes
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-info.html Docs]]
+    * @param nodes The list of nodes to which to restrict the stats request
+    *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster.html (Node formats)]]
+    */
+  case class `/_nodes/$nodes`(nodes: String*)
+    extends `tree:/_nodes/$nodes`
+      with RestReadable[NodeStatsParams]
+      with RestResource
+
+  /** The cluster nodes info API allows to retrieve one or more (or all) of the cluster nodes information.
+    * Specified info groups, specified nodes.
+    * Groups: `settings`, `os`, `process`, `jvm`, `thread_pool`, `transport`, `http` and `plugins`
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-info.html Docs]]
+    * @param nodes The list of nodes to which to restrict the stats request
+    *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster.html (Node formats)]]
+    * @param infoGroups The info groups to obtain
+    *                    Groups: `settings`, `os`, `process`, `jvm`, `thread_pool`, `transport`,
+    *                    `http` and `plugins`
+    */
+  case class `/_nodes/$nodes/$infoGroups`(nodes: Seq[String], infoGroups: Seq[String])
+    extends RestReadable[NodeStatsParams]
+      with RestResource
+
+  // 5.3) Nodes hot threads
+  // https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-hot-threads.html
+
+  /** An API allowing to get the current hot threads on each node in the cluster.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-hot-threads.html Docs]]
+    */
+  case class `/_nodes/hot_threads`()
+      extends RestReadable[NodeHotThreadParams]
+      with RestResource
+
+  /** An API allowing to get the current hot threads on each node in the cluster.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-hot-threads.html Docs]]
+    * @param nodes The nodes over which to request the information
+    *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster.html (Node formats)]]
+    */
+  case class `/_nodes/$nodes/hot_threads`(nodes: String*)
+    extends RestReadable[NodeHotThreadParams]
+      with RestResource
+
+  // 5.4) Task management API
+  // https://www.elastic.co/guide/en/elasticsearch/reference/2.3/tasks.html
 
   //TODO
+
 }
 object ApiModelCluster extends ApiModelCluster

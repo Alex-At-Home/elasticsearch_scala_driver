@@ -73,6 +73,51 @@ object ClusterModifiers {
     def dry_run(b: Boolean): this.type = self.withModifier(this.getModifier(b))
   }
 
+  // Nodes
+
+  /** (modifier - see method for details) */
+  trait Threads extends Modifier { self: BaseDriverOp =>
+    /** The number of hot threads to provide, defaults to 3.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-hot-threads.html Docs]]
+      *
+      * @param n number of hot threads to provide, defaults to 3.
+      */
+    def dry_run(n: Int): this.type = self.withModifier(this.getModifier(n))
+  }
+
+  /** (modifier - see method for details) */
+  trait Interval extends Modifier { self: BaseDriverOp =>
+    /** The interval to do the second sampling of threads. Defaults to 500ms.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-hot-threads.html Docs]]
+      *
+      * @param interval the interval to do the second sampling of threads. Defaults to 500ms.
+      */
+    def dry_run(interval: String): this.type = self.withModifier(this.getModifier(interval))
+  }
+
+  /** (modifier - see method for details) */
+  trait Type extends Modifier { self: BaseDriverOp =>
+    /** The type to sample, defaults to `cpu`, but supports `wait` and `block`
+      * to see hot threads that are in wait or block state.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-hot-threads.html Docs]]
+      *
+      * @param `type` The type to sample, defaults to `cpu`, but supports `wait` and `block`
+      *               to see hot threads that are in wait or block state.
+      */
+    def `type`(`type`: String): this.type = self.withModifier(this.getModifier(`type`))
+  }
+
+  /** (modifier - see method for details) */
+  trait IgnoreIdleThreads extends Modifier { self: BaseDriverOp =>
+    /** If true, known idle threads (e.g. waiting in a socket select, or to get a task from an empty queue) are
+      * filtered out. Defaults to true.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-hot-threads.html Docs]]
+      *
+      * @param b Whether to ignore idle threads (defaults to true)
+      */
+    def ignore_idle_threads(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+  }
+
 }
 /** Common groupings of modifiers relating to cluster resources
   */
@@ -88,4 +133,11 @@ object ClusterModifierGroups {
 
   /** Parameters controlling the `_cluster/reroute` resource */
   trait ClusterRerouteParams extends Explain with DryRun with StandardParams
+
+  /** Parameters controlling node statistics */
+  trait NodeStatsParams extends Fields with Groups with StandardParams
+
+  /** Parameters controlling the nodes' hot_threads resource */
+  trait NodeHotThreadParams
+    extends Threads with Interval with Type with IgnoreIdleThreads with StandardParams
 }
