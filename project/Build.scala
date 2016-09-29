@@ -8,7 +8,7 @@ object BuildSettings {
   val scalaBuildVersion = "2.11.8"
 
   val buildSettings = Defaults.coreDefaultSettings ++ Seq(
-    organization := "org.elasticsearch",
+    organization := "org.elastic",
     scalacOptions ++= Seq(),
     scalaVersion := scalaBuildVersion,
     crossScalaVersions := Seq(),

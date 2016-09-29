@@ -1507,7 +1507,7 @@ object ApiModelNavigationTree {
       * @param indexes The specified indexes over which to obtain cluster health information
       * @return a cluster health resource for the specified indexes
       */
-    def $(indexes: String*) = `/_cluster/health/$indexes`(indexes)
+    def $(indexes: String*) = `/_cluster/health/$indexes`(indexes:_*)
   }
 
   /**
@@ -1521,7 +1521,7 @@ object ApiModelNavigationTree {
       *                `"metadata"`, `"blocks"`
       * @return an intermediate cluster state resource for the specified metrics
       */
-    def $(metrics: String*) = `/_cluster/state/$metrics`(metrics)
+    def $(metrics: String*) = `/_cluster/state/$metrics`(metrics:_*)
 
     /**
       * Obtain an intermediate resource to get cluster state related information
@@ -1540,7 +1540,7 @@ object ApiModelNavigationTree {
       * @param indexes The indexes over which to restrict the state request
       * @return a cluster health resource for the specified indexes, all metrics
       */
-    def $(indexes: String*) = `/_cluster/state/_all/$indexes`(indexes)
+    def $(indexes: String*) = `/_cluster/state/_all/$indexes`(indexes:_*)
   }
 
   /**
@@ -1576,7 +1576,7 @@ object ApiModelNavigationTree {
       *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster.html (Node formats)]]
       * @return An intermediate step to get a resource to retrieve node statistics or info for specified nodes
       */
-    def $(nodes: String*) = `/_nodes/$nodes`(nodes)
+    def $(nodes: String*) = `/_nodes/$nodes`(nodes:_*)
 
     /**
       * Get an intermediate step to get a resource to retrieve node info over all nodes (specified info groups)
@@ -1603,7 +1603,7 @@ object ApiModelNavigationTree {
       *                    `http` and `plugins`
       * @return A resource to retrieve node statistics over the specified nodes
       */
-    def $(infoGroups: String*) = `/_nodes/_all/$infoGroups`(infoGroups)
+    def $(infoGroups: String*) = `/_nodes/_all/$infoGroups`(infoGroups:_*)
   }
 
   /**
@@ -1618,7 +1618,7 @@ object ApiModelNavigationTree {
       *                    `fs`, `breaker` and `thread_pool`
       * @return The resource to obtain the node statistics
       */
-    def $(statsGroups: String*) = `/_nodes/stats/$statsGroups`(statsGroups)
+    def $(statsGroups: String*) = `/_nodes/stats/$statsGroups`(statsGroups:_*)
   }
 
   /**
@@ -1630,7 +1630,7 @@ object ApiModelNavigationTree {
       * Get a resource to retrieve node statistics over the specified nodes
       * @return A resource to retrieve node statistics over the specified nodes
       */
-    def stats = `/_nodes/$nodes/stats`(nodes)
+    def stats = `/_nodes/$nodes/stats`(nodes:_*)
 
     /**
       * Get a resource to retrieve node info over the specified nodes and info groups
