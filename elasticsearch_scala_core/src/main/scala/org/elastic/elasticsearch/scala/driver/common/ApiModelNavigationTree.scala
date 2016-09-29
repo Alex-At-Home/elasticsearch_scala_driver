@@ -243,6 +243,13 @@ object ApiModelNavigationTree {
       * @return An intermediate resource to obtain cluster-node-related metadata
       */
     def _nodes = `/_nodes`()
+
+    /**
+      * An intermediate resource to obtain task management resources
+      *
+      * @return An intermediate resource to obtain task management resources
+      */
+    def _tasks = `/_tasks`()
   }
 
   /**
@@ -1510,8 +1517,8 @@ object ApiModelNavigationTree {
 
     /**
       * Obtain an intermediate resource to get cluster state related information
-      * @param metrics A comma separated list of `"version"`, `"master_node"`, `"nodes"`, `"routing_table"`, `"metadata"`,
-      *                `"blocks"`
+      * @param metrics A comma separated list of `"version"`, `"master_node"`, `"nodes"`, `"routing_table"`,
+      *                `"metadata"`, `"blocks"`
       * @return an intermediate cluster state resource for the specified metrics
       */
     def $(metrics: String*) = `/_cluster/state/$metrics`(metrics)
@@ -1565,7 +1572,8 @@ object ApiModelNavigationTree {
 
     /**
       * Get an intermediate step to get a resource to retrieve node info and statistics for specified nodes
-      * @param nodes The list of nodes to which to restrict the stats request [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster.html (Node formats)]]
+      * @param nodes The list of nodes to which to restrict the stats request
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster.html (Node formats)]]
       * @return An intermediate step to get a resource to retrieve node statistics or info for specified nodes
       */
     def $(nodes: String*) = `/_nodes/$nodes`(nodes)
@@ -1656,4 +1664,37 @@ object ApiModelNavigationTree {
     def $(statsGroups: String*) = `/_nodes/$nodes/stats/$statsGroups`(nodes, statsGroups)
   }
 
+  // 0.5.4 Task management API
+
+  /**
+    * An intermediate resource to obtain task info
+    */
+  trait `tree:/_tasks` {
+
+    /**
+      * Obtains a resource for task management info (/navigation to task cancellation)
+      * @param taskId The task id for which to request info/cancellation
+      * @return A resource for task management info (/navigation to task cancellation)
+      */
+    def $(taskId: String) = `/_tasks/$taskId`(taskId)
+
+    /**
+      * Obtains a resource to cancel multiple tasks
+      * @return A resource to cancel multiple tasks
+      */
+    def _cancel = `/_tasks/_cancel`()
+  }
+
+  /**
+    * An intermediate resource to obtain a task cancellation resource
+    */
+  trait `tree:/_tasks/$taskId` {
+    def taskId: String
+
+    /**
+      * Obtains a resource to cancel a single task
+      * @return A resource to cancel a single task
+      */
+    def _cancel = `/_tasks/$taskId/_cancel`(taskId)
+  }
 }
