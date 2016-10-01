@@ -68,8 +68,9 @@ trait ApiModelSearch {
     * with a set of parameters
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template.html Read Docs]]
     */
-  case class `/_search/template`() extends RestResource
+  case class `/_search/template`() extends `tree:/_search/template`
     with RestWithDataReadable[StandardParams]
+    with RestResource
 
   /** Retrieves/stores/deletes templates from/to/from the .scripts index
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template.html Read Docs]]

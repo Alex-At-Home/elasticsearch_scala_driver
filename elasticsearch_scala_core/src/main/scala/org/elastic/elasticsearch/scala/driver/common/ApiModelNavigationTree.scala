@@ -426,6 +426,17 @@ object ApiModelNavigationTree {
     def $(`type`: String) = `/$index/$type`(index, `type`)
 
     /**
+      * Sub-resources that work on  multiple types
+      *
+      * @param firstType The first type (must be at least 2)
+      * @param otherType The second type  (must be at least 2)
+      * @param moreTypes Optional 3rd+ types
+      * @return An intermediate or final step of the API model
+      */
+    def $(firstType: String, otherType: String, moreTypes: String*) =
+      `/$indexes/$types`(Seq(index), Seq(firstType, otherType) ++ moreTypes)
+
+    /**
       * The multi-get resource
       *
       * @return The multi-get resource
@@ -1697,4 +1708,18 @@ object ApiModelNavigationTree {
       */
     def _cancel = `/_tasks/$taskId/_cancel`(taskId)
   }
+
+  /**
+    * An intermediate resource to perform a search given a template
+    */
+  trait `tree:/_search/template` {
+
+    /**
+      * A resource to perform a search given a template
+      * @param template The name of the template
+      * @return A resource to perform a search given a template
+      */
+    def $(template: String) = `/_search/template/$template`(template)
+  }
+
 }
