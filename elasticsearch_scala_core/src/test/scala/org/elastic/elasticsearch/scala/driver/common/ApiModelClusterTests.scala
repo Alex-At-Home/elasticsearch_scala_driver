@@ -1,6 +1,7 @@
 package org.elastic.elasticsearch.scala.driver.common
 
 import utest._
+import org.elastic.rest.scala.driver.RestBase._
 
 object ApiModelClusterTests  extends TestSuite {
 
@@ -64,29 +65,73 @@ object ApiModelClusterTests  extends TestSuite {
       // Node statistics
 
       clusters.`/_nodes/stats`().read().fields("f1", "f2").groups("g1", "g2").human(false)
-        .getUrl ==> "/_nodes/stats?fields=f1,f2&groups[g1,g2&human=false"
+        .getUrl ==> "/_nodes/stats?fields=f1,f2&groups=g1,g2&human=false"
       api.`/`()._nodes.stats.read().getUrl ==> "/_nodes/stats"
 
       clusters.`/_nodes/stats/$statsGroups`("sg1", "sg2").read().fields("f1", "f2").groups("g1", "g2").human(false)
-        .getUrl ==> "/_nodes/stats/sg1,sg2?fields=f1,f2&groups[g1,g2&human=false"
+        .getUrl ==> "/_nodes/stats/sg1,sg2?fields=f1,f2&groups=g1,g2&human=false"
       api.`/`()._nodes.stats.$("sg1", "sg2").read().getUrl ==> "/_nodes/stats/sg1,sg2"
 
       clusters.`/_nodes/$nodes/stats`("n1", "n2").read().fields("f1", "f2").groups("g1", "g2").human(false)
-        .getUrl ==> "/_nodes/n1,n2/stats?fields=f1,f2&groups[g1,g2&human=false"
+        .getUrl ==> "/_nodes/n1,n2/stats?fields=f1,f2&groups=g1,g2&human=false"
       api.`/`()._nodes.$("n1", "n2").stats.read().getUrl ==> "/_nodes/n1,n2/stats"
 
       clusters.`/_nodes/$nodes/stats/$statsGroups`(Seq("n1", "n2"), Seq("sg1", "sg2")).read().
         fields("f1", "f2").groups("g1", "g2").human(false)
-        .getUrl ==> "/_nodes/n1,n2/stats/sg1,sg2?fields=f1,f2&groups[g1,g2&human=false"
+        .getUrl ==> "/_nodes/n1,n2/stats/sg1,sg2?fields=f1,f2&groups=g1,g2&human=false"
       api.`/`()._nodes.$("n1", "n2").stats.$("sg1", "sg2").read().getUrl ==> "/_nodes/n1,n2/stats/sg1,sg2"
 
       // Node info
 
       clusters.`/_nodes`().read().human(true)
-        .getUrl ==> "/_nodes/stats?human=false"
-      api.`/`()._nodes.stats.read().getUrl ==> "/_nodes/stats"
+        .getUrl ==> "/_nodes?human=true"
+      api.`/`()._nodes.read().getUrl ==> "/_nodes"
 
-      //TODO
+      clusters.`/_nodes/_all/$infoGroups`("i1", "i2").read().human(false).getUrl ==> "/_nodes/_all/i1,i2?human=false"
+      api.`/`()._nodes._all.$("i1", "i2").read().getUrl ==> "/_nodes/_all/i1,i2"
+
+      clusters.`/_nodes/$nodes`("n1", "n2").read().pretty(false).getUrl ==> "/_nodes/n1,n2?pretty=false"
+      api.`/`()._nodes.$("n1", "n2").read().getUrl ==> "/_nodes/n1,n2"
+
+      clusters.`/_nodes/$nodes/$infoGroups`(Seq("n1", "n2"), Seq("i1", "i2")).read().pretty(true)
+        .getUrl ==> "/_nodes/n1,n2/i1,i2?pretty=true"
+      api.`/`()._nodes.$("n1", "n2").$("i1", "i2").read().getUrl ==> "/_nodes/n1,n2/i1,i2"
+
+      // Hot threads
+
+      clusters.`/_nodes/hot_threads`().read()
+        .human(true)
+        .threads(3).interval("in").`type`("ty").ignore_idle_threads(true)
+        .getUrl ==> "/_nodes/hot_threads?human=true&threads=3&interval=in&type=ty&ignore_idle_threads=true"
+      api.`/`()._nodes.hot_threads.read().getUrl ==> "/_nodes/hot_threads"
+
+      clusters.`/_nodes/$nodes/hot_threads`("n1", "n2").read()
+        .human(false)
+        .threads(2).interval("val").`type`("tpe").ignore_idle_threads(false)
+        .getUrl ==> "/_nodes/n1,n2/hot_threads?human=false&threads=2&interval=val&type=tpe&ignore_idle_threads=false"
+      api.`/`()._nodes.$("n1", "n2").hot_threads.read().getUrl ==> "/_nodes/n1,n2/hot_threads"
+
+      // Task management
+
+      clusters.`/_tasks`().read()
+          .nodes("n1", "n2").actions("a1", "a2").wait_for_completion(true).timeout("1m")
+          .flat_settings(true)
+          .getUrl ==> "/_tasks?nodes=n1,n2&actions=a1,a2&wait_for_completion=true&timeout=1m&flat_settings=true"
+      api.`/`()._tasks.read().getUrl ==> "/_tasks"
+
+      clusters.`/_tasks/$taskId`("tid").read()
+        .nodes("n1", "n2").actions("a1", "a2").wait_for_completion(false).timeout("10m")
+        .flat_settings(false)
+        .getUrl ==> "/_tasks/tid?nodes=n1,n2&actions=a1,a2&wait_for_completion=false&timeout=10m&flat_settings=false"
+      api.`/`()._tasks.$("tid").read().getUrl ==> "/_tasks/tid"
+
+      clusters.`/_tasks/_cancel`().send().node_id("n1", "n2").actions("a1", "a2").pretty(true)
+        .getUrl ==> "/_tasks/_cancel?node_id=n1,n2&actions=a1,a2&pretty=true"
+      api.`/`()._tasks._cancel.send().getUrl ==> "/_tasks/_cancel"
+
+      clusters.`/_tasks/$taskId/_cancel`("tid").send().pretty(false)
+        .getUrl ==> "/_tasks/tid/_cancel?pretty=false"
+      api.`/`()._tasks.$("tid")._cancel.send().getUrl ==> "/_tasks/tid/_cancel"
     }
   }
 }

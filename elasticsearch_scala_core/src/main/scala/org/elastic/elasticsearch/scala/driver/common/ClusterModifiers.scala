@@ -82,7 +82,7 @@ object ClusterModifiers {
       *
       * @param n number of hot threads to provide, defaults to 3.
       */
-    def dry_run(n: Int): this.type = self.withModifier(this.getModifier(n))
+    def threads(n: Int): this.type = self.withModifier(this.getModifier(n))
   }
 
   /** (modifier - see method for details) */
@@ -92,7 +92,7 @@ object ClusterModifiers {
       *
       * @param interval the interval to do the second sampling of threads. Defaults to 500ms.
       */
-    def dry_run(interval: String): this.type = self.withModifier(this.getModifier(interval))
+    def interval(interval: String): this.type = self.withModifier(this.getModifier(interval))
   }
 
   /** (modifier - see method for details) */

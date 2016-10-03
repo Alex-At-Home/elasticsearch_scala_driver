@@ -1,6 +1,7 @@
 package org.elastic.elasticsearch.scala.driver.common
 
 import utest._
+import org.elastic.rest.scala.driver.RestBase._
 
 object ApiModelSearchTests extends TestSuite {
 
@@ -133,7 +134,7 @@ object ApiModelSearchTests extends TestSuite {
       api.`/`()._search.template.$("t").delete().getUrl ==> "/_search/template/t"
 
       search.`/_render/template`().read("TEST").filter_path("f1", "f2").getUrl ==> "/_render/template?filter_path=f1,f2"
-      api.`/`()._render.template.read("TEST") ==> "/_render/template"
+      api.`/`()._render.template.read("TEST").getUrl ==> "/_render/template"
 
       // Search shards
 
@@ -158,7 +159,7 @@ object ApiModelSearchTests extends TestSuite {
                     "&query=qq&lowercase_expanded_terms=false&lenient=false" +
                     "&analyzer=an&analyze_wildcard=false"
 
-      api.`/`()._suggest.read("TEST") ==> "/_suggest"
+      api.`/`()._suggest.read("TEST").getUrl ==> "/_suggest"
 
       search.`/_suggest`().read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
@@ -170,7 +171,7 @@ object ApiModelSearchTests extends TestSuite {
                     "&query=qq&lowercase_expanded_terms=true&lenient=true" +
                     "&analyzer=an&analyze_wildcard=true"
 
-      api.`/`()._suggest.read() ==> "/_suggest"
+      api.`/`()._suggest.read().getUrl ==> "/_suggest"
 
       // all indexes, specified types
 
@@ -184,7 +185,7 @@ object ApiModelSearchTests extends TestSuite {
                     "&query=qq&lowercase_expanded_terms=false&lenient=false" +
                     "&analyzer=an&analyze_wildcard=false"
 
-      api.`/`()._all.$("t1", "t2")._suggest.read("TEST") ==> "/_all/t1,t2/_suggest"
+      api.`/`()._all.$("t1", "t2")._suggest.read("TEST").getUrl ==>"/_all/t1,t2/_suggest"
 
       search.`/_all/$types/_suggest`("t1", "t2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
@@ -196,7 +197,7 @@ object ApiModelSearchTests extends TestSuite {
                     "&query=qq&lowercase_expanded_terms=true&lenient=true" +
                     "&analyzer=an&analyze_wildcard=true"
 
-      api.`/`()._all.$("t1", "t2")._suggest.read() ==> "/_all/t1,t2/_suggest"
+      api.`/`()._all.$("t1", "t2")._suggest.read().getUrl ==> "/_all/t1,t2/_suggest"
 
       // specified indexes, all types
 
@@ -210,8 +211,8 @@ object ApiModelSearchTests extends TestSuite {
                     "&query=qq&lowercase_expanded_terms=false&lenient=false" +
                     "&analyzer=an&analyze_wildcard=false"
 
-      api.`/`().$("i1")._suggest.read("TEST") ==> "/i1/_suggest"
-      api.`/`().$("i1", "i2")._suggest.read("TEST") ==> "/i1,i2/_suggest"
+      api.`/`().$("i1")._suggest.read("TEST").getUrl ==>"/i1/_suggest"
+      api.`/`().$("i1", "i2")._suggest.read("TEST").getUrl ==>"/i1,i2/_suggest"
 
       search.`/$indexes/_suggest`("i1", "i2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
@@ -223,8 +224,8 @@ object ApiModelSearchTests extends TestSuite {
                     "&query=qq&lowercase_expanded_terms=true&lenient=true" +
                     "&analyzer=an&analyze_wildcard=true"
 
-      api.`/`().$("i1")._suggest.read() ==> "/i1/_suggest"
-      api.`/`().$("i1", "i2")._suggest.read() ==> "/i1,i2/_suggest"
+      api.`/`().$("i1")._suggest.read().getUrl ==> "/i1/_suggest"
+      api.`/`().$("i1", "i2")._suggest.read().getUrl ==> "/i1,i2/_suggest"
 
       // specified indexes, specified types
 
@@ -238,8 +239,8 @@ object ApiModelSearchTests extends TestSuite {
                     "&query=qq&lowercase_expanded_terms=false&lenient=false" +
                     "&analyzer=an&analyze_wildcard=false"
 
-      api.`/`().$("i1").$("t1", "t2")._suggest.read("TEST") ==> "/i1/t1,t2/_suggest"
-      api.`/`().$("i1", "i2").$("t1", "t2")._suggest.read("TEST") ==> "/i1,i2/t1,t2/_suggest"
+      api.`/`().$("i1").$("t1", "t2")._suggest.read("TEST").getUrl ==>"/i1/t1,t2/_suggest"
+      api.`/`().$("i1", "i2").$("t1", "t2")._suggest.read("TEST").getUrl ==>"/i1,i2/t1,t2/_suggest"
 
       search.`/$indexes/$types/_suggest`(Seq("i1", "i2"), Seq("t1", "t2")).read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
@@ -251,8 +252,8 @@ object ApiModelSearchTests extends TestSuite {
                     "&query=qq&lowercase_expanded_terms=true&lenient=true" +
                     "&analyzer=an&analyze_wildcard=true"
 
-      api.`/`().$("i1").$("t1", "t2")._suggest.read() ==> "/i1/t1,t2/_suggest"
-      api.`/`().$("i1", "i2").$("t1", "t2")._suggest.read() ==> "/i1,i2/t1,t2/_suggest"
+      api.`/`().$("i1").$("t1", "t2")._suggest.read().getUrl ==> "/i1/t1,t2/_suggest"
+      api.`/`().$("i1", "i2").$("t1", "t2")._suggest.read().getUrl ==> "/i1,i2/t1,t2/_suggest"
 
       // Multi search
 
@@ -293,7 +294,7 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=false&lenient=false" +
         "&analyzer=an&analyze_wildcard=false&terminate_after=100"
 
-      api.`/`()._count.read("TEST") ==> "/_count"
+      api.`/`()._count.read("TEST").getUrl ==>"/_count"
 
       search.`/_count`().read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
@@ -305,7 +306,7 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=true&lenient=true" +
         "&analyzer=an&analyze_wildcard=true&terminate_after=100"
 
-      api.`/`()._count.read() ==> "/_count"
+      api.`/`()._count.read().getUrl ==> "/_count"
 
       // all indexes, specified types
 
@@ -319,7 +320,7 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=false&lenient=false" +
         "&analyzer=an&analyze_wildcard=false&terminate_after=100"
 
-      api.`/`()._all.$("t1", "t2")._count.read("TEST") ==> "/_all/t1,t2/_count"
+      api.`/`()._all.$("t1", "t2")._count.read("TEST").getUrl ==>"/_all/t1,t2/_count"
 
       search.`/_all/$types/_count`("t1", "t2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
@@ -331,7 +332,7 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=true&lenient=true" +
         "&analyzer=an&analyze_wildcard=true&terminate_after=100"
 
-      api.`/`()._all.$("t1", "t2")._count.read() ==> "/_all/t1,t2/_count"
+      api.`/`()._all.$("t1", "t2")._count.read().getUrl ==> "/_all/t1,t2/_count"
 
       // specified indexes, all types
 
@@ -345,8 +346,8 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=false&lenient=false" +
         "&analyzer=an&analyze_wildcard=false&terminate_after=100"
 
-      api.`/`().$("i1")._count.read("TEST") ==> "/i1/_count"
-      api.`/`().$("i1", "i2")._count.read("TEST") ==> "/i1,i2/_count"
+      api.`/`().$("i1")._count.read("TEST").getUrl ==>"/i1/_count"
+      api.`/`().$("i1", "i2")._count.read("TEST").getUrl ==>"/i1,i2/_count"
 
       search.`/$indexes/_count`("i1", "i2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
@@ -358,8 +359,8 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=true&lenient=true" +
         "&analyzer=an&analyze_wildcard=true&terminate_after=100"
 
-      api.`/`().$("i1")._count.read() ==> "/i1/_count"
-      api.`/`().$("i1", "i2")._count.read() ==> "/i1,i2/_count"
+      api.`/`().$("i1")._count.read().getUrl ==> "/i1/_count"
+      api.`/`().$("i1", "i2")._count.read().getUrl ==> "/i1,i2/_count"
 
       // specified indexes, specified types
 
@@ -373,21 +374,21 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=false&lenient=false" +
         "&analyzer=an&analyze_wildcard=false&terminate_after=100"
 
-      api.`/`().$("i1").$("t1", "t2")._count.read("TEST") ==> "/i1/t1,t2/_count"
-      api.`/`().$("i1", "i2").$("t1", "t2")._count.read("TEST") ==> "/i1,i2/t1,t2/_count"
+      api.`/`().$("i1").$("t1", "t2")._count.read("TEST").getUrl ==>"/i1/t1,t2/_count"
+      api.`/`().$("i1", "i2").$("t1", "t2")._count.read("TEST").getUrl ==>"/i1,i2/t1,t2/_count"
 
       search.`/$indexes/$types/_count`(Seq("i1", "i2"), Seq("t1", "t2")).read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
         .df("field").default_operator("op")
         .query("qq").lowercase_expanded_terms(true).lenient(true)
-        .analyzer("an").analyze_wildcard(true)
+        .analyzer("an").analyze_wildcard(true).terminate_after(100)
         .getUrl ==> "/i1,i2/t1,t2/_count?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
         "&df=field&default_operator=op" +
         "&query=qq&lowercase_expanded_terms=true&lenient=true" +
         "&analyzer=an&analyze_wildcard=true&terminate_after=100"
 
-      api.`/`().$("i1").$("t1", "t2")._count.read() ==> "/i1/t1,t2/_count"
-      api.`/`().$("i1", "i2").$("t1", "t2")._count.read() ==> "/i1,i2/t1,t2/_count"
+      api.`/`().$("i1").$("t1", "t2")._count.read().getUrl ==> "/i1/t1,t2/_count"
+      api.`/`().$("i1", "i2").$("t1", "t2")._count.read().getUrl ==> "/i1,i2/t1,t2/_count"
 
       // Validate
 
@@ -403,7 +404,7 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=false&lenient=false" +
         "&analyzer=an&analyze_wildcard=false&terminate_after=10"
 
-      api.`/`()._validate.read("TEST") ==> "/_validate"
+      api.`/`()._validate.read("TEST").getUrl ==>"/_validate"
 
       search.`/_validate`().read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
@@ -415,7 +416,7 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=true&lenient=true" +
         "&analyzer=an&analyze_wildcard=true"
 
-      api.`/`()._validate.read() ==> "/_validate"
+      api.`/`()._validate.read().getUrl ==> "/_validate"
 
       // all indexes, specified types
 
@@ -429,7 +430,7 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=false&lenient=false" +
         "&analyzer=an&analyze_wildcard=false&terminate_after=10"
 
-      api.`/`()._all.$("t1", "t2")._validate.read("TEST") ==> "/_all/t1,t2/_validate"
+      api.`/`()._all.$("t1", "t2")._validate.read("TEST").getUrl ==>"/_all/t1,t2/_validate"
 
       search.`/_all/$types/_validate`("t1", "t2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
@@ -441,7 +442,7 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=true&lenient=true" +
         "&analyzer=an&analyze_wildcard=true"
 
-      api.`/`()._all.$("t1", "t2")._validate.read() ==> "/_all/t1,t2/_validate"
+      api.`/`()._all.$("t1", "t2")._validate.read().getUrl ==> "/_all/t1,t2/_validate"
 
       // specified indexes, all types
 
@@ -455,8 +456,8 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=false&lenient=false" +
         "&analyzer=an&analyze_wildcard=false&terminate_after=10"
 
-      api.`/`().$("i1")._validate.read("TEST") ==> "/i1/_validate"
-      api.`/`().$("i1", "i2")._validate.read("TEST") ==> "/i1,i2/_validate"
+      api.`/`().$("i1")._validate.read("TEST").getUrl ==>"/i1/_validate"
+      api.`/`().$("i1", "i2")._validate.read("TEST").getUrl ==>"/i1,i2/_validate"
 
       search.`/$indexes/_validate`("i1", "i2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
@@ -468,8 +469,8 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=true&lenient=true" +
         "&analyzer=an&analyze_wildcard=true"
 
-      api.`/`().$("i1")._validate.read() ==> "/i1/_validate"
-      api.`/`().$("i1", "i2")._validate.read() ==> "/i1,i2/_validate"
+      api.`/`().$("i1")._validate.read().getUrl ==> "/i1/_validate"
+      api.`/`().$("i1", "i2")._validate.read().getUrl ==> "/i1,i2/_validate"
 
       // specified indexes, specified types
 
@@ -483,8 +484,8 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=false&lenient=false" +
         "&analyzer=an&analyze_wildcard=false&terminate_after=10"
 
-      api.`/`().$("i1").$("t1", "t2")._validate.read("TEST") ==> "/i1/t1,t2/_validate"
-      api.`/`().$("i1", "i2").$("t1", "t2")._validate.read("TEST") ==> "/i1,i2/t1,t2/_validate"
+      api.`/`().$("i1").$("t1", "t2")._validate.read("TEST").getUrl ==>"/i1/t1,t2/_validate"
+      api.`/`().$("i1", "i2").$("t1", "t2")._validate.read("TEST").getUrl ==>"/i1,i2/t1,t2/_validate"
 
       search.`/$indexes/$types/_validate`(Seq("i1", "i2"), Seq("t1", "t2")).read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
@@ -496,8 +497,8 @@ object ApiModelSearchTests extends TestSuite {
         "&query=qq&lowercase_expanded_terms=true&lenient=true" +
         "&analyzer=an&analyze_wildcard=true"
 
-      api.`/`().$("i1").$("t1", "t2")._validate.read() ==> "/i1/t1,t2/_validate"
-      api.`/`().$("i1", "i2").$("t1", "t2")._validate.read() ==> "/i1,i2/t1,t2/_validate"
+      api.`/`().$("i1").$("t1", "t2")._validate.read().getUrl ==> "/i1/t1,t2/_validate"
+      api.`/`().$("i1", "i2").$("t1", "t2")._validate.read().getUrl ==> "/i1,i2/t1,t2/_validate"
 
       // Explain
 

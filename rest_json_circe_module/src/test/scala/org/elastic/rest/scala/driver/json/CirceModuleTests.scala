@@ -64,10 +64,10 @@ object CirceModuleTests extends TestSuite {
       }
       implicit val mockDriver = new MockRestDriver(handler)
 
-      TestApi.`/data_model`().read().get() ==>
+      TestApi.`/data_model`().read().result().get ==>
         TestDataModel.OtherTestRead("get")
 
-      TestApi.`/data_model`().write(TestDataModel.OtherTestWrite("write")).getJ(Duration("1 second")) ==>
+      TestApi.`/data_model`().write(TestDataModel.OtherTestWrite("write")).resultJ(Duration("1 second")).get ==>
         parse("""{ "test": "written" }""").getOrElse(Json.Null)
     }
     "Test custom typed extensions" - {
@@ -80,9 +80,9 @@ object CirceModuleTests extends TestSuite {
       }
       implicit val mockDriver = new MockRestDriver(handler)
 
-      TestApi.`/custom_typed`().read().get() ==> TestDataModel.TestWrapperRead("""{ "testRead": "get" }""")
+      TestApi.`/custom_typed`().read().result().get ==> TestDataModel.TestWrapperRead("""{ "testRead": "get" }""")
 
-      TestApi.`/custom_typed`().write(TestDataModel.TestWrapperWrite("write")).getJ() ==>
+      TestApi.`/custom_typed`().write(TestDataModel.TestWrapperWrite("write")).resultJ().get ==>
         parse("""{ "test": "written" }""").getOrElse(Json.Null)
 
     }

@@ -3,6 +3,7 @@ package org.elastic.rest.scala.driver
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.reflect.runtime.universe._
+import scala.util.Try
 
 /**
   * The base operations for the Elasticsearch DSL
@@ -58,13 +59,13 @@ object RestBase {
       * @param ec The execution context for futures
       * @return The result of the operation as a type
       */
-    def get
+    def result
       (timeout: Duration = null)
       (implicit stringToTypedHelper: StringToTypedHelper,
        driver: RestDriver,
        ec: ExecutionContext)
-    : T =
-      Await.result(this.exec(), Option(timeout).getOrElse(driver.timeout))
+    : Try[T] =
+      Try { Await.result(this.exec(), Option(timeout).getOrElse(driver.timeout)) }
 
   }
 
@@ -140,7 +141,7 @@ object RestBase {
   }
 
   /** A trait to be implemented as an implicit class to provide the implicit methods `execJ`
-    * and `getJ`. Note different to `JsonToStringHelper` in that you declare this as an implicit class
+    * and `resultJ`. Note different to `JsonToStringHelper` in that you declare this as an implicit class
     * vs `JsonToStringHelper` which you declare as an implicit value
     *
     * @tparam J The JSON type
@@ -159,8 +160,8 @@ object RestBase {
       * @param driver The driver which executes the operation
       * @return A future containing the result of the operation as a JSON object
       */
-    def getJ(timeout: Duration = null)(implicit driver: RestDriver): J =
-      Await.result(this.execJ(), Option(timeout).getOrElse(driver.timeout))
+    def resultJ(timeout: Duration = null)(implicit driver: RestDriver): Try[J] =
+      Try { Await.result(this.execJ(), Option(timeout).getOrElse(driver.timeout)) }
   }
 
   /**
@@ -208,8 +209,8 @@ object RestBase {
       */
     def exec(baseDriverOp: BaseDriverOp): Future[String]
 
-    /** The default request-reply timeout for `getJ`, `getS` and `get`
-      * @return The default request-reply timeout for `getJ`, `getS` and `get`
+    /** The default request-reply timeout for `resultJ`, `resultS` and `result`
+      * @return The default request-reply timeout for `resultJ`, `resultS` and `result`
       */
     def timeout: Duration
   }
@@ -289,8 +290,8 @@ object RestBase {
       * @param driver The driver which executes the operation
       * @return A future containing the result of the operation as a string
       */
-    def getS(timeout: Duration = null)(implicit driver: RestDriver): String =
-      Await.result(this.execS(), Option(timeout).getOrElse(driver.timeout))
+    def resultS(timeout: Duration = null)(implicit driver: RestDriver): Try[String] =
+      Try { Await.result(this.execS(), Option(timeout).getOrElse(driver.timeout)) }
 
     /** Retrieves the URL (including params) for the operation on the resource with the modifiers
       *

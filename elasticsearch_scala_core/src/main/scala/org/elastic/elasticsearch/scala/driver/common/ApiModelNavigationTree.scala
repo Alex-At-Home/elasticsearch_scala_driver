@@ -1656,7 +1656,7 @@ object ApiModelNavigationTree {
       * Get a resource for analyzing hot threads in nodes
       * @return A resource for analyzing hot threads in nodes
       */
-    def hot_threads = `/_nodes/$nodes/hot_threads`()
+    def hot_threads = `/_nodes/$nodes/hot_threads`(nodes:_*)
   }
 
   /**
