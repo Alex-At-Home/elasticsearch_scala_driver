@@ -25,7 +25,7 @@ object ElasticsearchDriverTests extends TestSuite {
     "Test ElasticsearchDriver builder operations" - {
       val driver = ElasticsearchDriver()
       val base = ElasticsearchDriver(
-        List("http://localhost:9200"), "1 second", "10 seconds", "10 seconds", 1, None, List())
+        List("http://localhost:9200"), "5 seconds", "10 seconds", "10 seconds", 1, None, List())
       driver ==> base
       driver.withUrls("host1:9999") ==> base.copy(urls = List("host1:9999"))
       driver.withNewUrls(overwrite = false, "host2:8888") ==>
@@ -58,7 +58,6 @@ object ElasticsearchDriverTests extends TestSuite {
         override def customizeHttpClient(httpClientBuilder: HttpAsyncClientBuilder): HttpAsyncClientBuilder =
           httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
       }
-      //TODO test advanced config a bit later as part of basic auth testing
     }
     "Can read/write to/from an HTTP server" - {
 
@@ -72,8 +71,8 @@ object ElasticsearchDriverTests extends TestSuite {
             Callback.successful(request.ok(s"rx:/ $hasDefaultHeader $hasRequestHeader$basicAuth"))
           case request @ Get on Root if request.head.query.isDefined =>
             Callback.successful(request.ok(s"rx:/${request.head.query.get}"))
-
-            //TODO other methods as needed
+          case x @ _ =>
+            Callback.failed(new Exception(s"Unexpected request: $x"))
         }
       }
 
@@ -93,26 +92,26 @@ object ElasticsearchDriverTests extends TestSuite {
         // Basic check
         {
           val futureResult = driver.exec(Versions.latest.`/`().read())
-          val retVal = Await.result(futureResult, Duration("1 second"))
+          val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ false false"
         }
         // Basic check (default header)
         {
           val futureResult = driver2.exec(Versions.latest.`/`().read())
-          val retVal = Await.result(futureResult, Duration("1 second"))
+          val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ true false"
         }
         // custom headers
         {
           val futureResult = driver2.exec(
             Versions.latest.`/`().read().h("x-request: test2"))
-          val retVal = Await.result(futureResult, Duration("1 second"))
+          val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ true true"
         }
         // URL params
         {
           val futureResult = driver.exec(Versions.latest.`/`().read().pretty(true))
-          val retVal = Await.result(futureResult, Duration("1 second"))
+          val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/pretty=true"
         }
         // Check errors
@@ -122,7 +121,7 @@ object ElasticsearchDriverTests extends TestSuite {
                 .recover {
                   case ex: RestServerException => s"${ex.code}"
                 }
-          val retVal = Await.result(futureResult, Duration("1 second"))
+          val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "404"
         }
 
@@ -132,21 +131,21 @@ object ElasticsearchDriverTests extends TestSuite {
         {
           val threadDriver = driver.createCopy.withThreads(2).start()
           val futureResult = threadDriver.exec(Versions.latest.`/`().read())
-          val retVal = Await.result(futureResult, Duration("1 second"))
+          val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ false false"
         }
         // Check SSL (should at make it fail!)
         {
           val sslDriver = driver.createCopy.withUrls(s"https://localhost:$port").start()
           val futureResult = sslDriver.exec(Versions.latest.`/`().read())
-          val retVal = scala.util.Try { Await.ready(futureResult, Duration("1 second")) }
+          val retVal = scala.util.Try { Await.ready(futureResult, Duration("5 seconds")) }
           retVal.isFailure ==> true
         }
         // Check basic auth:
         {
           val authDriver = driver.createCopy.withBasicAuth("user", "pass").start()
           val futureResult = authDriver.exec(Versions.latest.`/`().read())
-          val retVal = Await.result(futureResult, Duration("1 second"))
+          val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ false false Basic dXNlcjpwYXNz"
         }
         // Check advanced options
@@ -156,7 +155,7 @@ object ElasticsearchDriverTests extends TestSuite {
             List(client => client.setDefaultHeaders(List(new BasicHeader("x-default", "test1")))))
             .start()
           val futureResult = authDriver.exec(Versions.latest.`/`().read())
-          val retVal = Await.result(futureResult, Duration("1 second"))
+          val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ true false"
         }
 
