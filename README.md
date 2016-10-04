@@ -16,8 +16,17 @@ A Scala driver for Elasticsearch, built using [this REST client library](https:/
 ## Example
 
 ```scala
+import org.elastic.elasticsearch.
 
-//TODO
+// Resource-style syntax, async request, string format
+latest.`/_node/stats`().read().execS()
+//Future containing """{"_nodes": { "total": 1, ..."""
+
+// Hierarchical-style syntax, sync request, JSON format
+latest._node.stats.read().resultJ()
+// Success(JsObject(_nodes=JsObject(total=1, ....
+
+//TODO etc
 ```
 
 ## Documentation
