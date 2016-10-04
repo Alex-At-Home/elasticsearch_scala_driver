@@ -71,9 +71,8 @@ object ElasticsearchDriverTests extends TestSuite {
             Callback.successful(request.ok(s"rx:/ $hasDefaultHeader $hasRequestHeader$basicAuth"))
           case request @ Get on Root if request.head.query.isDefined =>
             Callback.successful(request.ok(s"rx:/${request.head.query.get}"))
-          case x @ _ =>
-            println(s"****** Unexpected request: $x")
-            Callback.failed(new Exception(s"Unexpected request: $x"))
+
+          // (Don't handle unexpected requests - the server will convert those into 404s)
         }
       }
 
