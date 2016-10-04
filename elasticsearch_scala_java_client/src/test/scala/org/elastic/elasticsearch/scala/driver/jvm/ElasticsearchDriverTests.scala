@@ -25,7 +25,7 @@ object ElasticsearchDriverTests extends TestSuite {
     "Test ElasticsearchDriver builder operations" - {
       val driver = ElasticsearchDriver()
       val base = ElasticsearchDriver(
-        List("http://localhost:9200"), "5 seconds", "10 seconds", "10 seconds", 1, None, List())
+        List("http://localhost:9200"), "1 second", "10 seconds", "10 seconds", 1, None, List())
       driver ==> base
       driver.withUrls("host1:9999") ==> base.copy(urls = List("host1:9999"))
       driver.withNewUrls(overwrite = false, "host2:8888") ==>
@@ -72,6 +72,7 @@ object ElasticsearchDriverTests extends TestSuite {
           case request @ Get on Root if request.head.query.isDefined =>
             Callback.successful(request.ok(s"rx:/${request.head.query.get}"))
           case x @ _ =>
+            println(s"****** Unexpected request: $x")
             Callback.failed(new Exception(s"Unexpected request: $x"))
         }
       }
