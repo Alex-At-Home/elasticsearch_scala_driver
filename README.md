@@ -1,4 +1,4 @@
-# Scala Elasticsearch REST driver
+# Scala Elasticsearch REST driver   [![Build Status](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver.svg?branch=master)](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver)
 
 TODO
 
