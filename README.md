@@ -1,31 +1,41 @@
-# Scala Elasticsearch REST driver
+# Scala Elasticsearch REST driver   [![Build Status](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver.svg?branch=master)](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver)
 
-TODO
+## Overview
 
-## Running the shell (example)
+A Scala driver for Elasticsearch, built using [this REST client library](https://github.com/Alex-At-Home/rest_client_library), with the following attributes:
+* Maps 1-1 to the [Elasticsearch REST API](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html): each resource is named after and maps to a single REST endpoint, with identically named parameters, etc
+* Versioned - the same JAR can run multiple versions (currently: `2.3.x`)
+* Runs in ScalaJS or JVM
+* Reads and writes support strings, JSON, or types
+   * "Bring your own JSON library" with a _very_ thin wrapper ([CIRCE](https://github.com/travisbrown/circe) supported out of the box)
+   * The support for types is built in (using CIRCE). Some example types have been added, the intention is that users of the library (like me!) will add types as needed via PR, because it's so easy (see below).
+* Easily extendible for modules and plugins, using the underlying [REST client library](https://github.com/Alex-At-Home/rest_client_library)
+* Built on the [Elasticsearch REST driver](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html), or you can write a _very_ thin wrapper around your preferred HTTP client
+* Built-in mocking support
 
+## Example
+
+```scala
+import org.elastic.elasticsearch.
+
+// Resource-style syntax, async request, string format
+latest.`/_node/stats`().read().execS()
+//Future containing """{"_nodes": { "total": 1, ..."""
+
+// Hierarchical-style syntax, sync request, JSON format
+latest._node.stats.read().resultJ()
+// Success(JsObject(_nodes=JsObject(total=1, ....
+
+//TODO etc
 ```
-#bash> java -jar elasticsearch_shell.jar
-@ latest.`/`().read()
-@ implicit val driver = (new ElasticsearchDriver()).withNewHostPorts(List("localhost:9200")).withBasicAuth("user", "password").start()
-@ res0.exec()
-@ res2.value.get
-res3: util.Try[ElasticsearchInfo] = Success(
-  ElasticsearchInfo(
-    "host",
-    "cluster_name",
-    VersionInfo("2.3.4", "e455fd0c13dceca8dbbdbb1665d068ae55dabe3f", "2016-06-30T11:24:31Z", false, "5.5.0"),
-    "You Know, for Search"
-  )
-)
-```
 
-## Building the shell
+## Documentation
 
-In sbt simply run:
+TODO - reference REST driver docs
 
-```
-elasticsearch_scala_shell/assembly
-```
+TODO - gh docs
 
-This will generate `<PROJECT_HOME>/elasticsearch_scala_shell/target/scala-2.11/elasticsearch_shell.jar`
+## Advanced topics
+
+TODO mocking, adding types, adding new resources, changing JSON libraries
+
