@@ -45,11 +45,15 @@ object MyBuild extends Build {
     file("."),
     settings = buildSettings
   )
-    .aggregate(
-      elasticsearch_scala_core,
-      elasticsearch_scala_java_client,
-      elasticsearch_scala_shell
-    )
+  .aggregate(
+    elasticsearch_scala_core,
+    elasticsearch_scala_java_client,
+    elasticsearch_scala_shell
+  )
+
+  val githubName = "elasticsearch_scala_driver"
+  val apiRoot = "https://alex-at-home.github.io"
+  val docVersion = "current"
 
   lazy val rest_scala_core = ProjectRef(rest_client_library_uri, "rest_scala_core")
 
@@ -61,6 +65,8 @@ object MyBuild extends Build {
     settings = buildSettings ++ Seq(
       name := "Elasticsearch Scala Core",
       version := esScalaDriverVersion,
+      apiURL := Some(url(s"$apiRoot/$githubName/$docVersion/elasticsearch_scala_core/")),
+      autoAPIMappings := true,
       libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaBuildVersion,
       libraryDependencies += utestJvmDeps,
       testFrameworks += new TestFramework("utest.runner.Framework")
@@ -73,6 +79,8 @@ object MyBuild extends Build {
     settings = buildSettings ++ Seq(
       name := "Elasticsearch Java Client Scala bridge",
       version := esScalaDriverVersion,
+      apiURL := Some(url(s"$apiRoot/$githubName/$docVersion/elasticsearch_scala_java_client/")),
+      autoAPIMappings := true,
       libraryDependencies += esRestDeps,
       libraryDependencies += utestJvmDeps,
       libraryDependencies += simpleScalaHttpServer,
@@ -101,4 +109,20 @@ object MyBuild extends Build {
   )
   .dependsOn(rest_json_circe_module, elasticsearch_scala_java_client)
 
+  // Doc project
+  // (from https://groups.google.com/forum/#!topic/simple-build-tool/QXFsjLozLyU)
+  def mainDirs(project: ProjectRef) = unmanagedSourceDirectories in project in Compile
+  def mainDirs(project: Project) = unmanagedSourceDirectories in project in Compile
+  lazy val doc = Project("doc", file("doc"))
+      .dependsOn(rest_scala_core, rest_json_circe_module, elasticsearch_scala_core, elasticsearch_scala_java_client)
+      .settings(buildSettings ++ Seq(
+        version := esScalaDriverVersion,
+        unmanagedSourceDirectories in Compile <<= Seq(
+            mainDirs(elasticsearch_scala_core),
+            mainDirs(elasticsearch_scala_java_client),
+            mainDirs(rest_scala_core),
+            mainDirs(rest_json_circe_module)
+          ).join.apply {(s) => s.flatten}
+      )
+    )
 }
