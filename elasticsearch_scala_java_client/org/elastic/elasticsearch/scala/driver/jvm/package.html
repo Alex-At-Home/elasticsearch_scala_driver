@@ -1,0 +1,157 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>jvm - org.elastic.elasticsearch.scala.driver.jvm</title>
+          <meta name="description" content="jvm - org.elastic.elasticsearch.scala.driver.jvm" />
+          <meta name="keywords" content="jvm org.elastic.elasticsearch.scala.driver.jvm" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../../index.html';
+            var hash = 'org.elastic.elasticsearch.scala.driver.jvm.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../../package.html" class="extype" name="org">org</a>.<a href="../../../../package.html" class="extype" name="org.elastic">elastic</a>.<a href="../../../package.html" class="extype" name="org.elastic.elasticsearch">elasticsearch</a>.<a href="../../package.html" class="extype" name="org.elastic.elasticsearch.scala">scala</a>.<a href="../package.html" class="extype" name="org.elastic.elasticsearch.scala.driver">driver</a></p>
+        <h1>jvm</h1><span class="permalink">
+      <a href="../../../../../../index.html#org.elastic.elasticsearch.scala.driver.jvm.package" title="Permalink" target="_top">
+        <img src="../../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jvm</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="org.elastic.elasticsearch.scala.driver.jvm.ElasticsearchDriver" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ElasticsearchDriverextendsProductwithSerializable"></a>
+      <a id="ElasticsearchDriver:ElasticsearchDriver"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ElasticsearchDriver.html"><span class="name">ElasticsearchDriver</span></a><span class="params">(<span name="urls">urls: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">List(&quot;http://localhost:9200&quot;)</span></span>, <span name="connectTimeout">connectTimeout: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;1 second&quot;</span></span>, <span name="socketTimeout">socketTimeout: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;10 seconds&quot;</span></span>, <span name="retryTimeout">retryTimeout: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;10 seconds&quot;</span></span>, <span name="numThreads">numThreads: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">1</span></span>, <span name="basicAuth">basicAuth: <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)] = <span class="symbol">None</span></span>, <span name="defaultHeaders">defaultHeaders: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">List()</span></span>, <span name="advancedConfig">advancedConfig: <span class="extype" name="scala.List">List</span>[(<span class="extype" name="org.apache.http.impl.nio.client.HttpAsyncClientBuilder">HttpAsyncClientBuilder</span>) ⇒ <span class="extype" name="org.apache.http.impl.nio.client.HttpAsyncClientBuilder">HttpAsyncClientBuilder</span>] = <span class="symbol">List()</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../../index.html#org.elastic.elasticsearch.scala.driver.jvm.package@ElasticsearchDriverextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The Elasticsearch driver for the JVM
+Run <code>start()</code> to provide a client that can be used to execute resource operations</p><div class="fullcomment"><div class="comment cmt"><p>The Elasticsearch driver for the JVM
+Run <code>start()</code> to provide a client that can be used to execute resource operations</p></div><dl class="paramcmts block"><dt class="param">urls</dt><dd class="cmt"><p>A list of URL endpoints in the format <code>&quot;http://host:port&quot;</code> or <code>&quot;https://host:port&quot;</code></p></dd><dt class="param">connectTimeout</dt><dd class="cmt"><p>The connect timeout (human readable format, eg &quot;1 second&quot;)</p></dd><dt class="param">socketTimeout</dt><dd class="cmt"><p>The socket timeout (human readable format, eg &quot;10 seconds&quot;)</p></dd><dt class="param">retryTimeout</dt><dd class="cmt"><p>The retry timeout (human readable format, eg &quot;10 seconds&quot;)</p></dd><dt class="param">numThreads</dt><dd class="cmt"><p>The number of threads</p></dd><dt class="param">basicAuth</dt><dd class="cmt"><p>Basic authentication pair (user, password)</p></dd><dt class="param">defaultHeaders</dt><dd class="cmt"><p>A set of default headers applied to every request</p></dd><dt class="param">advancedConfig</dt><dd class="cmt"><p>Advanced configuration for the underlying REST client, expressed as a mapping
+                      from <code>HttpAsyncClientBuilder </code> to itself, enabled the chained <code>setXxx(...)</code> calls
+                      to be performed</p></dd></dl></div>
+    </li><li name="org.elastic.elasticsearch.scala.driver.jvm.MutableStartedElasticsearchDriver" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MutableStartedElasticsearchDriverextendsRestBase.RestDriverwithProductwithSerializable"></a>
+      <a id="MutableStartedElasticsearchDriver:MutableStartedElasticsearchDriver"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="MutableStartedElasticsearchDriver.html"><span class="name">MutableStartedElasticsearchDriver</span></a><span class="params">(<span name="esDriver">esDriver: <a href="ElasticsearchDriver.html" class="extype" name="org.elastic.elasticsearch.scala.driver.jvm.ElasticsearchDriver">ElasticsearchDriver</a></span>)</span><span class="result"> extends <span class="extype" name="org.elastic.rest.scala.driver.RestBase.RestDriver">RestDriver</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../../index.html#org.elastic.elasticsearch.scala.driver.jvm.package@MutableStartedElasticsearchDriverextendsRestBase.RestDriverwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="org.elastic.elasticsearch.scala.driver.jvm.StartedElasticsearchDriver" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StartedElasticsearchDriverextendsRestBase.RestDriver"></a>
+      <a id="StartedElasticsearchDriver:StartedElasticsearchDriver"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="StartedElasticsearchDriver.html"><span class="name">StartedElasticsearchDriver</span></a><span class="result"> extends <span class="extype" name="org.elastic.rest.scala.driver.RestBase.RestDriver">RestDriver</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../../index.html#org.elastic.elasticsearch.scala.driver.jvm.package@StartedElasticsearchDriverextendsRestBase.RestDriver" title="Permalink" target="_top">
+        <img src="../../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A started Elasticsearch Driver that can execute resource operations
+</p>
+    </li></ol>
+            </div>
+
+        
+
+        
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>
