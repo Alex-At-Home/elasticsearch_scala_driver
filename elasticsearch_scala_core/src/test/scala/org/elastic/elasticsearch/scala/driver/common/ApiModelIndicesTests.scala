@@ -111,8 +111,8 @@ object ApiModelIndicesTests extends TestSuite {
 
       // 3.4
 
-      indices.`/_aliases`().write("TEST").human(false).getUrl ==> "/_aliases?human=false"
-      api.`/`()._aliases.write("TEST").getUrl ==> "/_aliases"
+      indices.`/_aliases`().writeS("TEST").human(false).getUrl ==> "/_aliases?human=false"
+      api.`/`()._aliases.writeS("TEST").getUrl ==> "/_aliases"
 
       indices.`/_alias/$aliases`("a1", "a2").read().pretty(true).getUrl ==> "/_alias/a1,a2?pretty=true"
       indices.`/_alias/$aliases`("a1", "a2").check().pretty(false).getUrl ==> "/_alias/a1,a2?pretty=false"
@@ -199,27 +199,27 @@ object ApiModelIndicesTests extends TestSuite {
       //3.5
 
       indices.`/_settings`().read().pretty(true).getUrl ==> "/_settings?pretty=true"
-      indices.`/_settings`().write("TEST").pretty(false).getUrl ==> "/_settings?pretty=false"
+      indices.`/_settings`().writeS("TEST").pretty(false).getUrl ==> "/_settings?pretty=false"
       api.`/`()._settings.read().getUrl ==> "/_settings"
-      api.`/`()._settings.write("TEST").getUrl ==> "/_settings"
+      api.`/`()._settings.writeS("TEST").getUrl ==> "/_settings"
 
       indices.`/_settings/name=$name`("n").read().human(true).getUrl ==> "/_settings/name=n?human=true"
       api.`/`()._settings.name.$("n").read().getUrl ==> "/_settings/name=n"
 
       indices.`/_all/_settings`().read().pretty(true).getUrl ==> "/_all/_settings?pretty=true"
-      indices.`/_all/_settings`().write("TEST").pretty(false).getUrl ==> "/_all/_settings?pretty=false"
+      indices.`/_all/_settings`().writeS("TEST").pretty(false).getUrl ==> "/_all/_settings?pretty=false"
       api.`/`()._all._settings.read().getUrl ==> "/_all/_settings"
-      api.`/`()._all._settings.write("TEST").getUrl ==> "/_all/_settings"
+      api.`/`()._all._settings.writeS("TEST").getUrl ==> "/_all/_settings"
 
       indices.`/_all/_settings/name=$name`("n").read().human(true).getUrl ==> "/_all/_settings/name=n?human=true"
       api.`/`()._all._settings.name.$("n").read().getUrl ==> "/_all/_settings/name=n"
 
       indices.`/$indexes/_settings`("a", "b").read().pretty(true).getUrl ==> "/a,b/_settings?pretty=true"
-      indices.`/$indexes/_settings`("a", "b").write("TEST").pretty(false).getUrl ==> "/a,b/_settings?pretty=false"
+      indices.`/$indexes/_settings`("a", "b").writeS("TEST").pretty(false).getUrl ==> "/a,b/_settings?pretty=false"
       api.`/`().$("a")._settings.read().getUrl ==> "/a/_settings"
-      api.`/`().$("a")._settings.write("TEST").getUrl ==> "/a/_settings"
+      api.`/`().$("a")._settings.writeS("TEST").getUrl ==> "/a/_settings"
       api.`/`().$("a", "b")._settings.read().getUrl ==> "/a,b/_settings"
-      api.`/`().$("a", "b")._settings.write("TEST").getUrl ==> "/a,b/_settings"
+      api.`/`().$("a", "b")._settings.writeS("TEST").getUrl ==> "/a,b/_settings"
 
       indices.`/$indexes/_settings/name=$name`(Seq("a", "b"), "n").read().human(true)
         .getUrl ==> "/a,b/_settings/name=n?human=true"
@@ -228,11 +228,11 @@ object ApiModelIndicesTests extends TestSuite {
 
       // 3.6
 
-      indices.`/_analyze`().read("TEST").`case`(true).getUrl ==> "/_analyze?case=true"
-      api.`/`()._analyze.read("TEST").getUrl ==> "/_analyze"
+      indices.`/_analyze`().readS("TEST").`case`(true).getUrl ==> "/_analyze?case=true"
+      api.`/`()._analyze.readS("TEST").getUrl ==> "/_analyze"
 
-      indices.`/$index/_analyze`("a").read("TEST").`case`(false).getUrl ==> "/a/_analyze?case=false"
-      api.`/`().$("a")._analyze.read("TEST").getUrl ==> "/a/_analyze"
+      indices.`/$index/_analyze`("a").readS("TEST").`case`(false).getUrl ==> "/a/_analyze?case=false"
+      api.`/`().$("a")._analyze.readS("TEST").getUrl ==> "/a/_analyze"
 
       // 3.7
 

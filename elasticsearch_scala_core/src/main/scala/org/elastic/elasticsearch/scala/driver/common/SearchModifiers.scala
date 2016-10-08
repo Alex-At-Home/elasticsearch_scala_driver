@@ -20,7 +20,7 @@ object SearchModifiers {
       * @param query The query string (maps to the query_string query)
       * @return The updated driver operation
       */
-    def query(query: String): this.type = self.withModifier(this.getModifier(query))
+    @Param def query(query: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -31,7 +31,7 @@ object SearchModifiers {
       * @param defaultField The default field to use when no field prefix is defined within the query
       * @return The updated driver operation
       */
-    def df(defaultField: String): this.type = self.withModifier(this.getModifier(defaultField))
+    @Param def df(defaultField: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -42,7 +42,7 @@ object SearchModifiers {
       * @param analyzer The analyzer name to be used when analyzing the query string.
       * @return The updated driver operation
       */
-    def analyzer(analyzer: String): this.type = self.withModifier(this.getModifier(analyzer))
+    @Param def analyzer(analyzer: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -53,7 +53,7 @@ object SearchModifiers {
       * @param b Should terms be automatically lowercased or not. Defaults to `true`.
       * @return The updated driver operation
       */
-    def lowercase_expanded_terms(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def lowercase_expanded_terms(b: Boolean): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -64,7 +64,7 @@ object SearchModifiers {
       * @param b Should wildcard and prefix queries be analyzed or not. Defaults to `false`.
       * @return The updated driver operation
       */
-    def analyze_wildcard(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def analyze_wildcard(b: Boolean): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -76,7 +76,7 @@ object SearchModifiers {
       * @param defaultOperator The default operator to be used, can be AND or OR. Defaults to OR.
       * @return The updated driver operation
       */
-    def default_operator(defaultOperator: String): this.type = self.withModifier(this.getModifier(defaultOperator))
+    @Param def default_operator(defaultOperator: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -89,7 +89,7 @@ object SearchModifiers {
       * @param b If set to true will cause format based failures (like providing text to a numeric field) to be ignored.
       * @return The updated driver operation
       */
-    def lenient(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def lenient(b: Boolean): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -103,7 +103,7 @@ object SearchModifiers {
       * @param sortFields List of fields to sort (fieldName, fieldName:asc, fieldName:desc)
       * @return The updated driver operation
       */
-    def sort(sortFields: String*): this.type = self.withModifier(this.getModifier(sortFields))
+    @Param def sort(sortFields: String*): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -115,7 +115,7 @@ object SearchModifiers {
       * @param b When sorting, set to true in order to still track scores and return them as part of each hit.
       * @return The updated driver operation
       */
-    def track_scores(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def track_scores(b: Boolean): this.type = Modifier.Body
   }
 
   // Search modifiers - standard "body data" version
@@ -129,7 +129,7 @@ object SearchModifiers {
       * @param b enable or disable the caching of search results for requests where size is 0
       * @return The updated driver operation
       */
-    def request_cache(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def request_cache(b: Boolean): this.type = Modifier.Body
   }
 
   // Search modifiers - common
@@ -142,7 +142,7 @@ object SearchModifiers {
       * @param n The starting from index of the hits to return. Defaults to 0.
       * @return The updated driver operation
       */
-    def from(n: Integer): this.type = self.withModifier(this.getModifier(n))
+    @Param def from(n: Integer): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -153,7 +153,7 @@ object SearchModifiers {
       * @param n The number of hits to return. Defaults to 10.
       * @return The updated driver operation
       */
-    def size(n: Integer): this.type = self.withModifier(this.getModifier(n))
+    @Param def size(n: Integer): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -166,7 +166,7 @@ object SearchModifiers {
       * @param searchType The search type: dfs_query_then_fetch, query_then_fetch
       * @return The updated driver operation
       */
-    def search_type(searchType: String): this.type = self.withModifier(this.getModifier(searchType))
+    @Param def search_type(searchType: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -179,7 +179,7 @@ object SearchModifiers {
       * @param n The maximum number of documents to collect for each shard
       * @return The updated driver operation
       */
-    def terminate_after(n: Integer): this.type = self.withModifier(this.getModifier(n))
+    @Param def terminate_after(n: Integer): this.type = Modifier.Body
   }
 
   // Query modifiers - shard information
@@ -192,7 +192,7 @@ object SearchModifiers {
       * @param preference Controls on which shard the explain is executed.
       * @return The updated driver operation
       */
-    def preference(preference: String): this.type = self.withModifier(this.getModifier(preference))
+    @Param def preference(preference: String): this.type = Modifier.Body
   }
 }
 /** Common groupings of modifiers relating to search resources

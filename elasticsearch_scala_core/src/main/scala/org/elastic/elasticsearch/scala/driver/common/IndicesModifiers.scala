@@ -18,7 +18,7 @@ object IndicesModifiers {
       *
       * @param b Whether to error if any of the specified clusters are not available
       */
-    def ignore_unavailable(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def ignore_unavailable(b: Boolean): this.type = Modifier.Body
   }
 
   // Index statistics
@@ -31,7 +31,7 @@ object IndicesModifiers {
       * @param types The types over which to filter statistics
       * @return The updated driver operation
       */
-    def types(types: String*): this.type = self.withModifier(this.getModifier(types))
+    @Param def types(types: String*): this.type = Modifier.Body
   }
 
   // Segments modifiers
@@ -44,7 +44,7 @@ object IndicesModifiers {
       * @param b Whether the response should be verbose
       * @return The updated driver operation
       */
-    def verbose(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def verbose(b: Boolean): this.type = Modifier.Body
   }
 
   // Recovery Modifiers
@@ -58,7 +58,7 @@ object IndicesModifiers {
       * @param b Whether the reply should add extra detail (default: false)
       * @return The updated driver operation
       */
-    def detailed(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def detailed(b: Boolean): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -69,7 +69,7 @@ object IndicesModifiers {
       * @param b Whether the only ongoing recoveries are displayed (default: false)
       * @return The updated driver operation
       */
-    def active_only(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def active_only(b: Boolean): this.type = Modifier.Body
   }
 
   // Index shard status information
@@ -82,7 +82,7 @@ object IndicesModifiers {
       * @param status Only shards with this status are shown
       * @return The updated driver operation
       */
-    def status(status: String): this.type = self.withModifier(this.getModifier(status))
+    @Param def status(status: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -94,7 +94,7 @@ object IndicesModifiers {
       * @param fields Which fields from the document index to include
       * @return The updated driver operation
       */
-    def fields(fields: String*): this.type = self.withModifier(this.getModifier(fields))
+    @Param def fields(fields: String*): this.type = Modifier.Body
   }
 
   // Flush parameters
@@ -110,7 +110,7 @@ object IndicesModifiers {
       *          operation is already executing.
       * @return The updated driver operation
       */
-    def wait_if_ongoing(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def wait_if_ongoing(b: Boolean): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -123,7 +123,7 @@ object IndicesModifiers {
       * @param b  Whether a flush should be forced
       * @return The updated driver operation
       */
-    def force(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def force(b: Boolean): this.type = Modifier.Body
   }
 
   // Force Merge Parameters
@@ -137,7 +137,7 @@ object IndicesModifiers {
       * @param n The number of segments to merge to. To fully merge the index, set it to 1.
       * @return The updated driver operation
       */
-    def max_num_segments(n: Integer): this.type = self.withModifier(this.getModifier(n))
+    @Param def max_num_segments(n: Integer): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -149,7 +149,7 @@ object IndicesModifiers {
       * @param b Whether the only ongoing recoveries are displayed (default: false)
       * @return The updated driver operation
       */
-    def only_expunge_deletes(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def only_expunge_deletes(b: Boolean): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -160,7 +160,7 @@ object IndicesModifiers {
       * @param b Should a flush be performed after the forced merge. Defaults to true.
       * @return The updated driver operation
       */
-    def flush(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def flush(b: Boolean): this.type = Modifier.Body
   }
 
   // Upgrade modifiers
@@ -176,7 +176,7 @@ object IndicesModifiers {
       * @param b If true, only very old segments (from a previous Lucene major release) will be upgraded
       * @return The updated driver operation
       */
-    def only_ancient_segments(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def only_ancient_segments(b: Boolean): this.type = Modifier.Body
   }
 
 }

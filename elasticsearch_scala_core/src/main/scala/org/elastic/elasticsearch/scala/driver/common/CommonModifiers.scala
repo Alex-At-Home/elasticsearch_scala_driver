@@ -17,7 +17,7 @@ object CommonModifiers {
       * @param b The prettiness (newlines/indendation)
       * @return The updated driver operation
       */
-    def pretty(b: Boolean = true): this.type = self.withModifier(this.getModifier(b))
+    @Param def pretty(b: Boolean): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -28,7 +28,7 @@ object CommonModifiers {
       * @param b Whether to return statistics as human readable stats
       * @return The updated driver operation
       */
-    def human(b: Boolean = true): this.type = self.withModifier(this.getModifier(b))
+    @Param def human(b: Boolean): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -39,7 +39,7 @@ object CommonModifiers {
       * @param b Whether to return JSON in camel case
       * @return The updated driver operation
       */
-    def `case`(b: Boolean = true): this.type = self.withModifier(this.getModifier(b))
+    @Param def `case`(b: Boolean): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -50,7 +50,7 @@ object CommonModifiers {
       * @param filterPath A list of fields to include (supports `*` and `**` for wildcarding)
       * @return The updated driver operation
       */
-    def filter_path(filterPath: String*): this.type = self.withModifier(this.getModifier(filterPath))
+    @Param def filter_path(filterPath: String*): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -61,7 +61,7 @@ object CommonModifiers {
       * @param b Whether to return the settings in flat mode
       * @return The updated driver operation
       */
-    def flat_settings(b: Boolean = true): this.type = self.withModifier(this.getModifier(b))
+    @Param def flat_settings(b: Boolean): this.type = Modifier.Body
   }
 
   // Control over write operations
@@ -76,7 +76,7 @@ object CommonModifiers {
       * @param node The body to `POST`/`PUT`
       * @return The updated driver operation
       */
-    def source(node: String): this.type = self.withModifier(this.getModifier(node))
+    @Param def source(node: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -88,7 +88,7 @@ object CommonModifiers {
       * @param node The node to which to restrict the request
       * @return The updated driver operation
       */
-    def routing(node: String): this.type = self.withModifier(this.getModifier(node))
+    @Param def routing(node: String): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
   trait Version extends Modifier { self: BaseDriverOp =>
@@ -98,7 +98,7 @@ object CommonModifiers {
       * @param v The version of the doc against which to apply the operation
       * @return The updated driver operation
       */
-    def version(v: Int): this.type = self.withModifier(this.getModifier(v))
+    @Param def version(v: Int): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
   trait OpType extends Modifier { self: BaseDriverOp =>
@@ -109,7 +109,7 @@ object CommonModifiers {
       * @param opType The operation type
       * @return The updated driver operation
       */
-    def op_type(opType: String): this.type = self.withModifier(this.getModifier(opType))
+    @Param def op_type(opType: String): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
   trait Parent extends Modifier { self: BaseDriverOp =>
@@ -119,7 +119,7 @@ object CommonModifiers {
       * @param parent The parent document id
       * @return The updated driver operation
       */
-    def parent(parent: String): this.type = self.withModifier(this.getModifier(parent))
+    @Param def parent(parent: String): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
   trait Timeout extends Modifier { self: BaseDriverOp =>
@@ -131,7 +131,7 @@ object CommonModifiers {
       * @param timeout The timeout
       * @return The updated driver operation
       */
-    def timeout(timeout: String): this.type = self.withModifier(this.getModifier(timeout))
+    @Param def timeout(timeout: String): this.type = Modifier.Body
   }
 
   // Control the details of returned documents
@@ -144,7 +144,7 @@ object CommonModifiers {
       * @param b Whether to include the _source field of the document in the return
       * @return The updated driver operation
       */
-    def _source(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def _source(b: Boolean): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
   trait SourceInclude extends Modifier { self: BaseDriverOp =>
@@ -154,14 +154,14 @@ object CommonModifiers {
       * @param fields Which fields from the _source object to include
       * @return The updated driver operation
       */
-    def _source_include(fields: String*): this.type = self.withModifier(this.getModifier(fields))
+    @Param def _source_include(fields: String*): this.type = Modifier.Body
     /** Which fields from the _source object to include
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#get-source-filtering Docs]]
       *
       * @param fields Which fields from the _source object to include
       * @return The updated driver operation
       */
-    def _source(fields: String*): this.type = self.withModifier(this.getModifier(fields))
+    @Param def _source(fields: String*): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
   trait SourceExclude extends Modifier { self: BaseDriverOp =>
@@ -171,7 +171,7 @@ object CommonModifiers {
       * @param fields Which fields from the _source object to include
       * @return The updated driver operation
       */
-    def _source_exclude(fields: String*): this.type = self.withModifier(this.getModifier(fields))
+    @Param def _source_exclude(fields: String*): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
   trait Fields extends Modifier { self: BaseDriverOp =>
@@ -182,7 +182,7 @@ object CommonModifiers {
       * @param fields Which fields from the document index to include
       * @return The updated driver operation
       */
-    def fields(fields: String*): this.type = self.withModifier(this.getModifier(fields))
+    @Param def fields(fields: String*): this.type = Modifier.Body
   }
 
   // Misc other modifiers
@@ -196,7 +196,7 @@ object CommonModifiers {
       * @param op If set to "proceed" then doesn't abort on version conflicts
       * @return The updated driver operation
       */
-    def conflict(op: String): this.type = self.withModifier(this.getModifier(op))
+    @Param def conflict(op: String): this.type = Modifier.Body
   }
 
   // Cluster/index statistics
@@ -205,14 +205,14 @@ object CommonModifiers {
   trait Level extends Modifier { self: BaseDriverOp =>
     /** Defines if various stats (cluster health. fields) should be returned on a per index level or on a
       * cluster wide level.
-      * Valid values are "shards", "indices "and "cluster" (default).
+      * Valid values are "shards", "indices "and "cluster" (@Param def ault).
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-health.html#request-params Cluster Health Stats]]
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html#indices-stats Index Stats]]
       *
       * @param level "shards", "indices" or "cluster"
       * @return The updated driver operation
       */
-    def level(level: String): this.type = self.withModifier(this.getModifier(level))
+    @Param def level(level: String): this.type = Modifier.Body
   }
 
   // Cluster/search modifiers
@@ -227,7 +227,7 @@ object CommonModifiers {
       * @param b Whether the cluster state is read locally
       * @return The updated driver operation
       */
-    def local(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def local(b: Boolean): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -243,7 +243,7 @@ object CommonModifiers {
       * @param b For each hit, whether to return an explanation of the request.
       * @return The updated driver operation
       */
-    def explain(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def explain(b: Boolean): this.type = Modifier.Body
   }
 
   // Index and node statistics
@@ -259,7 +259,7 @@ object CommonModifiers {
       * @param groups The set of statistics groups for which to return statistics
       * @return The updated driver operation
       */
-    def groups(groups: String*): this.type = self.withModifier(this.getModifier(groups))
+    @Param def groups(groups: String*): this.type = Modifier.Body
   }
 
 }
