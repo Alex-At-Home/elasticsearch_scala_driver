@@ -1,14 +1,10 @@
 package org.elastic.elasticsearch.scala.driver.common
 
 import utest._
-import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.{BulkIndexOps, ElasticsearchInfo}
+import org.elastic.elasticsearch.scala.driver.common.DataModelCommon.BulkIndexOps
 import org.elastic.rest.scala.driver.RestBase._
-import org.elastic.rest.scala.driver.utils.{MockRestDriver, NoJsonHelpers}
+import org.elastic.rest.scala.driver.utils.NoJsonHelpers
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.reflect.runtime.universe._
 
 
 object ApiModelCommonTests extends TestSuite {
@@ -21,31 +17,31 @@ object ApiModelCommonTests extends TestSuite {
       api.`/`().read().pretty(true).getUrl ==> "/?pretty=true"
 
       api.`/$uri`("/a").read().m("param", "val").getUrl ==> "/a?param=val"
-      api.`/$uri`("/a").read("TEST").getUrl ==> "/a"
+      api.`/$uri`("/a").readS("TEST").getUrl ==> "/a"
       api.`/$uri`("/a").check().getUrl ==> "/a"
-      api.`/$uri`("/a").write("TEST").getUrl ==> "/a"
+      api.`/$uri`("/a").writeS("TEST").getUrl ==> "/a"
       api.`/$uri`("/a").write().getUrl ==> "/a"
       api.`/$uri`("/a").delete().getUrl ==> "/a"
-      api.`/$uri`("/a").delete("TEST").getUrl ==> "/a"
+      api.`/$uri`("/a").deleteS("TEST").getUrl ==> "/a"
       api.`/$uri`("/a").check().getUrl ==> "/a"
 
       api.`/$index`("a").read().pretty(false).getUrl ==> "/a?pretty=false"
-      api.`/$index`("a").write("TEST").pretty(true).getUrl ==> "/a?pretty=true"
-      api.`/$index`("a").delete().pretty().getUrl ==> "/a?pretty=true"
+      api.`/$index`("a").writeS("TEST").pretty(true).getUrl ==> "/a?pretty=true"
+      api.`/$index`("a").delete().pretty(true).getUrl ==> "/a?pretty=true"
       api.`/$index`("a").check().getUrl ==> "/a"
       api.`/`().$("a").read().getUrl ==> "/a"
-      api.`/`().$("a").write("TEST").getUrl ==> "/a"
+      api.`/`().$("a").writeS("TEST").getUrl ==> "/a"
       api.`/`().$("a").delete().getUrl ==> "/a"
       api.`/`().$("a").check().getUrl ==> "/a"
 
       api.`/$indexes/$types`(Seq("a", "b"), Seq("x", "y")).check().getUrl ==> "/a,b/x,y"
       api.`/`().$("a", "b").$("x", "y").check().getUrl ==> "/a,b/x,y"
 
-      api.`/$index/$type`("a", "x").write("TEST")
+      api.`/$index/$type`("a", "x").writeS("TEST")
         .pretty(true).parent("P").op_type("O").version(9).routing("R").timeout("T")
         .getUrl == "/a/x?pretty=true&parent=P&op_type=O&version=9&routing=R&timeout=T"
       api.`/$index/$type`("a", "x").check().getUrl == "/a/x"
-      api.`/`().$("a").$("x").write("TEST").getUrl ==> "/a/x"
+      api.`/`().$("a").$("x").writeS("TEST").getUrl ==> "/a/x"
       api.`/`().$("a").$("x").check().getUrl ==> "/a/x"
 
       api.`/$index/$type/$id`("a", "x", "1").read().pretty(true)
@@ -53,7 +49,7 @@ object ApiModelCommonTests extends TestSuite {
           .fields("f1", "f2").getUrl ==>
       "/a/x/1?pretty=true&_source=true&_source=s1,s2&_source_include=s3,s4&_source_exclude=s5,s6&fields=f1,f2"
       api.`/$index/$type/$id`("a", "x", "1").check().getUrl ==> "/a/x/1"
-      api.`/$index/$type/$id`("a", "x", "1").write("TEST").pretty()
+      api.`/$index/$type/$id`("a", "x", "1").writeS("TEST").pretty(true)
         .op_type("op").parent("2").routing("node").timeout("1m").version(3).getUrl ==>
         "/a/x/1?pretty=true&op_type=op&parent=2&routing=node&timeout=1m&version=3"
       api.`/$index/$type/$id`("a", "x", "1").delete().pretty(false)
@@ -61,7 +57,7 @@ object ApiModelCommonTests extends TestSuite {
         "/a/x/1?pretty=false&op_type=op&parent=2&routing=node&timeout=1m"
       api.`/`().$("a").$("x").$("1").read().getUrl ==> "/a/x/1"
       api.`/`().$("a").$("x").$("1").check().getUrl ==> "/a/x/1"
-      api.`/`().$("a").$("x").$("1").write("TEST").getUrl ==> "/a/x/1"
+      api.`/`().$("a").$("x").$("1").writeS("TEST").getUrl ==> "/a/x/1"
       api.`/`().$("a").$("x").$("1").delete().getUrl ==> "/a/x/1"
 
       api.`/$index/$type/$id/_source`("a", "x", "1").read().pretty(true)
@@ -70,15 +66,15 @@ object ApiModelCommonTests extends TestSuite {
         "/a/x/1/_source?pretty=true&_source=true&_source=s1,s2&_source_include=s3,s4&_source_exclude=s5,s6&fields=f1,f2"
       api.`/`().$("a").$("x").$("1")._source.read().getUrl ==> "/a/x/1/_source"
 
-      api.`/$index/$type/$id/_update`("a", "x", "1").write("TEST").pretty(true).getUrl ==>
+      api.`/$index/$type/$id/_update`("a", "x", "1").writeS("TEST").pretty(true).getUrl ==>
         "/a/x/1/_update?pretty=true"
-      api.`/`().$("a").$("x").$("1")._update.write("TEST").getUrl ==> "/a/x/1/_update"
+      api.`/`().$("a").$("x").$("1")._update.writeS("TEST").getUrl ==> "/a/x/1/_update"
 
-      api.`/$index/_update_by_query`("a").write("TEST").pretty(false)
+      api.`/$index/_update_by_query`("a").writeS("TEST").pretty(false)
           .conflict("proceed").getUrl ==> "/a/_update_by_query?pretty=false&conflict=proceed"
-      api.`/`().$("a")._update_by_query.write("TEST").getUrl ==> "/a/_update_by_query"
+      api.`/`().$("a")._update_by_query.writeS("TEST").getUrl ==> "/a/_update_by_query"
 
-      api.`/_mget`().read().pretty().routing("a").getUrl ==> "/_mget?pretty=true&routing=a"
+      api.`/_mget`().read().pretty(true).routing("a").getUrl ==> "/_mget?pretty=true&routing=a"
       api.`/$index/_mget`("a").read().pretty(true).routing("a").getUrl ==> "/a/_mget?pretty=true&routing=a"
       api.`/$index/$type/_mget`("a", "x").read().pretty(false).routing("a").getUrl ==>
         "/a/x/_mget?pretty=false&routing=a"
@@ -86,41 +82,41 @@ object ApiModelCommonTests extends TestSuite {
       api.`/`().$("a")._mget.read().getUrl ==> "/a/_mget"
       api.`/`().$("a").$("x")._mget.read().getUrl ==> "/a/x/_mget"
 
-      api.`/_bulk`().write("TEST").pretty().getUrl ==> "/_bulk?pretty=true"
-      api.`/$index/_bulk`("a").write("TEST").pretty(true).getUrl ==> "/a/_bulk?pretty=true"
-      api.`/$index/$type/_bulk`("a", "x").write("TEST").pretty(false).getUrl ==> "/a/x/_bulk?pretty=false"
-      api.`/`()._bulk.write("TEST").getUrl ==> "/_bulk"
-      api.`/`().$("a")._bulk.write("TEST").getUrl ==> "/a/_bulk"
-      api.`/`().$("a").$("x")._bulk.write("TEST").getUrl ==> "/a/x/_bulk"
+      api.`/_bulk`().writeS("TEST").pretty(true).getUrl ==> "/_bulk?pretty=true"
+      api.`/$index/_bulk`("a").writeS("TEST").pretty(true).getUrl ==> "/a/_bulk?pretty=true"
+      api.`/$index/$type/_bulk`("a", "x").writeS("TEST").pretty(false).getUrl ==> "/a/x/_bulk?pretty=false"
+      api.`/`()._bulk.writeS("TEST").getUrl ==> "/_bulk"
+      api.`/`().$("a")._bulk.writeS("TEST").getUrl ==> "/a/_bulk"
+      api.`/`().$("a").$("x")._bulk.writeS("TEST").getUrl ==> "/a/x/_bulk"
 
-      api.`/_reindex`().write("TEST").pretty().getUrl ==> "/_reindex?pretty=true"
-      api.`/`()._reindex.write("TEST").getUrl ==> "/_reindex"
+      api.`/_reindex`().writeS("TEST").pretty(true).getUrl ==> "/_reindex?pretty=true"
+      api.`/`()._reindex.writeS("TEST").getUrl ==> "/_reindex"
 
-      api.`/$index/$type/_termvectors`("a", "x").read().pretty().fields("f1", "f2").getUrl ==>
+      api.`/$index/$type/_termvectors`("a", "x").read().pretty(true).fields("f1", "f2").getUrl ==>
         "/a/x/_termvectors?pretty=true&fields=f1,f2"
       api.`/$index/$type/$id/_termvectors`("a", "x", "1").read().pretty(false).fields("f1", "f2").getUrl ==>
         "/a/x/1/_termvectors?pretty=false&fields=f1,f2"
       api.`/`().$("a").$("x")._termvectors.read().getUrl ==> "/a/x/_termvectors"
       api.`/`().$("a").$("x").$("1")._termvectors.read().getUrl ==> "/a/x/1/_termvectors"
 
-      api.`/_mtermvectors`().read("TEST").pretty().getUrl ==> "/_mtermvectors?pretty=true"
-      api.`/$index/_mtermvectors`("a").read("TEST").pretty(true).getUrl ==> "/a/_mtermvectors?pretty=true"
-      api.`/`()._mtermvectors.read("TEST").getUrl ==> "/_mtermvectors"
-      api.`/`().$("a")._mtermvectors.read("TEST").getUrl ==> "/a/_mtermvectors"
+      api.`/_mtermvectors`().readS("TEST").pretty(true).getUrl ==> "/_mtermvectors?pretty=true"
+      api.`/$index/_mtermvectors`("a").readS("TEST").pretty(true).getUrl ==> "/a/_mtermvectors?pretty=true"
+      api.`/`()._mtermvectors.readS("TEST").getUrl ==> "/_mtermvectors"
+      api.`/`().$("a")._mtermvectors.readS("TEST").getUrl ==> "/a/_mtermvectors"
     }
     "Custom typed operations: _bulk" - {
       object api extends ApiModelCommon
 
-      import NoJsonHelpers.NoJsonTypedToStringHelper
+      import NoJsonHelpers._
 
       val bulkOps = BulkIndexOps(List(
-        api.`/$index/$type`("index", "type").write("TEST1").m("param", "tp"),
-        api.`/$index/$type/$id`("index", "type", "id").write("TEST2").m("param", true),
-        api.`/$index/$type/$id`("", "type", "id").write("TEST3"),
+        api.`/$index/$type`("index", "type").writeS("TEST1").m("param", "tp"),
+        api.`/$index/$type/$id`("index", "type", "id").writeS("TEST2").m("param", true),
+        api.`/$index/$type/$id`("", "type", "id").writeS("TEST3"),
         api.`/$index/$type/$id`("index", "", "id").delete(),
-        api.`/$index/$type/$id`("", "", "id").write("TEST5"),
-        api.`/$uri`("index").write("TEST6").m("param", 3),
-        api.`/$index/$type/$id/_update`("index", "type", "id").write("TEST7").m("param", List("l1", "l2"))
+        api.`/$index/$type/$id`("", "", "id").writeS("TEST5"),
+        api.`/$uri`("index").writeS("TEST6").m("param", 3),
+        api.`/$index/$type/$id/_update`("index", "type", "id").writeS("TEST7").m("param", List("l1", "l2"))
       ))
 
       def formatVals(s: String) =
@@ -149,28 +145,6 @@ object ApiModelCommonTests extends TestSuite {
       //  .map(x => if (x._1 != x._2) s"****$x****" else s"$x").mkString("|"))
 
       formatVals(api.`/_bulk`().write(bulkOps).body.get) ==> expected
-    }
-    "Custom typed operations: return values" - {
-      object latest extends ApiModelCommon
-
-      val handler: PartialFunction[BaseDriverOp, Future[String]] = {
-        case BaseDriverOp(latest.`/`(), _, None, List(("pretty", true)), _) =>
-          Future.successful("test_cluster")
-      }
-      implicit val mockDriver = new MockRestDriver(handler)
-
-      implicit val stringToTypedHelper = new StringToTypedHelper() {
-        override def toType[T](s: String)(implicit ct: WeakTypeTag[T]): T = {
-          if (ct.tpe =:= typeOf[ElasticsearchInfo]) {
-            ElasticsearchInfo(
-              s, s, ElasticsearchInfo.VersionInfo("", "", "", build_snapshot = true, ""), "You know, for search")
-          }.asInstanceOf[T]
-          else throw RestRequestException(s"Internal logic error: toType $ct vs ElasticsearchInfo")
-        }
-      }
-
-      val result = Await.result(latest.`/`().read().pretty(true).exec(), Duration("1 second"))
-      result.cluster_name ==> "test_cluster"
     }
   }
 }

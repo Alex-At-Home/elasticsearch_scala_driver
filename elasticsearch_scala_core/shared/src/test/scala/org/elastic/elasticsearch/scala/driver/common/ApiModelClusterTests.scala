@@ -55,12 +55,12 @@ object ApiModelClusterTests  extends TestSuite {
       clusters.`/_cluster/pending_tasks`().read().pretty(false).getUrl ==> "/_cluster/pending_tasks?pretty=false"
       api.`/`()._cluster.pending_tasks.read().getUrl ==> "/_cluster/pending_tasks"
 
-      clusters.`/_cluster/reroute`().send("TEST").pretty(true).explain(false).dry_run(true)
+      clusters.`/_cluster/reroute`().sendS("TEST").pretty(true).explain(false).dry_run(true)
         .getUrl ==> "/_cluster/reroute?pretty=true&explain=false&dry_run=true"
-      api.`/`()._cluster.reroute.send("TEST").getUrl ==> "/_cluster/reroute"
+      api.`/`()._cluster.reroute.sendS("TEST").getUrl ==> "/_cluster/reroute"
 
       clusters.`/_cluster/settings`().read().pretty(false).getUrl ==> "/_cluster/settings?pretty=false"
-      clusters.`/_cluster/settings`().write("TEST").pretty(true).getUrl ==> "/_cluster/settings?pretty=true"
+      clusters.`/_cluster/settings`().writeS("TEST").pretty(true).getUrl ==> "/_cluster/settings?pretty=true"
 
       // Node statistics
 

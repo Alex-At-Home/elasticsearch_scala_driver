@@ -2,6 +2,8 @@ import sbt._
 import Keys._
 import sbtassembly.AssemblyKeys._
 import sbtassembly.{MergeStrategy, PathList}
+import org.scalajs.sbtplugin.ScalaJSPlugin
+import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 
 object BuildSettings {
 
@@ -34,7 +36,9 @@ object MyBuild extends Build {
 
   lazy val simpleScalaHttpServer = "com.tumblr" %% "colossus" % "0.8.1" % "test"
 
-  val rest_client_library_uri = uri("https://github.com/Alex-At-Home/rest_client_library.git")
+  val rest_client_library_branch = "" //("#$branch" or "" for master)
+  val rest_client_library_uri =
+    uri(s"https://github.com/Alex-At-Home/rest_client_library.git$rest_client_library_branch")
 
   // Project definitions
 
@@ -45,8 +49,10 @@ object MyBuild extends Build {
     file("."),
     settings = buildSettings
   )
+  .enablePlugins(ScalaJSPlugin)
   .aggregate(
-    elasticsearch_scala_core,
+    elasticsearch_scala_coreJVM,
+    elasticsearch_scala_coreJS,
     elasticsearch_scala_java_client,
     elasticsearch_scala_shell
   )
@@ -55,23 +61,30 @@ object MyBuild extends Build {
   val apiRoot = "https://alex-at-home.github.io"
   val docVersion = "current"
 
-  lazy val rest_scala_core = ProjectRef(rest_client_library_uri, "rest_scala_core")
+  lazy val rest_scala_coreJVM = ProjectRef(rest_client_library_uri, "rest_scala_coreJVM")
+  lazy val rest_scala_coreJS = ProjectRef(rest_client_library_uri, "rest_scala_coreJS")
 
-  lazy val rest_json_circe_module = ProjectRef(rest_client_library_uri, "rest_json_circe_module")
+  lazy val rest_json_circe_moduleJVM = ProjectRef(rest_client_library_uri, "rest_json_circe_moduleJVM")
+  lazy val rest_json_circe_moduleJS = ProjectRef(rest_client_library_uri, "rest_json_circe_moduleJS")
 
-  lazy val elasticsearch_scala_core: Project = Project(
-    "elasticsearch_scala_core",
-    file("elasticsearch_scala_core"),
-    settings = buildSettings ++ Seq(
-      name := "Elasticsearch Scala Core",
-      version := esScalaDriverVersion,
-      apiURL := Some(url(s"$apiRoot/$githubName/$docVersion/elasticsearch_scala_core/")),
-      autoAPIMappings := true,
-      libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaBuildVersion,
-      libraryDependencies += utestJvmDeps,
-      testFrameworks += new TestFramework("utest.runner.Framework")
+  lazy val elasticsearch_scala_core = crossProject
+    .in(file("elasticsearch_scala_core"))
+    .settings(
+      buildSettings ++ Seq(
+        name := "Elasticsearch Scala Core",
+        version := esScalaDriverVersion,
+        apiURL := Some(url(s"$apiRoot/$githubName/$docVersion/")),
+        autoAPIMappings := true,
+        libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaBuildVersion,
+        libraryDependencies += "com.lihaoyi" %%% "utest" % utestJvmVersion % "test",
+        testFrameworks += new TestFramework("utest.runner.Framework")
+      ): _*)
+    .jvmSettings()
+    .jsSettings(
+      scalaJSUseRhino in Global := false
     )
-  ).dependsOn(rest_scala_core).dependsOn(rest_json_circe_module)
+  lazy val elasticsearch_scala_coreJVM = elasticsearch_scala_core.jvm dependsOn rest_scala_coreJVM dependsOn rest_json_circe_moduleJVM
+  lazy val elasticsearch_scala_coreJS = elasticsearch_scala_core.js dependsOn rest_scala_coreJS dependsOn rest_json_circe_moduleJS
 
   lazy val elasticsearch_scala_java_client: Project = Project(
     "elasticsearch_scala_java_client",
@@ -79,14 +92,14 @@ object MyBuild extends Build {
     settings = buildSettings ++ Seq(
       name := "Elasticsearch Java Client Scala bridge",
       version := esScalaDriverVersion,
-      apiURL := Some(url(s"$apiRoot/$githubName/$docVersion/elasticsearch_scala_java_client/")),
+      apiURL := Some(url(s"$apiRoot/$githubName/$docVersion/")),
       autoAPIMappings := true,
       libraryDependencies += esRestDeps,
       libraryDependencies += utestJvmDeps,
       libraryDependencies += simpleScalaHttpServer,
       testFrameworks += new TestFramework("utest.runner.Framework")
     )
-  ).dependsOn(elasticsearch_scala_core)
+  ).dependsOn(elasticsearch_scala_coreJVM)
 
   lazy val elasticsearch_scala_shell: Project = Project(
     "elasticsearch_scala_shell",
@@ -107,21 +120,24 @@ object MyBuild extends Build {
       mainClass in assembly := Some("org.elastic.elasticsearch.scala.driver.jvm.ShellMain")
     )
   )
-  .dependsOn(rest_json_circe_module, elasticsearch_scala_java_client)
+  .dependsOn(rest_json_circe_moduleJVM, elasticsearch_scala_java_client)
 
   // Doc project
   // (from https://groups.google.com/forum/#!topic/simple-build-tool/QXFsjLozLyU)
   def mainDirs(project: ProjectRef) = unmanagedSourceDirectories in project in Compile
   def mainDirs(project: Project) = unmanagedSourceDirectories in project in Compile
   lazy val doc = Project("doc", file("doc"))
-      .dependsOn(rest_scala_core, rest_json_circe_module, elasticsearch_scala_core, elasticsearch_scala_java_client)
+      .dependsOn(
+        rest_scala_coreJVM, rest_json_circe_moduleJVM,
+        elasticsearch_scala_coreJVM, elasticsearch_scala_java_client
+      )
       .settings(buildSettings ++ Seq(
         version := esScalaDriverVersion,
         unmanagedSourceDirectories in Compile <<= Seq(
-            mainDirs(elasticsearch_scala_core),
+            mainDirs(elasticsearch_scala_coreJVM),
             mainDirs(elasticsearch_scala_java_client),
-            mainDirs(rest_scala_core),
-            mainDirs(rest_json_circe_module)
+            mainDirs(rest_scala_coreJVM),
+            mainDirs(rest_json_circe_moduleJVM)
           ).join.apply {(s) => s.flatten}
       )
     )

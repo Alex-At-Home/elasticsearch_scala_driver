@@ -3,7 +3,7 @@ package org.elastic.elasticsearch.scala.driver.common
 import org.elastic.elasticsearch.scala.driver.common.ClusterModifiers._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifiers._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
-import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, Modifier}
+import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, Modifier, Param}
 
 /** Parameters for resources to monitor and manage top level Elasticsearch cluster attributes
   */
@@ -17,7 +17,7 @@ object ClusterModifiers {
       *
       * @param status "red", "yellow" or "green", the status to wait for
       */
-    def wait_for_status(status: String): this.type = self.withModifier(this.getModifier(status))
+    @Param def wait_for_status(status: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -28,7 +28,7 @@ object ClusterModifiers {
       *
       * @param n The number of relocating shards to wait for (defaults to not wait; 0 to wait for all relocations)
       */
-    def wait_for_relocating_shards(n: Integer): this.type = self.withModifier(this.getModifier(n))
+    @Param def wait_for_relocating_shards(n: Integer): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -38,7 +38,7 @@ object ClusterModifiers {
       *
       * @param n The number of active shards to wait for (defaults to not wait)
       */
-    def wait_for_active_shards(n: Integer): this.type = self.withModifier(this.getModifier(n))
+    @Param def wait_for_active_shards(n: Integer): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -50,7 +50,7 @@ object ClusterModifiers {
       *
       * @param n The number of active shards to wait for (defaults to not wait)
       */
-    def wait_for_nodes(n: Integer): this.type = self.withModifier(this.getModifier(n))
+    @Param def wait_for_nodes(n: Integer): this.type = Modifier.Body
     /** The request waits until the specified number N of nodes is available
       * Also supports `>=N`, `<=N`, `>N` and `<N`).
       * Alternatively, it is possible to use `ge(N)`, `le(N)`, `gt(N)` and `lt(N)` notation.
@@ -58,7 +58,7 @@ object ClusterModifiers {
       *
       * @param n The number of active shards to wait for (defaults to not wait)
       */
-    def wait_for_nodes(n: String): this.type = self.withModifier(this.getModifier(n))
+    @Param def wait_for_nodes(n: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -70,7 +70,7 @@ object ClusterModifiers {
       *
       * @param b Whether to execute the command as a dry run
       */
-    def dry_run(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def dry_run(b: Boolean): this.type = Modifier.Body
   }
 
   // Nodes
@@ -82,7 +82,7 @@ object ClusterModifiers {
       *
       * @param n number of hot threads to provide, defaults to 3.
       */
-    def threads(n: Int): this.type = self.withModifier(this.getModifier(n))
+    @Param def threads(n: Int): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -92,7 +92,7 @@ object ClusterModifiers {
       *
       * @param interval the interval to do the second sampling of threads. Defaults to 500ms.
       */
-    def interval(interval: String): this.type = self.withModifier(this.getModifier(interval))
+    @Param def interval(interval: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -104,7 +104,7 @@ object ClusterModifiers {
       * @param `type` The type to sample, defaults to `cpu`, but supports `wait` and `block`
       *               to see hot threads that are in wait or block state.
       */
-    def `type`(`type`: String): this.type = self.withModifier(this.getModifier(`type`))
+    @Param def `type`(`type`: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -115,7 +115,7 @@ object ClusterModifiers {
       *
       * @param b Whether to ignore idle threads (defaults to true)
       */
-    def ignore_idle_threads(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def ignore_idle_threads(b: Boolean): this.type = Modifier.Body
   }
 
   // Task management
@@ -128,7 +128,7 @@ object ClusterModifiers {
       * @param nodes The list of nodes to which to restrict the task info request
       *              [[https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster.html (Node formats)]]
       */
-    def nodes(nodes: String*): this.type = self.withModifier(this.getModifier(nodes))
+    @Param def nodes(nodes: String*): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -139,7 +139,7 @@ object ClusterModifiers {
       * @param nodes The list of nodes to which to restrict the task cancel request
       *              [[https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster.html (Node formats)]]
       */
-    def node_id(nodes: String*): this.type = self.withModifier(this.getModifier(nodes))
+    @Param def node_id(nodes: String*): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -149,7 +149,7 @@ object ClusterModifiers {
       *
       * @param taskId The id of the task that "spawned" children
       */
-    def parent_task_id(taskId: String): this.type = self.withModifier(this.getModifier(taskId))
+    @Param def parent_task_id(taskId: String): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -159,7 +159,7 @@ object ClusterModifiers {
       *
       * @param actions The list of actions to which to restrict the task info/action request
       */
-    def actions(actions: String*): this.type = self.withModifier(this.getModifier(actions))
+    @Param def actions(actions: String*): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -171,7 +171,7 @@ object ClusterModifiers {
       * @param b Whether to wait for a task to complete
       *          (or the `timeout` parameter to expire if specified)
       */
-    def wait_for_completion(b: Boolean): this.type = self.withModifier(this.getModifier(b))
+    @Param def wait_for_completion(b: Boolean): this.type = Modifier.Body
   }
 
 

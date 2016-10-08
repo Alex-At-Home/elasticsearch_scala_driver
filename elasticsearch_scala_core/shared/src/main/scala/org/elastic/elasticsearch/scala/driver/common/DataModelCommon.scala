@@ -1,10 +1,9 @@
 package org.elastic.elasticsearch.scala.driver.common
 
-import io.circe.jawn._
-import io.circe._
 import io.circe.generic.JsonCodec
 import org.elastic.elasticsearch.scala.driver.utils.BulkUtils
 import org.elastic.rest.scala.driver.RestBase._
+import org.elastic.rest.scala.driver.RestBaseImplicits.CustomTypedToString
 
 /** Common data model types used by the resources
   */
