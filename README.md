@@ -10,8 +10,8 @@ A Scala driver for Elasticsearch, built using [this REST client library](https:/
    * The support for types is built in (using CIRCE). Some example types have been added, the intention is that users of the library (like me!) will add types as needed via PR, because it's so easy (see below).
 * Easily extendible for modules and plugins, using the underlying [REST client library](https://github.com/Alex-At-Home/rest_client_library)
 * Built on the [Elasticsearch REST driver](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html), or you can write a _very_ thin wrapper around your preferred HTTP client
+* Runs in [Scala.JS](https://www.scala-js.org/) as well as in the JVM
 * Built-in mocking support
-* _(Currently does not run in ScalaJS, though that is a longer term goal)_
 
 ## Example
 
