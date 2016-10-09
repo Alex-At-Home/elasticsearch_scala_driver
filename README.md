@@ -28,6 +28,16 @@ latest._node.stats.read().resultJ()
 
 //TODO etc
 ```
+## Import the elasticsearch driver
+
+Add the following to your `build.sbt` or `Build.scala` (assuming running in the JVM not ScalaJS):
+* `val es_driver = ProjectRef(uri("https://github.com/Alex-At-Home/elasticsearch_scala_driver#2.3.0", "elasticsearch_scala_java_clientJVM")`
+   * (or whatever version/branch is desired after the `#`)
+* `.dependsOn(es_driver)` to any projects that will use the driver.
+
+For ScalaJS it is similar, except the following 2 projects are required:
+* `val es_driver = ProjectRef(uri("https://github.com/Alex-At-Home/elasticsearch_scala_driver#2.3.0", "elasticsearch_scala_coreJS")`
+* `val rest_client = ProjectRef(uri("https://github.com/Alex-At-Home/rest_client_library#1.0.0", "rest_http_client")`
 
 ## Documentation
 
