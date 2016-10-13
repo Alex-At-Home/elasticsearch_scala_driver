@@ -4,6 +4,7 @@ import org.elastic.rest.scala.driver.RestResources.{RestReadable, _}
 import org.elastic.rest.scala.driver.RestBase._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
+import org.elastic.elasticsearch.scala.driver.common.XpackModifierGroups._
 
 /**
   * API for Xpack extensions - Monitoring (formerly Marvel), Security (formerly Shield),
@@ -49,15 +50,13 @@ trait ApiModelXpack {
     extends RestReadable[StandardParams]
       with RestResource
 
-  //TODO: username params
-
   /** The Clear Cache API evicts users from the user cache. You can completely clear the cache or evict specific users.
     * [[https://www.elastic.co/guide/en/shield/current/shield-rest.html#shield-clear-cache-rest Docs]]
     * [[https://www.elastic.co/guide/en/shield/current/controlling-user-cache.html (Cache information)]]
     * @param realms The list of realms to cache evict
     */
   case class `/_shield/realm/$realms/_clear_cache`(realms: String*)
-    extends RestNoDataSendable[StandardParams]
+    extends RestNoDataSendable[SecurityClearCacheParams]
       with RestResource
 
   /** The Users API enables you to create, read, update, and delete users from the native realm. These users are
@@ -122,8 +121,6 @@ trait ApiModelXpack {
   // 3) Licensing
   // https://www.elastic.co/guide/en/shield/current/license-management.html
 
-  //TODO: acknowledge = true
-
   /** You can update your license at runtime without shutting down your nodes. License updates take effect immediately.
     * The license is provided as a JSON file that you install with the license API. You need cluster admin privileges
     * to install the license.
@@ -131,7 +128,7 @@ trait ApiModelXpack {
     */
   case class `/_license`()
     extends RestReadable[StandardParams]
-    with RestWritable[StandardParams]
+    with RestWritable[LicenseParams]
     with RestResource
 
   // 4) Snapshots
@@ -185,16 +182,12 @@ trait ApiModelXpack {
   // 5) Watcher
   // https://www.elastic.co/guide/en/watcher/current/api-rest.html
 
-  //TODO docs
-
   /** The watcher info API gives basic version information on the watcher plugin that is installed.
     * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html Docs]]
     */
   case class `/_watcher`()
     extends RestReadable[StandardParams]
       with RestResource
-
-  //TODO master_timeout (WD), active (W)
 
   /** Read, Write or Delete watches
     * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html#api-rest-put-watch Write Docs]]
@@ -204,8 +197,8 @@ trait ApiModelXpack {
     */
   case class `/_watcher/watch/$watchName`(watchName: String)
     extends RestReadable[StandardParams]
-      with RestWritable[StandardParams]
-      with RestDeletable[StandardParams]
+      with RestWritable[WatcherWriteParams]
+      with RestDeletable[WatcherDeleteParams]
       with RestResource
 
   /** The execute watch API forces the execution of a stored watch. It can be used to force execution of the watch
@@ -217,15 +210,13 @@ trait ApiModelXpack {
     extends RestSendable[StandardParams]
       with RestResource
 
-  //TODO master_timeout
-
   /** Acknowledging a watch enables you to manually throttle execution of the watch’s actions.
     * An action’s acknowledgement state is stored in the `_status.actions.id.ack.state structure`.
     * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html#api-rest-ack-watch Docs]]
     * @param watchName The name of the watch to acknowledge
     */
   case class `/_watcher/watch/$watchName/_ack`(watchName: String)
-    extends RestNoDataWritable[StandardParams]
+    extends RestNoDataWritable[WatcherAckParams]
       with RestResource
 
   /** A watch can be either active or inactive. This API enables you to activate a currently inactive watch.
@@ -244,13 +235,11 @@ trait ApiModelXpack {
     extends RestNoDataWritable[StandardParams]
       with RestResource
 
-  //TODO metric
-
   /** The watcher stats API returns information on the aspects of watcher on your cluster.
     * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html#api-rest-stats Docs]]
     */
   case class `/_watcher/stats`()
-    extends RestReadable[StandardParams]
+    extends RestReadable[MetricParams]
       with RestResource
 
   /** The watcher stats API returns information on the aspects of watcher on your cluster.
