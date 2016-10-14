@@ -118,7 +118,8 @@ trait ApiModelCluster {
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-update-settings.html Docs]]
     */
   case class `/_cluster/settings`()
-    extends RestReadable[StandardParams]
+    extends `tree:/_cluster/settings`
+      with RestReadable[StandardParams]
       with RestWritable[StandardParams]
       with RestResource
 

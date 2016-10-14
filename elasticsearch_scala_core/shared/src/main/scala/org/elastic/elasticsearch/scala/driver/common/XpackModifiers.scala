@@ -57,10 +57,12 @@ object XpackModifiers {
 
   /** (modifier - see method for details) */
   trait Metric extends Modifier { self: BaseDriverOp =>
-    /**
-      * [[ Docs]]
+    /** Specify the metric in watcher for which to get statistics, one of
+      * "queued_watches", "current_watches", "executing_watches", "_all"
+      * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html#_current_executing_watches_metric Docs]]
       *
-      * @param metric
+      * @param metric The metric in watcher for which to get statistics, one of
+      *               "queued_watches", "current_watches", "executing_watches", "_all"
       * @return The updated driver operation
       */
     @Param def metric(metric: String): this.type = Modifier.Body

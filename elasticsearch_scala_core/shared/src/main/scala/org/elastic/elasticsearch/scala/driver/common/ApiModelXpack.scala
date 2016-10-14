@@ -4,6 +4,7 @@ import org.elastic.rest.scala.driver.RestResources.{RestReadable, _}
 import org.elastic.rest.scala.driver.RestBase._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
+import org.elastic.elasticsearch.scala.driver.common.DataModelXpack._
 import org.elastic.elasticsearch.scala.driver.common.XpackModifierGroups._
 
 /**
@@ -17,16 +18,16 @@ trait ApiModelXpack {
   // 1) Marvel/Monitoring
   // https://www.elastic.co/guide/en/marvel/current/configuration.html
 
-  //TODO this needs a data model (or maybe have an embedded mode?)
-
-  /** Reads or writes the Marvel configuration
+  /** Writes the Marvel configuration
     * Note that if not using the typed version of this API, the JSON object is just written to
     * `/_cluster/settings` ie is not Marvel specific
+    * (ie will need the "marvel.agent" prefixes to each field, see documentation
+    * To read, just use `/cluster/settings` (once a typed output has been written for Marvel
+    * a read resource will be added)
     * [[https://www.elastic.co/guide/en/marvel/current/configuration.html Docs]]
     */
-  case class `/_cluster/settings#marvel`()
-    extends RestReadable[StandardParams]
-      with RestWritable[StandardParams]
+  case class `/_cluster/settings#marvel.agent`()
+    extends RestWritableTU[StandardParams, MarvelConfig]
       with RestResource
   {
     override lazy val location: String = "/_cluster/settings"
@@ -87,7 +88,8 @@ trait ApiModelXpack {
     * [[https://www.elastic.co/guide/en/shield/current/shield-rest.html#shield-users-rest Docs]]
     */
   case class `/_shield/user`()
-    extends RestReadable[StandardParams]
+    extends `tree:/_shield/user`
+      with RestReadable[StandardParams]
       with RestResource
 
   /** The Roles API enables you to add, remove, and retrieve roles in the native Shield realm. To use this API,
@@ -115,7 +117,8 @@ trait ApiModelXpack {
     * [[https://www.elastic.co/guide/en/shield/current/shield-rest.html#shield-roles-rest Docs]]
     */
   case class `/_shield/role`()
-    extends RestReadable[StandardParams]
+    extends `tree:/_shield/role`
+      with RestReadable[StandardParams]
       with RestResource
 
   // 3) Licensing
@@ -133,6 +136,9 @@ trait ApiModelXpack {
 
   // 4) Snapshots
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html
+
+  //TODO: pretty sure I have the snapshot API wrong: (mixed up repo vs name)
+
 
   /** The snapshot and restore module allows to create snapshots of individual indices or an entire cluster
     * into a remote repository like shared file system, S3, or HDFS. These snapshots are great for backups
@@ -166,7 +172,8 @@ trait ApiModelXpack {
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html Docs]]
     */
   case class `/_snapshot`()
-    extends RestReadable[StandardParams]
+    extends `tree:/_snapshot`
+      with RestReadable[StandardParams]
       with RestResource
 
   /** The snapshot and restore module allows to create snapshots of individual indices or an entire cluster
@@ -186,7 +193,8 @@ trait ApiModelXpack {
     * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html Docs]]
     */
   case class `/_watcher`()
-    extends RestReadable[StandardParams]
+    extends `tree:/_watcher`
+      with RestReadable[StandardParams]
       with RestResource
 
   /** Read, Write or Delete watches
@@ -196,7 +204,8 @@ trait ApiModelXpack {
     * @param watchName The name of the watch to manage
     */
   case class `/_watcher/watch/$watchName`(watchName: String)
-    extends RestReadable[StandardParams]
+    extends `tree:/_watcher/watch/$watchName`
+      with RestReadable[StandardParams]
       with RestWritable[WatcherWriteParams]
       with RestDeletable[WatcherDeleteParams]
       with RestResource
@@ -239,7 +248,8 @@ trait ApiModelXpack {
     * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html#api-rest-stats Docs]]
     */
   case class `/_watcher/stats`()
-    extends RestReadable[MetricParams]
+    extends `tree:/_watcher/stats`
+      with RestReadable[MetricParams]
       with RestResource
 
   /** The watcher stats API returns information on the aspects of watcher on your cluster.
@@ -278,3 +288,4 @@ trait ApiModelXpack {
   //TODO
 
 }
+object ApiModelXpack extends ApiModelXpack
