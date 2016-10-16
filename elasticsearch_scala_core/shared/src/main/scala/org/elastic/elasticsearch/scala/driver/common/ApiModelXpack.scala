@@ -13,8 +13,6 @@ import org.elastic.elasticsearch.scala.driver.common.XpackModifierGroups._
   */
 trait ApiModelXpack {
 
-  //TODO navigation tree
-
   // 1) Marvel/Monitoring
   // https://www.elastic.co/guide/en/marvel/current/configuration.html
 
@@ -40,8 +38,9 @@ trait ApiModelXpack {
     * [[https://www.elastic.co/guide/en/shield/current/shield-rest.html Docs]]
     */
   case class `/_shield`()
-    extends RestReadable[StandardParams]
-    with RestResource
+    extends `tree:/_shield`
+      with RestReadable[StandardParams]
+      with RestResource
 
   /** The Authenticate API enables you to submit a request with a basic auth header to authenticate a user and
     * retrieve information about the authenticated user. Returns a 401 status code if the user cannot be authenticated.

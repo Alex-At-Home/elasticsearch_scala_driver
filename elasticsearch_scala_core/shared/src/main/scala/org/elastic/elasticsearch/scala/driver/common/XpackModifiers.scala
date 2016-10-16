@@ -1,5 +1,6 @@
 package org.elastic.elasticsearch.scala.driver.common
 
+import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups.StandardParams
 import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, Modifier, Param}
 
 /** Modifiers used in the XPack API
@@ -76,21 +77,21 @@ object XpackModifierGroups {
   import XpackModifiers._
 
   /** Params for the Security/Shield clear cache resource */
-  trait SecurityClearCacheParams extends Usernames with BaseDriverOp
+  trait SecurityClearCacheParams extends Usernames with StandardParams
 
   /** Params for the license installation */
-  trait LicenseParams extends Acknowledge with BaseDriverOp
+  trait LicenseParams extends Acknowledge with StandardParams
 
   /** Params for watcher writes */
-  trait WatcherWriteParams extends MasterTimeout with Active with BaseDriverOp
+  trait WatcherWriteParams extends MasterTimeout with Active with StandardParams
 
   /** Params for watcher deletes */
-  trait WatcherDeleteParams extends MasterTimeout with BaseDriverOp
+  trait WatcherDeleteParams extends MasterTimeout with StandardParams
 
   /** Params for watcher acks */
-  trait WatcherAckParams extends MasterTimeout with BaseDriverOp
+  trait WatcherAckParams extends MasterTimeout with StandardParams
 
   /** Parms for metric*/
-  trait MetricParams extends Metric with BaseDriverOp
+  trait MetricParams extends Metric with StandardParams
 }
 
