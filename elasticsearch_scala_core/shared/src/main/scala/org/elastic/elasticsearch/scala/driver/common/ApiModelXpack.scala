@@ -136,8 +136,7 @@ trait ApiModelXpack {
   // 4) Snapshots
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html
 
-  //TODO: pretty sure I have the snapshot API wrong: (mixed up repo vs name)
-
+  // Snapshot repos
 
   /** The snapshot and restore module allows to create snapshots of individual indices or an entire cluster
     * into a remote repository like shared file system, S3, or HDFS. These snapshots are great for backups
@@ -145,11 +144,23 @@ trait ApiModelXpack {
     * versions of Elasticsearch that can read the index.
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html Docs]]
     *
-    * @param snapshotName The name of the snapshot to manage
+    * @param snapshotRepo The name of the snapshot repo to manage
     */
-  case class `/_snapshot/$snapshotName`(snapshotName: String)
-    extends RestReadable[StandardParams]
-      with RestWritable[StandardParams]
+  case class `/_snapshot/$snapshotRepo`(snapshotRepo: String)
+    extends `tree:/_snapshot/$snapshotRepo`
+      with RestReadable[StandardParams]
+      with RestWritable[SnapshotVerifyParams]
+      with RestResource
+
+  /** When a repository is registered, it’s immediately verified on all master and data nodes to make sure that it is
+    * functional on all nodes currently present in the cluster. This manual verification returns a list of nodes
+    * where repository was successfully verified or an error message if verification process failed.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_repository_verification Docs]]
+    *
+    * @param $snapshotRepo The name of the snapshot repo to verify
+    */
+  case class `/_snapshot/$snapshotRepo/_verify`($snapshotRepo: String)
+    extends RestNoDataSendable[StandardParams]
       with RestResource
 
   /** The snapshot and restore module allows to create snapshots of individual indices or an entire cluster
@@ -158,9 +169,9 @@ trait ApiModelXpack {
     * versions of Elasticsearch that can read the index.
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html Docs]]
     *
-    * @param snapshotNames The names of the snapshot to retrieve
+    * @param $snapshotRepos The names of the snapshot repos to retrieve
     */
-  case class `/_snapshot/$snapshotNames`(snapshotNames: String*)
+  case class `/_snapshot/$snapshotRepos`($snapshotRepos: String*)
     extends RestReadable[StandardParams]
       with RestResource
 
@@ -184,6 +195,42 @@ trait ApiModelXpack {
   case class `/_snapshot/_all`()
     extends RestReadable[StandardParams]
       with RestResource
+
+  // Snapshots
+
+  //TODO navigation
+
+  //TODO wait for completion PUT
+
+  /** A repository can contain multiple snapshots of the same cluster. Snapshots are identified by unique names within
+    * the cluster. Snapshots can be created, retrieved or deleted by name
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_snapshot Docs]]
+    * @param snapshotRepo The names of the snapshot repo to use
+    * @param snapshotName The name of the snapshot to create/manage
+    */
+  case class `/_snapshot/$snapshotRepo/$snapshotName`(snapshotRepo: String, snapshotName: String)
+    extends RestReadable[StandardParams]
+      with RestWritable[StandardParams]
+      with RestDeletable[StandardParams]
+      with RestResource
+
+  //TODO ignore unavailable
+
+  /** A repository can contain multiple snapshots of the same cluster. Snapshots are identified by unique names within
+    * the cluster. Information about multiple snapshots within a repo can be obtained
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_snapshot Docs]]
+    * @param snapshotRepo The names of the snapshot repo to use
+    * @param snapshotNames The name of the snapshots to retrieve
+    */
+  case class `/_snapshot/$snapshotRepo/$snapshotNames`(snapshotRepo: String, snapshotNames: String*)
+    extends RestReadable[StandardParams]
+      with RestWritable[StandardParams]
+      with RestDeletable[StandardParams]
+      with RestResource
+
+  //TODO: more snapshot API calls
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_restore
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_snapshot_status
 
   // 5) Watcher
   // https://www.elastic.co/guide/en/watcher/current/api-rest.html

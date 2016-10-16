@@ -1888,20 +1888,35 @@ object ApiModelNavigationTree {
 
     /**
       * A resource to manage the specified snapshot
-      * @param snapshotName The name of the snapshot to manage
+      * @param snapshotRepo The name of the snapshot to manage
       * @return
       */
-    def $(snapshotName: String) = `/_snapshot/$snapshotName`(snapshotName)
+    def $(snapshotRepo: String) = `/_snapshot/$snapshotRepo`(snapshotRepo)
 
     /**
-      * A resource to return information about specified snapshots
-      * @param snapshotName1 The first snapshot about which to retrieve info
-      * @param snapshotName2 The second snapshot about which to retrieve info
-      * @param otherSnapshotNames The third+ snapshot about which to retrieve info
+      * A resource to return information about specified snapshot repos
+      * @param snapshotRepo1 The first snapshot repo about which to retrieve info
+      * @param snapshotRepo2 The second snapshot repo about which to retrieve info
+      * @param otherSnapshotRepos The third+ snapshot repos about which to retrieve info
       * @return A resource to return information about specified snapshots
       */
-    def $(snapshotName1: String, snapshotName2: String, otherSnapshotNames: String*) =
-      `/_snapshot/$snapshotNames`(Seq(snapshotName1, snapshotName2) ++ otherSnapshotNames:_*)
+    def $(snapshotRepo1: String, snapshotRepo2: String, otherSnapshotRepos: String*) =
+      `/_snapshot/$snapshotRepos`(Seq(snapshotRepo1, snapshotRepo2) ++ otherSnapshotRepos:_*)
+  }
+
+  /**
+    * An intermediate resource to obtain snapshot repo related settings
+    */
+  trait `tree:/_snapshot/$snapshotRepo` {
+    val snapshotRepo: String
+
+    /**
+      * When a repository is registered, it’s immediately verified on all master and data nodes to make sure that it is
+      * functional on all nodes currently present in the cluster. This manual verification returns a list of nodes
+      * where repository was successfully verified or an error message if verification process failed.
+      * @return The snapshot repo verification resource
+      */
+    def _verify = `/_snapshot/$snapshotRepo/_verify`(snapshotRepo)
   }
 
   // 0.6.5 Watcher (alerting)

@@ -64,7 +64,25 @@ object ApiModelXpackTests extends TestSuite {
 
       // Snapshots
 
-      //TODO fix snapshots before testing
+      xpack.`/_snapshot`().read().`case`(true).getUrl ==> "/_snapshot?case=true"
+      api.`/`()._snapshot.read().getUrl ==> "/_snapshot"
+
+      xpack.`/_snapshot/$snapshotRepo`("sr").read().`case`(false).getUrl ==> "/_snapshot/sr?case=false"
+      xpack.`/_snapshot/$snapshotRepo`("sr").writeS("TEST")
+        .`case`(true).verify(true).getUrl ==> "/_snapshot/sr?case=true&verify=true"
+      api.`/`()._snapshot.$("sr").read().getUrl ==> "/_snapshot/sr"
+      api.`/`()._snapshot.$("sr").writeS("TEST").getUrl ==> "/_snapshot/sr"
+
+      xpack.`/_snapshot/$snapshotRepo/_verify`("sr").send().`case`(true).getUrl ==> "/_snapshot/sr/_verify?case=true"
+      api.`/`()._snapshot.$("sr")._verify.send().getUrl ==> "/_snapshot/sr/_verify"
+
+      xpack.`/_snapshot/$snapshotRepos`("sr1", "sr2").read().`case`(true).getUrl ==> "/_snapshot/sr1,sr2?case=true"
+      api.`/`()._snapshot.$("sr1", "sr2").read().getUrl ==> "/_snapshot/sr1,sr2"
+
+      xpack.`/_snapshot/_all`().read().`case`(true).getUrl ==> "/_snapshot/_all?case=true"
+      api.`/`()._snapshot._all.read().getUrl ==> "/_snapshot/_all"
+
+      //TODO more snapshot calls
 
       // Watcher
 

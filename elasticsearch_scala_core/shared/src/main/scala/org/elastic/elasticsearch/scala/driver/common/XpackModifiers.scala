@@ -32,6 +32,19 @@ object XpackModifiers {
   }
 
   /** (modifier - see method for details) */
+  trait Verify extends Modifier { self: BaseDriverOp =>
+    /** When a repository is registered, it’s immediately verified on all master and data nodes to make sure that it
+      * is functional on all nodes currently present in the cluster. The verify parameter can be used to explicitly
+      * disable the repository verification when registering or updating a repository
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_repository_verification Docs]]
+      *
+      * @param b Whether to verify the snapshot repo
+      * @return The updated driver operation
+      */
+    @Param def verify(b: Boolean): this.type = Modifier.Body
+  }
+
+  /** (modifier - see method for details) */
   trait MasterTimeout extends Modifier { self: BaseDriverOp =>
     /** When updating a watch while it is executing, the put action will block and wait for the watch execution to
       * finish. Depending on the nature of the watch, in some situations this can take a while. For this reason,
@@ -81,6 +94,9 @@ object XpackModifierGroups {
 
   /** Params for the license installation */
   trait LicenseParams extends Acknowledge with StandardParams
+
+  /** Params for snapshot verification */
+  trait SnapshotVerifyParams extends Verify with StandardParams
 
   /** Params for watcher writes */
   trait WatcherWriteParams extends MasterTimeout with Active with StandardParams
