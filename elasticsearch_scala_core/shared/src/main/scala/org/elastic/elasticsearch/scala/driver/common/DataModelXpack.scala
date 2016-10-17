@@ -20,7 +20,7 @@ object DataModelXpack {
       extends MarvelExporterConfig
     {
       override def fromTyped = {
-        val authBlock = auth.map { case (u, p) => s""" , { "auth": { "username: "$u", "password": "$p" } """ }
+        val authBlock = auth.map { case (u, p) => s""" , "auth": { "username": "$u", "password": "$p" } """ }
         s"""{ "type": "http", "enabled": true, "host": "$host" ${authBlock.getOrElse("")} } """
       }
     }
@@ -55,12 +55,12 @@ object DataModelXpack {
         case m: Map[_, _] if m.isEmpty  => ""
         case _ =>
           exporters.map { case (k, v) =>
-            s""" "marvel.agent.exporters.$k": $v """
+            s""" "marvel.agent.exporters.$k": ${v.fromTyped} """
           }.mkString(" , ") + " , "
       }
       val intervalString =  s""" "marvel.agent.collection.interval": "${interval.getOrElse("10s")}" """
 
-      s"""{ "persistent": { $exporterString $intervalString }"""
+      s"""{ "persistent": { $exporterString $intervalString } }"""
     }
   }
 
