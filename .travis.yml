@@ -6,8 +6,9 @@ jdk:
 
 env:
   global:
-    - sbt_cmd="sbt ++$TRAVIS_SCALA_VERSION"
-    - scala_js="$sbt_cmd elasticsearch_scala_coreJS/test"
-    - scala_jvm="$sbt_cmd elasticsearch_scala_coreJVM/test elasticsearch_scala_java_clientJVM/test"
+    - scala_js="elasticsearch_scala_coreJS/test"
+    - scala_jvm="elasticsearch_scala_coreJVM/test elasticsearch_scala_java_clientJVM/test"
 
-script: $scala_js && $scala_jvm
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION $scala_js
+  - sbt ++$TRAVIS_SCALA_VERSION $scala_jvm
