@@ -47,7 +47,6 @@ object DataModelXpackTests extends TestSuite {
       )
 
       // (check this is valid JSON)
-      println("........................ " + parse(cfg2.fromTyped) + "\n\n" + cfg2.fromTyped)
       parse(cfg1.fromTyped).isRight ==> true
       parse(cfg2.fromTyped).isRight ==> true
     }
