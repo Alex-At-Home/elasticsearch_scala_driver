@@ -23,8 +23,8 @@ object BuildSettings {
 object MyBuild extends Build {
   import BuildSettings._
 
-  // (been seeing some issues with NodeJS in travis, so default to Rhino)
-  val useRhino = true
+  // (Node.js is faster, rhino doesn't require any additional deps)
+  val useRhino = false
 
   // Dependencies:
 
