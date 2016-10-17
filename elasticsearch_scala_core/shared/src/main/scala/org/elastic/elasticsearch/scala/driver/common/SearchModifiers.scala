@@ -194,6 +194,9 @@ object SearchModifiers {
       */
     @Param def preference(preference: String): this.type = Modifier.Body
   }
+
+  /** Indicates that the result operation can be used in a multi search */
+  trait MultiSearchDeclaration
 }
 /** Common groupings of modifiers relating to search resources
   */
@@ -214,6 +217,7 @@ object SearchModifierGroups {
     extends Timeout with RequestCache with TerminateAfter
       with From with Size with SearchType
       with StandardParams
+      with MultiSearchDeclaration
 
   /** Parameters controlling information about which shards are affected by a query */
   trait QuerySearchShardsParams extends Routing with Preference with Local with StandardParams

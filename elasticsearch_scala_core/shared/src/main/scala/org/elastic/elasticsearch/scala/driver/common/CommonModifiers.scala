@@ -288,6 +288,8 @@ object CommonModifiers {
     @Param def groups(groups: String*): this.type = Modifier.Body
   }
 
+  /** Use this to indicate that an operation can be used in a bulk operation */
+  trait BulkManagementDeclaration extends Modifier
 }
 
 /**
@@ -305,11 +307,16 @@ object CommonModifierGroups {
     */
   trait StandardParams extends Pretty with Human with Case with FilterPath with FlatSettings
 
+  /** Standard params but can be used in a bulk index operation */
+  trait BulkStandardParams extends StandardParams with BulkManagementDeclaration
+
   /** Parameters controlling index operations */
   trait IndexWriteParams extends Version with OpType with Routing with Parent with Timeout with StandardParams
+    with BulkManagementDeclaration
 
   /** Parameters controlling delete operations */
   trait IndexDeleteParams extends OpType with Routing with Parent with Timeout with StandardParams
+    with BulkManagementDeclaration
 
   /** Parameters controlling the data returned from document access */
   trait DocumentReadParams extends SourceBase with SourceInclude with SourceExclude with Fields with StandardParams

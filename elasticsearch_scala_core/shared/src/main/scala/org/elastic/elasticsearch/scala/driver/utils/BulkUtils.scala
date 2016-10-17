@@ -1,6 +1,9 @@
 package org.elastic.elasticsearch.scala.driver.utils
 
-import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon.{`/$index/$type/$id/_update`, `/$index/$type/$id`, `/$index/$type`, `/$uri`}
+import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon._
+import org.elastic.elasticsearch.scala.driver.common.ApiModelSearch._
+import org.elastic.elasticsearch.scala.driver.common.CommonModifiers.BulkManagementDeclaration
+import org.elastic.elasticsearch.scala.driver.common.SearchModifiers.MultiSearchDeclaration
 import org.elastic.rest.scala.driver.RestBase._
 import org.elastic.rest.scala.driver.RestBase
 
@@ -15,7 +18,7 @@ object BulkUtils {
     * @param m The REST method
     * @return The ES operation string
     */
-  private def methodToBulkOp(m: String): String = m match {
+  private def methodToBulkIndexOp(m: String): String = m match {
     case RestBase.PUT => "index"
     case RestBase.POST => "index"
     case RestBase.DELETE => "delete"
@@ -71,27 +74,28 @@ object BulkUtils {
   /** List of operations to apply as part of the bulk operation
     *
     * @param ops The list of ES operations
-*a    */
-  def buildBulkOps(ops: List[BaseDriverOp]): String = ops.map {
+    * @return The body to send to the client
+    */
+  def buildBulkIndexOps(ops: List[BaseDriverOp with BulkManagementDeclaration]): String = ops.map {
 
-    case BaseDriverOp(`/$uri`(index),
-    method @ _, body @ _, mods @ _, _) =>
-      val blocks = listToString(List(addBlock("_index", index)) ++ addMods(mods))
-      s"""{ "${methodToBulkOp(method)}": { $blocks } }${addBodyBlock(body)}"""
+    case BaseDriverOp(`/$index`(index),
+      method @ _, body @ _, mods @ _, _) =>
+        val blocks = listToString(List(addBlock("_index", index)) ++ addMods(mods))
+        s"""{ "${methodToBulkIndexOp(method)}": { $blocks } }${addBodyBlock(body)}"""
 
     case BaseDriverOp(`/$index/$type`(index, theType),
       method @ _, body @ _, mods @ _, _) =>
         val blocks = listToString(List(
           addBlock("_index", index), addBlock("_type", theType)) ++
           addMods(mods))
-        s"""{ "${methodToBulkOp(method)}": { $blocks } }${addBodyBlock(body)}"""
+        s"""{ "${methodToBulkIndexOp(method)}": { $blocks } }${addBodyBlock(body)}"""
 
     case BaseDriverOp(`/$index/$type/$id`(index, theType, id),
       method @ _, body @ _, mods @ _, _) =>
         val blocks = listToString(List(
           addBlock("_index",index), addBlock("_type", theType), addBlock("_id", id)) ++
           addMods(mods))
-        s"""{ "${methodToBulkOp(method)}": { $blocks } }${addBodyBlock(body)}"""
+        s"""{ "${methodToBulkIndexOp(method)}": { $blocks } }${addBodyBlock(body)}"""
 
     case BaseDriverOp(`/$index/$type/$id/_update`(index, theType, id),
       _, body @ _, mods @ _, _) =>
@@ -101,6 +105,39 @@ object BulkUtils {
         s"""{ "update": { $blocks } }${addBodyBlock(body)}"""
 
     case op @ _ => throw RestRequestException(s"This operation is not supported by _bulk: $op")
+
+  }.mkString("\n")
+
+  /** The list of searches to apply as part of the search operation
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html Docs]]
+    * @param ops The list of multi-searchable operations
+    * @return The body to send to the client
+    */
+  def buildBulkSearchOps(ops: List[BaseDriverOp with MultiSearchDeclaration]): String = ops.map {
+
+    case BaseDriverOp(`/_search`(),
+      RestBase.GET, body @ _, mods @ _, _) =>
+        val blocks = listToString(addMods(mods))
+        s"""{ $blocks }${addBodyBlock(body)}"""
+
+    case BaseDriverOp(`/_all/$types/_search`(types),
+      RestBase.GET, body @ _, mods @ _, _) =>
+        val blocks = listToString(List(addBlock("type", types.mkString(","))) ++ addMods(mods))
+        s"""{ $blocks }${addBodyBlock(body)}"""
+
+    case BaseDriverOp(`/$indexes/_search`(indexes),
+      RestBase.GET, body @ _, mods @ _, _) =>
+        val blocks = listToString(List(addBlock("index", indexes.mkString(","))) ++ addMods(mods))
+        s"""{ $blocks }${addBodyBlock(body)}"""
+
+    case BaseDriverOp(`/$indexes/$types/_search`(indexes, types),
+      RestBase.GET, body @ _, mods @ _, _) =>
+        val blocks = listToString(List(
+          addBlock("index", indexes.mkString(",")), addBlock("type", types.mkString(","))) ++
+          addMods(mods))
+        s"""{ $blocks }${addBodyBlock(body)}"""
+
+    case op @ _ => throw RestRequestException(s"This operation is not supported by _msearch: $op")
 
   }.mkString("\n")
 }

@@ -115,7 +115,7 @@ object ApiModelCommonTests extends TestSuite {
         api.`/$index/$type/$id`("", "type", "id").writeS("TEST3"),
         api.`/$index/$type/$id`("index", "", "id").delete(),
         api.`/$index/$type/$id`("", "", "id").writeS("TEST5"),
-        api.`/$uri`("index").writeS("TEST6").m("param", 3),
+        api.`/$index`("index").writeS("TEST6").m("param", 3),
         api.`/$index/$type/$id/_update`("index", "type", "id").writeS("TEST7").m("param", List("l1", "l2"))
       ))
 
