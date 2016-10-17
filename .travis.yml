@@ -5,10 +5,8 @@ jdk:
   - oraclejdk8
 
 env:
-  global:
-    - scala_js="elasticsearch_scala_coreJS/test"
-    - scala_jvm="elasticsearch_scala_coreJVM/test elasticsearch_scala_java_clientJVM/test"
+  - scala_projects="elasticsearch_scala_coreJS/test"
+  - scala_projects="elasticsearch_scala_coreJVM/test elasticsearch_scala_java_client/test"
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION $scala_js
-  - sbt ++$TRAVIS_SCALA_VERSION $scala_jvm
+  - sbt ++$TRAVIS_SCALA_VERSION $scala_projects
