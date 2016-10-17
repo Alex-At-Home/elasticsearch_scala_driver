@@ -23,6 +23,9 @@ object BuildSettings {
 object MyBuild extends Build {
   import BuildSettings._
 
+  // (Node.js is faster, rhino doesn't require any additional deps)
+  val useRhino = false
+
   // Dependencies:
 
   val esRestVersion = "5.0.0-alpha5"
@@ -81,7 +84,7 @@ object MyBuild extends Build {
       ): _*)
     .jvmSettings()
     .jsSettings(
-      scalaJSUseRhino in Global := false
+      scalaJSUseRhino in Global := useRhino
     )
   lazy val elasticsearch_scala_coreJVM = elasticsearch_scala_core.jvm dependsOn rest_scala_coreJVM dependsOn rest_json_circe_moduleJVM
   lazy val elasticsearch_scala_coreJS = elasticsearch_scala_core.js dependsOn rest_scala_coreJS dependsOn rest_json_circe_moduleJS

@@ -4,6 +4,7 @@ import org.elastic.elasticsearch.scala.driver.common.ApiModelCommon._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelSearch._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelIndices._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelCluster._
+import org.elastic.elasticsearch.scala.driver.common.ApiModelXpack._
 
 /**
   * Contains a hierarchical model of the Elasticsearch API resources
@@ -250,6 +251,34 @@ object ApiModelNavigationTree {
       * @return An intermediate resource to obtain task management resources
       */
     def _tasks = `/_tasks`()
+
+    /**
+      * An intermediate resource to obtain security-related resources
+      *
+      * @return An intermediate resource to obtain security-related resources
+      */
+    def _shield = `/_shield`()
+
+    /**
+      * An intermediate resource to obtain license-related resources
+      *
+      * @return An intermediate resource to obtain license-related resources
+      */
+    def _license = `/_license`()
+
+    /**
+      * An intermediate resource to obtain snapshot-related resources
+      *
+      * @return An intermediate resource to obtain snapshot-related resources
+      */
+    def _snapshot = `/_snapshot`()
+
+    /**
+      * An intermediate resource to obtain alerting (watcher)-related resources
+      *
+      * @return An intermediate resource to obtain alerting (watcher)-related resources
+      */
+    def _watcher = `/_watcher`()
   }
 
   /**
@@ -1524,6 +1553,17 @@ object ApiModelNavigationTree {
   /**
     * An intermediate resource to obtain cluster-related metadata
     */
+  trait `tree:/_cluster/settings` {
+    /**
+      * Returns a (typed only) view for writing Marvel config via `/_cluster/settings`
+      * @return A (typed only) view for writing Marvel config via `/_cluster/settings`
+      */
+    def `#marvel.agent` = `/_cluster/settings#marvel.agent`()
+  }
+
+  /**
+    * An intermediate resource to obtain cluster-related metadata
+    */
   trait `tree:/_cluster/state` {
 
     /**
@@ -1722,4 +1762,334 @@ object ApiModelNavigationTree {
     def $(template: String) = `/_search/template/$template`(template)
   }
 
+  // 0.6 X-pack navigation tree
+
+  // 0.6.1 Monitoring
+
+  // 0.6.2 Security
+
+  /**
+    * An intermediate resource to obtain security related settings
+    */
+  trait `tree:/_shield` {
+
+    /**
+      * The Authenticate API enables you to submit a request with a basic auth header to authenticate a user and
+      * retrieve information about the authenticated user. Returns a 401 status code if the user cannot be
+      * authenticated.
+      * @return The authenticate resource
+      */
+    def authenticate = `/_shield/authenticate`()
+
+    /**
+      * An intermediate step to clear a realm's cache
+      * @return An intermediate step to clear a realm's cache
+      */
+    def realm = `tree:/_shield/realm`()
+
+    /**
+      * An intermediate step to a set of resources for managing users in elasticsearch
+      * @return An intermediate step to a set of resources for managing users in elasticsearch
+      */
+    def user = `/_shield/user`()
+
+    /**
+      * An intermediate step to a set of resources for managing roles in elasticsearch
+      * @return An intermediate step to a set of resources for managing roles in elasticsearch
+      */
+    def role = `/_shield/role`()
+  }
+
+  /**
+    * An intermediate step to clear a realm's cache
+    */
+  case class `tree:/_shield/realm`() {
+
+    def $(realms: String*) = `tree:/_shield/realm/$realms`(realms:_*)
+  }
+
+  /**
+    * An intermediate step to clear a realm's cache
+    */
+  case class `tree:/_shield/realm/$realms`(realms: String*) {
+    /**
+      * The Clear Cache API evicts users from the user cache. You can completely clear the cache or evict specific
+      * users.
+      * @return
+      */
+    def _clear_cache = `/_shield/realm/$realms/_clear_cache`(realms:_*)
+  }
+
+  /**
+    * An intermediate resource to obtain security related settings
+    */
+  trait `tree:/_shield/user` {
+
+    /**
+      * The Users API enables you to create, read, update, and delete users from the native realm. These users are
+      * commonly referred to as native users. To use this API, you must have at least the manage_security cluster
+      * privilege.
+      * @param username The user to manage
+      * @return The user management resource
+      */
+    def $(username: String) = `/_shield/user/$username`(username)
+
+    /**
+      * Get information about elasticsearch users (>1 user)
+      * @param user1 The first user about which to retrieve info
+      * @param user2 The second user about which to retrieve info
+      * @param otherUsers The third+ user about which to retrieve info
+      * @return
+      */
+    def $(user1: String, user2: String, otherUsers: String*) =
+      `/_shield/user/$usernames`(Seq(user1, user2) ++ otherUsers:_*)
+  }
+
+  /**
+    * An intermediate resource to obtain security related settings
+    */
+  trait `tree:/_shield/role` {
+
+    /**
+      * The Roles API enables you to add, remove, and retrieve roles in the native Shield realm. To use this API,
+      * you must have at least the manage_security cluster privilege.
+      * @param role The role to manage
+      * @return The user management resource
+      */
+    def $(role: String) = `/_shield/role/$role`(role)
+
+    /**
+      * Get information about elasticsearch roles (>1 role)
+      * @param role1 The first role about which to retrieve info
+      * @param role2 The second role about which to retrieve info
+      * @param otherRoles The third+ role about which to retrieve info
+      * @return
+      */
+    def $(role1: String, role2: String, otherRoles: String*) =
+     `/_shield/role/$roles`(Seq(role1, role2) ++ otherRoles:_*)
+  }
+
+  // 0.6.3 Licenses
+
+  // 0.6.4 Snapshots
+
+  /**
+    * An intermediate resource to obtain snapshot related settings
+    */
+  trait `tree:/_snapshot` {
+    /**
+      * A resource to return information about all snapshots
+      * @return A resource to return information about all snapshots
+      */
+    def _all = `/_snapshot/_all`()
+
+    /**
+      * A list of currently running snapshots with their detailed status information can be obtained
+      * @return A resource to return all snapshot information
+      */
+    def _status = `/_snapshot/_status`()
+
+    /**
+      * A resource to manage the specified snapshot repo
+      * @param snapshotRepo The name of the snapshot to manage
+      * @return A resource to manage the specified snapshot repo
+      */
+    def $(snapshotRepo: String) = `/_snapshot/$snapshotRepo`(snapshotRepo)
+
+    /**
+      * A resource to return information about specified snapshot repos
+      * @param snapshotRepo1 The first snapshot repo about which to retrieve info
+      * @param snapshotRepo2 The second snapshot repo about which to retrieve info
+      * @param otherSnapshotRepos The third+ snapshot repos about which to retrieve info
+      * @return A resource to return information about specified snapshots
+      */
+    def $(snapshotRepo1: String, snapshotRepo2: String, otherSnapshotRepos: String*) =
+      `/_snapshot/$snapshotRepos`(Seq(snapshotRepo1, snapshotRepo2) ++ otherSnapshotRepos:_*)
+  }
+
+  /**
+    * An intermediate resource to obtain snapshot related settings
+    */
+  trait `tree:/_snapshot/$snapshotRepo` {
+    val snapshotRepo: String
+
+    /**
+      * When a repository is registered, it’s immediately verified on all master and data nodes to make sure that it is
+      * functional on all nodes currently present in the cluster. This manual verification returns a list of nodes
+      * where repository was successfully verified or an error message if verification process failed.
+      * @return The snapshot repo verification resource
+      */
+    def _verify = `/_snapshot/$snapshotRepo/_verify`(snapshotRepo)
+
+    /**
+      * A list of currently running snapshots within the specified repo with
+      * their detailed status information can be obtained
+      * @return A resource to return all snapshot information in this repo
+      */
+    def _status = `/_snapshot/$snapshotRepos/_status`(snapshotRepo)
+
+    /**
+      * An intermediate resource for managing or creating a snapshot
+      * @param snapshotName The name of the snapshot within the specified repo
+      * @return An intermediate resource for managing or creating a snapshot
+      */
+    def $(snapshotName: String) = `/_snapshot/$snapshotRepo/$snapshotName`(snapshotRepo, snapshotName)
+
+    /**
+      *  An intermediate resource for retrieving information about multiple snapshots in a repo
+      * @param snapshotName1 The first snapshot about which to retrieve info
+      * @param snapshotName2 The second snapshot repo about which to retrieve info
+      * @param otherSnapshotNames The third+ snapshots about which to retrieve info
+      * @return An intermediate resource for retrieving information about multiple snapshots in a repo
+      */
+    def $(snapshotName1: String, snapshotName2: String, otherSnapshotNames: String*) =
+      `/_snapshot/$snapshotRepo/$snapshotNames`(snapshotRepo, Seq(snapshotName1, snapshotName2) ++ otherSnapshotNames:_*)
+  }
+
+  /**
+    * An intermediate resource to obtain snapshot related settings
+    */
+  trait `tree:/_snapshot/$snapshotRepos` {
+    val snapshotRepos: Seq[String]
+
+    /**
+      * A list of currently running snapshots within the specified repo with
+      * their detailed status information can be obtained
+      * @return A resource to return all snapshot information in this repo
+      */
+    def _status = `/_snapshot/$snapshotRepos/_status`(snapshotRepos:_*)
+  }
+
+  /**
+    * An intermediate resource to obtain snapshot related settings
+    */
+  trait `tree:/_snapshot/$snapshotRepo/$snapshotName` {
+    val snapshotRepo: String
+    val snapshotName: String
+
+    /**
+      * Detailed status information for the specfied snapshot in the specified repo
+      * @return A resource to return detailed status information for the specfied snapshot in the specified repo
+      */
+    def _status = `/_snapshot/$snapshotRepo/$snapshotNames/_status`(snapshotRepo, snapshotName)
+
+    /**
+      * Returns a resource that restores the snapshot
+      * @return A resource that restores the snapshot
+      */
+    def _restore = `/_snapshot/$snapshotRepo/$snapshotName/_restore`(snapshotRepo, snapshotName)
+  }
+
+  /**
+    * An intermediate resource to obtain snapshot related settings
+    */
+  trait `tree:/_snapshot/$snapshotRepo/$snapshotNames` {
+    val snapshotRepo: String
+    val snapshotNames: Seq[String]
+
+    /**
+      * Detailed status information for the specfied snapshots in the specified repo
+      * @return A resource to return detailed status information for the specfied snapshot in the specified repo
+      */
+    def _status = `/_snapshot/$snapshotRepo/$snapshotNames/_status`(snapshotRepo, snapshotNames:_*)
+  }
+
+
+    // 0.6.5 Watcher (alerting)
+
+  /**
+    * An intermediate resource to obtain watcher related settings
+    */
+  trait `tree:/_watcher` {
+
+    /**
+      * An intermediate resource to obtain watcher related settings
+      * @return An intermediate resource to obtain watcher related settings
+      */
+    def watch = `tree:/_watcher/watch`()
+
+    /**
+      * A resource to obtain watcher related statistics
+      * @return A resource to obtain watcher related statistics
+      */
+    def stats = `/_watcher/stats`()
+
+    /**
+      * A resource to start a stopped watcher
+      * @return A resource to start a stopped watcher
+      */
+    def _start = `/_watcher/_start`()
+
+    /**
+      * A resource to stop a started watcher
+      * @return A resource to stop a started watcher
+      */
+    def _stop = `/_watcher/_stop`()
+
+    /**
+      * A resource to restart a started watcher
+      * @return A resource to restart a started watcher
+      */
+    def _restart = `/_watcher/_restart`()
+  }
+
+  /**
+    * An intermediate resource to obtain watcher related settings
+    */
+  case class `tree:/_watcher/watch`() {
+    /**
+      * Returns an intermediate to manage a specific watch in watcher
+      * @param watchName The name of the watch to manage
+      * @return Returns an intermediate to manage a specific watch in watcher
+      */
+    def $(watchName: String) = `/_watcher/watch/$watchName`(watchName)
+  }
+
+  /**
+    * An intermediate resource to obtain watcher related settings
+    */
+  trait `tree:/_watcher/watch/$watchName` {
+    val watchName: String
+
+    /** The execute watch API forces the execution of a stored watch. It can be used to force execution of the watch
+      * outside of its triggering logic, or to test the watch for debugging purposes.
+      * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html#api-rest-execute-watch Docs]]
+      * @return A resource to execute a watch
+      */
+    def _execute = `/_watcher/watch/$watchName/_execute`(watchName)
+
+    /** Acknowledging a watch enables you to manually throttle execution of the watch’s actions.
+      * An action’s acknowledgement state is stored in the `_status.actions.id.ack.state structure`.
+      * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html#api-rest-ack-watch Docs]]
+      * @return A resource to ack a watch
+      */
+    def _ack = `/_watcher/watch/$watchName/_ack`(watchName)
+
+    /** A watch can be either active or inactive. This API enables you to activate a currently inactive watch.
+      * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html#api-rest-activate-watch Docs]]
+      * @return A resource to activate a watch
+      */
+    def _activate = `/_watcher/watch/$watchName/_activate`(watchName)
+
+    /** A watch can be either active or inactive. This API enables you to deactivate a currently active watch.
+      * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html#api-rest-activate-watch Docs]]
+      * @return A resource to deactivate a watch
+      */
+    def _deactivate = `/_watcher/watch/$watchName/_deactivate`(watchName)
+  }
+
+  /**
+    * An intermediate resource to obtain watcher related statistics settings
+    */
+  trait `tree:/_watcher/stats` {
+
+    /** The watcher stats API returns information on the aspects of watcher on your cluster.
+      * This resource returns against one of the following metrics:
+      * "queued_watches", "current_watches", "executing_watches", "_all"
+      * [[https://www.elastic.co/guide/en/watcher/current/api-rest.html#_current_executing_watches_metric Docs]]
+      * @param metric The metric stats to achieve
+      * @return A metric-specific watcher statistics resource
+      */
+    def $(metric: String) = `/_watcher/stats/$metric`(metric: String)
+  }
 }

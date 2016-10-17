@@ -161,20 +161,6 @@ object ClusterModifiers {
       */
     @Param def actions(actions: String*): this.type = Modifier.Body
   }
-
-  /** (modifier - see method for details) */
-  trait WaitForCompletion extends Modifier { self: BaseDriverOp =>
-    /** Enables task request to wait for a task to complete (should be used in conjunction with the `Timeout`
-      * modifier, eg `timeout("10s")`)
-      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/tasks.html Docs]]
-      *
-      * @param b Whether to wait for a task to complete
-      *          (or the `timeout` parameter to expire if specified)
-      */
-    @Param def wait_for_completion(b: Boolean): this.type = Modifier.Body
-  }
-
-
 }
 /** Common groupings of modifiers relating to cluster resources
   */

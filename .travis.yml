@@ -1,7 +1,12 @@
 language: scala
 scala:
-        - 2.11.8
+  - 2.11.8
 jdk:
-        - oraclejdk8
+  - oraclejdk8
 
-script: sbt ++$TRAVIS_SCALA_VERSION test
+env:
+  - scala_projects="elasticsearch_scala_coreJS/test"
+  - scala_projects="elasticsearch_scala_coreJVM/test elasticsearch_scala_java_client/test"
+
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION $scala_projects
