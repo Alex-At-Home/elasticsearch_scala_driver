@@ -3,9 +3,9 @@ scala:
         - 2.11.8
 jdk:
         - oraclejdk8
-
-sbt_cmd="sbt ++$TRAVIS_SCALA_VERSION"
-scala_js="$sbt_cmd elasticsearch_scala_coreJS/test"
-scala_jvm="$sbt_cmd elasticsearch_scala_coreJVM/test elasticsearch_scala_java_clientJVM/test"
+env:
+        - sbt_cmd="sbt ++$TRAVIS_SCALA_VERSION"
+        - scala_js="$sbt_cmd elasticsearch_scala_coreJS/test"
+        - scala_jvm="$sbt_cmd elasticsearch_scala_coreJVM/test elasticsearch_scala_java_clientJVM/test"
 
 script: $scala_js && $scala_jvm
