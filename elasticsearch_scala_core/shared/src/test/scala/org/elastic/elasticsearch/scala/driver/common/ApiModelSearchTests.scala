@@ -640,7 +640,7 @@ object ApiModelSearchTests extends TestSuite {
       import NoJsonHelpers._
 
       val msearchOps = MultiSearchOps(List(
-        search.`/_search`().readS("TEST1").m("param1", "tp1").m("param1", "tp2"),
+        search.`/_search`().readS("TEST1").m("param1", "tp1").m("param2", "tp2"),
         search.`/_all/$types/_search`("t1.1", "t1.2").readS("TEST2"),
         search.`/$indexes/_search`("i2.1", "i2.2").readS("TEST3").m("param", List("l1", "l2")),
         search.`/$indexes/$types/_search`(Seq("i3.1", "i3.2"), Seq("t3.1", "t3.2")).readS("TEST4").m("param", true)
@@ -650,7 +650,7 @@ object ApiModelSearchTests extends TestSuite {
         s.replace(" ", "").replace("\t", "").replace("\r", "")
 
       val expected = formatVals(
-        s"""{ "param1": "tp1", "param2": "tp2"  }
+        s"""{ "param2": "tp2", "param1": "tp1"  }
             |TEST1
             |{ "type": "t1.1,t1.2" }
             |TEST2

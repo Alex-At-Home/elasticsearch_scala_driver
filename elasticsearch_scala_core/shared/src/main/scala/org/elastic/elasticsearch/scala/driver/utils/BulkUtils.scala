@@ -120,12 +120,12 @@ object BulkUtils {
         val blocks = listToString(addMods(mods))
         s"""{ $blocks }${addBodyBlock(body)}"""
 
-    case BaseDriverOp(`/_all/$types/_search`(types),
+    case BaseDriverOp(`/_all/$types/_search`(types @ _*),
       RestBase.GET, body @ _, mods @ _, _) =>
         val blocks = listToString(List(addBlock("type", types.mkString(","))) ++ addMods(mods))
         s"""{ $blocks }${addBodyBlock(body)}"""
 
-    case BaseDriverOp(`/$indexes/_search`(indexes),
+    case BaseDriverOp(`/$indexes/_search`(indexes @ _*),
       RestBase.GET, body @ _, mods @ _, _) =>
         val blocks = listToString(List(addBlock("index", indexes.mkString(","))) ++ addMods(mods))
         s"""{ $blocks }${addBodyBlock(body)}"""
