@@ -14,7 +14,7 @@ object ApiModelXpackTests extends TestSuite {
       // Monitoring
 
       xpack.`/_cluster/settings#marvel.agent`().writeS("TEST").pretty(true).getUrl ==> "/_cluster/settings?pretty=true"
-      api.`/`()._cluster.settings.`#marvel.agent`.writeS("TEST") ==> "/_cluster/settings"
+      api.`/`()._cluster.settings.`#marvel.agent`.writeS("TEST").getUrl ==> "/_cluster/settings"
 
       // Security
 
@@ -58,7 +58,7 @@ object ApiModelXpackTests extends TestSuite {
 
       xpack.`/_license`().read().filter_path("f1").getUrl ==> "/_license?filter_path=f1"
       xpack.`/_license`().writeS("TEST")
-        .acknowledge(true).flat_settings(true).getUrl ==> "/_license?flat_settings=true&acknowledge=true"
+        .acknowledge(true).flat_settings(true).getUrl ==> "/_license?acknowledge=true&flat_settings=true"
       api.`/`()._license.read().getUrl ==> "/_license"
       api.`/`()._license.writeS("TEST").getUrl ==> "/_license"
 
@@ -82,7 +82,37 @@ object ApiModelXpackTests extends TestSuite {
       xpack.`/_snapshot/_all`().read().`case`(true).getUrl ==> "/_snapshot/_all?case=true"
       api.`/`()._snapshot._all.read().getUrl ==> "/_snapshot/_all"
 
-      //TODO more snapshot calls
+      xpack.`/_snapshot/$snapshotRepo/$snapshotName`("sr", "sn").read()
+        .pretty(true).getUrl ==> "/_snapshot/sr/sn?pretty=true"
+      xpack.`/_snapshot/$snapshotRepo/$snapshotName`("sr", "sn").writeS("TEST")
+        .wait_for_completion(true).pretty(false).getUrl ==> "/_snapshot/sr/sn?wait_for_completion=true&pretty=false"
+      xpack.`/_snapshot/$snapshotRepo/$snapshotName`("sr", "sn").delete()
+        .pretty(false).getUrl ==> "/_snapshot/sr/sn?pretty=false"
+      api.`/`()._snapshot.$("sr").$("sn").read().getUrl ==> "/_snapshot/sr/sn"
+      api.`/`()._snapshot.$("sr").$("sn").writeS("TEST").getUrl ==> "/_snapshot/sr/sn"
+      api.`/`()._snapshot.$("sr").$("sn").delete().getUrl ==> "/_snapshot/sr/sn"
+
+      xpack.`/_snapshot/$snapshotRepo/$snapshotNames`("sr", "sn1", "sn2").read()
+        .pretty(true).ignore_unavailable(true).getUrl ==> "/_snapshot/sr/sn1,sn2?pretty=true&ignore_unavailable=true"
+      api.`/`()._snapshot.$("sr").$("sn1", "sn2").read().getUrl ==> "/_snapshot/sr/sn1,sn2"
+
+      xpack.`/_snapshot/$snapshotRepo/$snapshotName/_restore`("sr", "sn").send()
+        .pretty(true).getUrl ==> "/_snapshot/sr/sn/_restore?pretty=true"
+      xpack.`/_snapshot/$snapshotRepo/$snapshotName/_restore`("sr", "sn").sendS("TEST")
+        .pretty(false).getUrl ==> "/_snapshot/sr/sn/_restore?pretty=false"
+      api.`/`()._snapshot.$("sr").$("sn")._restore.send().getUrl ==> "/_snapshot/sr/sn/_restore"
+      api.`/`()._snapshot.$("sr").$("sn")._restore.sendS("TEST").getUrl ==> "/_snapshot/sr/sn/_restore"
+
+      xpack.`/_snapshot/_status`().read().human(true).getUrl ==> "/_snapshot/_status?human=true"
+      xpack.`/_snapshot/$snapshotRepos/_status`("sr1", "sr2").read()
+        .human(false).getUrl ==> "/_snapshot/sr1,sr2/_status?human=false"
+      xpack.`/_snapshot/$snapshotRepo/$snapshotNames/_status`("sr1", "sn1", "sn2").read()
+        .pretty(false).getUrl ==> "/_snapshot/sr1/sn1,sn2/_status?pretty=false"
+      api.`/`()._snapshot._status.read().getUrl ==> "/_snapshot/_status"
+      api.`/`()._snapshot.$("sr")._status.read().getUrl ==> "/_snapshot/sr/_status"
+      api.`/`()._snapshot.$("sr1", "sr2")._status.read().getUrl ==> "/_snapshot/sr1,sr2/_status"
+      api.`/`()._snapshot.$("sr").$("sn")._status.read().getUrl ==> "/_snapshot/sr/sn/_status"
+      api.`/`()._snapshot.$("sr").$("sn1", "sn2")._status.read().getUrl ==> "/_snapshot/sr/sn1,sn2/_status"
 
       // Watcher
 
@@ -114,7 +144,7 @@ object ApiModelXpackTests extends TestSuite {
         .getUrl ==> "/_watcher/watch/w1/_deactivate?pretty=false"
       api.`/`()._watcher.watch.$("w1")._deactivate.write().getUrl ==> "/_watcher/watch/w1/_deactivate"
 
-      xpack.`/_watcher/stats`().read().metric("m").pretty(true).getUrl ==> "/_watcher/stats?metric=m,pretty=true"
+      xpack.`/_watcher/stats`().read().metric("m").pretty(true).getUrl ==> "/_watcher/stats?metric=m&pretty=true"
       api.`/`()._watcher.stats.read().getUrl ==> "/_watcher/stats"
 
       xpack.`/_watcher/stats/$metric`("m").read().pretty(true).getUrl ==> "/_watcher/stats/m?pretty=true"

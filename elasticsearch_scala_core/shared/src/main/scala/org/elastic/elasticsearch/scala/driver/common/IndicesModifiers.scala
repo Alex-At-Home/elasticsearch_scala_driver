@@ -8,19 +8,6 @@ import org.elastic.rest.scala.driver.RestBase._
   */
 object IndicesModifiers {
 
-  // Opening and closing indexes
-
-  /** (modifier - see method for details) */
-  trait IgnoreUnavailable extends Modifier { self: BaseDriverOp =>
-    /** It is possible to open and close multiple indices. An error will be thrown if the request explicitly refers
-      * to a missing index. This behaviour can be disabled using the ignore_unavailable=true parameter.
-      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html]]
-      *
-      * @param b Whether to error if any of the specified clusters are not available
-      */
-    @Param def ignore_unavailable(b: Boolean): this.type = Modifier.Body
-  }
-
   // Index statistics
 
   /** (modifier - see method for details) */

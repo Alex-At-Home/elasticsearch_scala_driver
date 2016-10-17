@@ -1805,7 +1805,7 @@ object ApiModelNavigationTree {
     */
   case class `tree:/_shield/realm`() {
 
-    def $(realms: String*) = `tree:/_shield/realm/$realms`(realms)
+    def $(realms: String*) = `tree:/_shield/realm/$realms`(realms:_*)
   }
 
   /**
@@ -1817,13 +1817,13 @@ object ApiModelNavigationTree {
       * users.
       * @return
       */
-    def _clear_cache = `/_shield/realm/$realms/_clear_cache`(realms)
+    def _clear_cache = `/_shield/realm/$realms/_clear_cache`(realms:_*)
   }
 
   /**
     * An intermediate resource to obtain security related settings
     */
-  case class `tree:/_shield/user`() {
+  trait `tree:/_shield/user` {
 
     /**
       * The Users API enables you to create, read, update, and delete users from the native realm. These users are
@@ -1848,7 +1848,7 @@ object ApiModelNavigationTree {
   /**
     * An intermediate resource to obtain security related settings
     */
-  case class `tree:/_shield/role`() {
+  trait `tree:/_shield/role` {
 
     /**
       * The Roles API enables you to add, remove, and retrieve roles in the native Shield realm. To use this API,
@@ -1926,7 +1926,7 @@ object ApiModelNavigationTree {
       * their detailed status information can be obtained
       * @return A resource to return all snapshot information in this repo
       */
-    def _status = `/_snapshot/$snapshotRepo/_status`(snapshotRepo)
+    def _status = `/_snapshot/$snapshotRepos/_status`(snapshotRepo)
 
     /**
       * An intermediate resource for managing or creating a snapshot
@@ -1937,13 +1937,27 @@ object ApiModelNavigationTree {
 
     /**
       *  An intermediate resource for retrieving information about multiple snapshots in a repo
-      * @param snapshotName1
-      * @param snapshotName2
-      * @param otherSnapshotNames
+      * @param snapshotName1 The first snapshot about which to retrieve info
+      * @param snapshotName2 The second snapshot repo about which to retrieve info
+      * @param otherSnapshotNames The third+ snapshots about which to retrieve info
       * @return An intermediate resource for retrieving information about multiple snapshots in a repo
       */
     def $(snapshotName1: String, snapshotName2: String, otherSnapshotNames: String*) =
       `/_snapshot/$snapshotRepo/$snapshotNames`(snapshotRepo, Seq(snapshotName1, snapshotName2) ++ otherSnapshotNames:_*)
+  }
+
+  /**
+    * An intermediate resource to obtain snapshot related settings
+    */
+  trait `tree:/_snapshot/$snapshotRepos` {
+    val snapshotRepos: Seq[String]
+
+    /**
+      * A list of currently running snapshots within the specified repo with
+      * their detailed status information can be obtained
+      * @return A resource to return all snapshot information in this repo
+      */
+    def _status = `/_snapshot/$snapshotRepos/_status`(snapshotRepos:_*)
   }
 
   /**
@@ -1977,7 +1991,7 @@ object ApiModelNavigationTree {
       * Detailed status information for the specfied snapshots in the specified repo
       * @return A resource to return detailed status information for the specfied snapshot in the specified repo
       */
-    def _status = `/_snapshot/$snapshotRepo/$snapshotNames/_status`(snapshotRepo, snapshotNames)
+    def _status = `/_snapshot/$snapshotRepo/$snapshotNames/_status`(snapshotRepo, snapshotNames:_*)
   }
 
 

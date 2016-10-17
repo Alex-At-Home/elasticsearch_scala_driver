@@ -199,6 +199,32 @@ object CommonModifiers {
     @Param def conflict(op: String): this.type = Modifier.Body
   }
 
+  /** (modifier - see method for details) */
+  trait IgnoreUnavailable extends Modifier { self: BaseDriverOp =>
+    /** It is possible to manage multiple artefacts (indexes, snapshots). An error will be thrown if the request
+      * explicitly refers to a missing artefact. This behaviour can be disabled using the
+      * ignore_unavailable=true parameter.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html Index Docs]]
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_snapshot Snapshot Docs]]
+      *
+      * @param b Whether to error if any of the specified clusters are not available
+      */
+    @Param def ignore_unavailable(b: Boolean): this.type = Modifier.Body
+  }
+
+  /** (modifier - see method for details) */
+  trait WaitForCompletion extends Modifier { self: BaseDriverOp =>
+    /** Enables task request to wait for a task to complete (should be used in conjunction with the `Timeout`
+      * modifier, eg `timeout("10s")`)
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/tasks.html Task Docs]]
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_monitoring_snapshot_restore_progress Snapshot Docs]]
+      *
+      * @param b Whether to wait for a task to complete
+      *          (or the `timeout` parameter to expire if specified)
+      */
+    @Param def wait_for_completion(b: Boolean): this.type = Modifier.Body
+  }
+
   // Cluster/index statistics
 
   /** (modifier - see method for details) */

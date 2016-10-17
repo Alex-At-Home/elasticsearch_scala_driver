@@ -52,7 +52,7 @@ object DataModelXpack {
     override def fromTyped = {
 
       val exporterString = exporters match {
-        case Map.empty => ""
+        case m: Map[_, _] if m.isEmpty  => ""
         case _ =>
           exporters.map { case (k, v) =>
             s""" "marvel.agent.exporters.$k": $v """

@@ -172,7 +172,8 @@ trait ApiModelXpack {
     * @param snapshotRepos The names of the snapshot repos to retrieve
     */
   case class `/_snapshot/$snapshotRepos`(snapshotRepos: String*)
-    extends RestReadable[StandardParams]
+    extends  `tree:/_snapshot/$snapshotRepos`
+      with RestReadable[StandardParams]
       with RestResource
 
   /** The snapshot and restore module allows to create snapshots of individual indices or an entire cluster
@@ -198,8 +199,6 @@ trait ApiModelXpack {
 
   // Snapshots
 
-  //TODO wait for completion PUT - update docs
-
   /** A repository can contain multiple snapshots of the same cluster. Snapshots are identified by unique names within
     * the cluster. Snapshots can be created, retrieved or deleted by name
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_snapshot Docs]]
@@ -212,8 +211,6 @@ trait ApiModelXpack {
       with RestWritable[SnapshotCreateParams]
       with RestDeletable[StandardParams]
       with RestResource
-
-  //TODO ignore unavailable - update docs
 
   /** A repository can contain multiple snapshots of the same cluster. Snapshots are identified by unique names within
     * the cluster. Information about multiple snapshots within a repo can be obtained
@@ -251,12 +248,12 @@ trait ApiModelXpack {
     extends RestReadable[StandardParams]
       with RestResource
 
-  /** A list of currently running snapshots in the specified repo with their detailed status information
+  /** A list of currently running snapshots in the specified repos with their detailed status information
     * can be obtained using this resource
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_snapshot_status Docs]]
-    * @param snapshotRepo The names of the snapshot repo to use
+    * @param snapshotRepos The names of the snapshot repos to use
     */
-  case class `/_snapshot/$snapshotRepo/_status`(snapshotRepo: String)
+  case class `/_snapshot/$snapshotRepos/_status`(snapshotRepos: String*)
     extends RestReadable[StandardParams]
       with RestResource
 
