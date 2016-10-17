@@ -13,7 +13,7 @@ object SearchModifiers {
   // Search modifiers - URI version
 
   /** (modifier - see method for details) */
-  trait Query extends Modifier { self: BaseDriverOp =>
+  trait Query extends Modifier { 
     /** The query string (maps to the query_string query)
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html#_parameters_3]]
       *
@@ -24,7 +24,7 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait DefaultField extends Modifier { self: BaseDriverOp =>
+  trait DefaultField extends Modifier { 
     /** The default field to use when no field prefix is defined within the query.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html#_parameters_3]]
       *
@@ -35,7 +35,7 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Analyzer extends Modifier { self: BaseDriverOp =>
+  trait Analyzer extends Modifier { 
     /** The analyzer name to be used when analyzing the query string.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html#_parameters_3]]
       *
@@ -46,7 +46,7 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait LowercaseExpandedTerms extends Modifier { self: BaseDriverOp =>
+  trait LowercaseExpandedTerms extends Modifier { 
     /** Should terms be automatically lowercased or not. Defaults to `true`.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html#_parameters_3]]
       *
@@ -57,7 +57,7 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait AnalyzeWildcard extends Modifier { self: BaseDriverOp =>
+  trait AnalyzeWildcard extends Modifier { 
     /** Should wildcard and prefix queries be analyzed or not. Defaults to `false`.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html#_parameters_3]]
       *
@@ -68,7 +68,7 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait DefaultOperator extends Modifier { self: BaseDriverOp =>
+  trait DefaultOperator extends Modifier { 
     /**
       * The default operator to be used, can be AND or OR. Defaults to OR.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html#_parameters_3]]
@@ -80,7 +80,7 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Lenient extends Modifier { self: BaseDriverOp =>
+  trait Lenient extends Modifier { 
     /**
       * If set to true will cause format based failures (like providing text to a numeric field) to be ignored.
       * Defaults to false.
@@ -93,7 +93,7 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Sort extends Modifier { self: BaseDriverOp =>
+  trait Sort extends Modifier { 
     /**
       * Sorting to perform. Can either be in the form of fieldName, or fieldName:asc/fieldName:desc. The fieldName can
       * either be an actual field within the document, or the special _score name to indicate sorting based on scores.
@@ -107,7 +107,7 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait TrackScores extends Modifier { self: BaseDriverOp =>
+  trait TrackScores extends Modifier { 
     /**
       * When sorting, set to true in order to still track scores and return them as part of each hit.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html#_parameters_3]]
@@ -121,7 +121,7 @@ object SearchModifiers {
   // Search modifiers - standard "body data" version
 
   /** (modifier - see method for details) */
-  trait RequestCache extends Modifier { self: BaseDriverOp =>
+  trait RequestCache extends Modifier { 
     /** Set to true or false to enable or disable the caching of search results for requests where size is 0,
       * ie aggregations and suggestions (no top hits returned). See Shard request cache.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#_parameters_4]]
@@ -135,7 +135,7 @@ object SearchModifiers {
   // Search modifiers - common
 
   /** (modifier - see method for details) */
-  trait From extends Modifier { self: BaseDriverOp =>
+  trait From extends Modifier { 
     /** The starting from index of the hits to return. Defaults to 0.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#_parameters_4]]
       *
@@ -146,7 +146,7 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Size extends Modifier { self: BaseDriverOp =>
+  trait Size extends Modifier { 
     /** The number of hits to return. Defaults to 10.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#_parameters_4]]
       *
@@ -157,7 +157,7 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait SearchType extends Modifier { self: BaseDriverOp =>
+  trait SearchType extends Modifier { 
     /** The type of the search operation to perform. Can be dfs_query_then_fetch, query_then_fetch.
       * Defaults to query_then_fetch.
       * See Search Type for more details on the different types of search that can be performed.
@@ -170,7 +170,7 @@ object SearchModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait TerminateAfter extends Modifier { self: BaseDriverOp =>
+  trait TerminateAfter extends Modifier { 
     /**  The maximum number of documents to collect for each shard, upon reaching which the query execution will
       * terminate early. If set, the response will have a boolean field terminated_early to indicate whether the query
       * execution has actually `terminated_early`. Defaults to no terminate_after.
@@ -185,7 +185,7 @@ object SearchModifiers {
   // Query modifiers - shard information
 
   /** (modifier - see method for details) */
-  trait Preference extends Modifier { self: BaseDriverOp =>
+  trait Preference extends Modifier { 
     /** Controls on which shard the explain is executed.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-shards.html#_all_parameters]]
       *

@@ -10,7 +10,7 @@ object CommonModifiers {
   // Control over the rendering of the reply strings
 
   /** (modifier - see method for details) */
-  trait Pretty extends Modifier { self: BaseDriverOp =>
+  trait Pretty extends Modifier { 
     /** Controls the format of the response (newlines/indendation) if returned as a string, else ignored
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_pretty_results]]
       *
@@ -21,7 +21,7 @@ object CommonModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Human extends Modifier { self: BaseDriverOp =>
+  trait Human extends Modifier { 
     /** Controls returning statistics as human readable strings instead of numbers
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_human_readable_output]]
       *
@@ -32,7 +32,7 @@ object CommonModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Case extends Modifier { self: BaseDriverOp =>
+  trait Case extends Modifier { 
     /** Controls returning JSON in `camelCase` instead of `snake_case`
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_result_casing]]
       *
@@ -43,7 +43,7 @@ object CommonModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait FilterPath extends Modifier { self: BaseDriverOp =>
+  trait FilterPath extends Modifier { 
     /** Removes unspecified fields from the JSON path
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_response_filtering]]
       *
@@ -54,7 +54,7 @@ object CommonModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait FlatSettings extends Modifier { self: BaseDriverOp =>
+  trait FlatSettings extends Modifier { 
     /** Controls whether to return fields in flat mode (the fields themselves are returned in dot notation)
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_flat_settings]]
       *
@@ -67,7 +67,7 @@ object CommonModifiers {
   // Control over write operations
 
   /** (modifier - see method for details) */
-  trait Source extends Modifier { self: BaseDriverOp =>
+  trait Source extends Modifier { 
     /** Allows to post bodies for `POST` or `PUT` in the query params
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/common-options.html#_request_body_in_query_string]]
       *
@@ -80,7 +80,7 @@ object CommonModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Routing extends Modifier { self: BaseDriverOp =>
+  trait Routing extends Modifier { 
     /** Represents a resource that can have the modifier ?routing
       * (Forces the request to go to a specific node in the cluster)
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html#index-routing Docs]]
@@ -91,7 +91,7 @@ object CommonModifiers {
     @Param def routing(node: String): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
-  trait Version extends Modifier { self: BaseDriverOp =>
+  trait Version extends Modifier { 
     /** . This will control the version of the document the operation is intended to be executed against.
       *  [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html#index-versioning Docs]]
       *
@@ -101,7 +101,7 @@ object CommonModifiers {
     @Param def version(v: Int): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
-  trait OpType extends Modifier { self: BaseDriverOp =>
+  trait OpType extends Modifier { 
     /** The index operation also accepts an op_type that can be used to force a create operation,
       * eg allowing for "put-if-absent" behavior.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html#operation-type Docs]]
@@ -112,7 +112,7 @@ object CommonModifiers {
     @Param def op_type(opType: String): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
-  trait Parent extends Modifier { self: BaseDriverOp =>
+  trait Parent extends Modifier { 
     /** A child document can be indexed by specifying its parent when indexing
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html#parent-children Docs]]
       *
@@ -122,7 +122,7 @@ object CommonModifiers {
     @Param def parent(parent: String): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
-  trait Timeout extends Modifier { self: BaseDriverOp =>
+  trait Timeout extends Modifier { 
     /** A search timeout, bounding the search request to be executed within the specified time value and bail with the
       * hits accumulated up to that point when expired. Defaults to no timeout.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html#timeout Docs]]
@@ -137,7 +137,7 @@ object CommonModifiers {
   // Control the details of returned documents
 
   /** (modifier - see method for details) */
-  trait SourceBase extends Modifier { self: BaseDriverOp =>
+  trait SourceBase extends Modifier { 
     /** Whether to include the _source object of the document in the return
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html Docs]]
       *
@@ -147,7 +147,7 @@ object CommonModifiers {
     @Param def _source(b: Boolean): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
-  trait SourceInclude extends Modifier { self: BaseDriverOp =>
+  trait SourceInclude extends Modifier { 
     /** Which fields from the _source object to include
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#get-source-filtering Docs]]
       *
@@ -164,7 +164,7 @@ object CommonModifiers {
     @Param def _source(fields: String*): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
-  trait SourceExclude extends Modifier { self: BaseDriverOp =>
+  trait SourceExclude extends Modifier { 
     /** Which fields from the _source object to exclude
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#get-source-filtering Docs]]
       *
@@ -174,7 +174,7 @@ object CommonModifiers {
     @Param def _source_exclude(fields: String*): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
-  trait Fields extends Modifier { self: BaseDriverOp =>
+  trait Fields extends Modifier { 
     /** Which fields from the document index or node statistics to include
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#get-fields Index docs]]
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-nodes-stats.html#field-data Node stats docs]]
@@ -188,7 +188,7 @@ object CommonModifiers {
   // Misc other modifiers
 
   /** (modifier - see method for details) */
-  trait Conflict extends Modifier { self: BaseDriverOp =>
+  trait Conflict extends Modifier { 
     /** If you want to simply count version conflicts not cause the _update_by_query to abort you can set
       * conflicts=proceed on the url
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update-by-query.html Docs]]
@@ -200,7 +200,7 @@ object CommonModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait IgnoreUnavailable extends Modifier { self: BaseDriverOp =>
+  trait IgnoreUnavailable extends Modifier { 
     /** It is possible to manage multiple artefacts (indexes, snapshots). An error will be thrown if the request
       * explicitly refers to a missing artefact. This behaviour can be disabled using the
       * ignore_unavailable=true parameter.
@@ -213,7 +213,7 @@ object CommonModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait WaitForCompletion extends Modifier { self: BaseDriverOp =>
+  trait WaitForCompletion extends Modifier { 
     /** Enables task request to wait for a task to complete (should be used in conjunction with the `Timeout`
       * modifier, eg `timeout("10s")`)
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/tasks.html Task Docs]]
@@ -228,7 +228,7 @@ object CommonModifiers {
   // Cluster/index statistics
 
   /** (modifier - see method for details) */
-  trait Level extends Modifier { self: BaseDriverOp =>
+  trait Level extends Modifier { 
     /** Defines if various stats (cluster health. fields) should be returned on a per index level or on a
       * cluster wide level.
       * Valid values are "shards", "indices "and "cluster" (@Param def ault).
@@ -244,7 +244,7 @@ object CommonModifiers {
   // Cluster/search modifiers
 
   /** (modifier - see method for details) */
-  trait Local extends Modifier { self: BaseDriverOp =>
+  trait Local extends Modifier { 
     /** A boolean value whether to read the cluster state locally in order to determine where shards are allocated
       * instead of using the Master node’s cluster state.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-shards.html#_all_parameters Search resources]]
@@ -257,7 +257,7 @@ object CommonModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Explain extends Modifier { self: BaseDriverOp =>
+  trait Explain extends Modifier { 
     /**
       * For search - For each hit, contain an explanation of how scoring of the hits was computed.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html#_parameters_3]]
@@ -275,7 +275,7 @@ object CommonModifiers {
   // Index and node statistics
 
   /** (modifier - see method for details) */
-  trait Groups extends Modifier { self: BaseDriverOp =>
+  trait Groups extends Modifier { 
     /**  You can include statistics for custom groups by adding an extra groups parameter (search operations can be
       * associated with one or more groups). The groups parameter accepts a comma separated list of group names.
       * Use _all to return statistics for all groups
@@ -298,12 +298,12 @@ object CommonModifierGroups {
   import CommonModifiers._
 
   /** No modifiers are supported for these parameters */
-  trait NoParams extends BaseDriverOp
+  trait NoParams extends Modifier
 
   /** The standard set available to all ES resource
     * See [[https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html]]
     */
-  trait StandardParams extends Pretty with Human with Case with FilterPath with FlatSettings with BaseDriverOp
+  trait StandardParams extends Pretty with Human with Case with FilterPath with FlatSettings
 
   /** Parameters controlling index operations */
   trait IndexWriteParams extends Version with OpType with Routing with Parent with Timeout with StandardParams

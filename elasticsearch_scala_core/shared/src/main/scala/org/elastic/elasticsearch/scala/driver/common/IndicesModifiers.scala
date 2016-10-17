@@ -11,7 +11,7 @@ object IndicesModifiers {
   // Index statistics
 
   /** (modifier - see method for details) */
-  trait Types extends Modifier { self: BaseDriverOp =>
+  trait Types extends Modifier { 
     /** The types over which to filter statistics
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html#indices-stats]]
       *
@@ -24,7 +24,7 @@ object IndicesModifiers {
   // Segments modifiers
 
   /** (modifier - see method for details) */
-  trait Verbose extends Modifier { self: BaseDriverOp =>
+  trait Verbose extends Modifier { 
     /** Controls the verbosity of many index related resources
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html eg Segments resources]]
       *
@@ -37,7 +37,7 @@ object IndicesModifiers {
   // Recovery Modifiers
 
   /** (modifier - see method for details) */
-  trait Detailed extends Modifier { self: BaseDriverOp =>
+  trait Detailed extends Modifier { 
     /** Display a detailed view of ongoing shard recoveries.
       * This is primarily useful for viewing the recovery of physical index files. Default: false.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html]]
@@ -49,7 +49,7 @@ object IndicesModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait ActiveOnly extends Modifier { self: BaseDriverOp =>
+  trait ActiveOnly extends Modifier { 
     /** Display only those recoveries that are currently on-going. Default: false.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html]]
       *
@@ -62,7 +62,7 @@ object IndicesModifiers {
   // Index shard status information
 
   /** (modifier - see method for details) */
-  trait Status extends Modifier { self: BaseDriverOp =>
+  trait Status extends Modifier { 
     /** Only shards with this status are shown
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-shards-stores.html]]
       *
@@ -73,7 +73,7 @@ object IndicesModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait CacheFields extends Modifier { self: BaseDriverOp =>
+  trait CacheFields extends Modifier { 
     /** All caches relating to a specific field(s) can also be cleared by specifying fields parameter with a
       * comma delimited list of the relevant fields.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html]]
@@ -87,7 +87,7 @@ object IndicesModifiers {
   // Flush parameters
 
   /** (modifier - see method for details) */
-  trait WaitIfOngoing extends Modifier { self: BaseDriverOp =>
+  trait WaitIfOngoing extends Modifier { 
     /** If set to true the flush operation will block until the flush can be executed if another flush operation is
       * already executing. The default is false and will cause an exception to be thrown on the shard level if another
       * flush operation is already running.
@@ -101,7 +101,7 @@ object IndicesModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Force extends Modifier { self: BaseDriverOp =>
+  trait Force extends Modifier { 
     /** Whether a flush should be forced even if it is not necessarily needed ie. if no changes will be committed to the
       * index. This is useful if transaction log IDs should be incremented even if no uncommitted changes are present.
       * (This setting can be considered as internal)
@@ -116,7 +116,7 @@ object IndicesModifiers {
   // Force Merge Parameters
 
   /** (modifier - see method for details) */
-  trait MaxNumSegments extends Modifier { self: BaseDriverOp =>
+  trait MaxNumSegments extends Modifier { 
     /** The number of segments to merge to. To fully merge the index, set it to 1.
       * Defaults to simply checking if a merge needs to execute, and if so, executes it.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html]]
@@ -128,7 +128,7 @@ object IndicesModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait OnlyExpungeDeletes extends Modifier { self: BaseDriverOp =>
+  trait OnlyExpungeDeletes extends Modifier { 
     /** The number of segments to merge to. To fully merge the index, set it to 1.
       * Defaults to simply checking if a merge needs to execute, and if so, executes it.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html]]
@@ -140,7 +140,7 @@ object IndicesModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Flush extends Modifier { self: BaseDriverOp =>
+  trait Flush extends Modifier { 
     /** Should a flush be performed after the forced merge. Defaults to true.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html]]
       *
@@ -153,7 +153,7 @@ object IndicesModifiers {
   // Upgrade modifiers
 
   /** (modifier - see method for details) */
-  trait OnlyAncientSegments extends Modifier { self: BaseDriverOp =>
+  trait OnlyAncientSegments extends Modifier { 
     /**
       * If true, only very old segments (from a previous Lucene major release) will be upgraded. While this will do the
       * minimal work to ensure the next major release of Elasticsearch can read the segments, it’s dangerous because

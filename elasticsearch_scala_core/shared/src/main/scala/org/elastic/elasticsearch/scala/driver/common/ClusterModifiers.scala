@@ -10,7 +10,7 @@ import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, Modifier, Param}
 object ClusterModifiers {
 
   /** (modifier - see method for details) */
-  trait WaitForStatus extends Modifier { self: BaseDriverOp =>
+  trait WaitForStatus extends Modifier { 
     /** One of `"green"`, `"yellow"` or `"red"`. Will wait (until the timeout provided) until the status of the cluster changes to
       * the one provided or better, i.e. green > yellow > red. By default, will not wait for any status.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html#request-params Docs]]
@@ -21,7 +21,7 @@ object ClusterModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait WaitForRelocatingShards extends Modifier { self: BaseDriverOp =>
+  trait WaitForRelocatingShards extends Modifier { 
     /** A number controlling to how many relocating shards to wait for. Usually will be `0` to indicate to wait
       * till all relocations have happened. Defaults to not wait.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html#request-params Docs]]
@@ -32,7 +32,7 @@ object ClusterModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait WaitForActiveShards extends Modifier { self: BaseDriverOp =>
+  trait WaitForActiveShards extends Modifier { 
     /** A number controlling to how many active shards to wait for. Defaults to not wait.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html#request-params Docs]]
       *
@@ -42,7 +42,7 @@ object ClusterModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait WaitForNodes extends Modifier { self: BaseDriverOp =>
+  trait WaitForNodes extends Modifier { 
     /** The request waits until the specified number N of nodes is available
       * (See also string version, supports `>=N`, `<=N`, `>N` and `<N`).
       * Alternatively, it is possible to use `ge(N)`, `le(N)`, `gt(N)` and `lt(N)` notation.)
@@ -62,7 +62,7 @@ object ClusterModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait DryRun extends Modifier { self: BaseDriverOp =>
+  trait DryRun extends Modifier { 
     /** Another option is to run the commands in dry_run (as a URI flag, or in the request body). This will cause the
       * commands to apply to the current cluster state, and return the resulting cluster after the commands
       * (and re-balancing) has been applied.
@@ -76,7 +76,7 @@ object ClusterModifiers {
   // Nodes
 
   /** (modifier - see method for details) */
-  trait Threads extends Modifier { self: BaseDriverOp =>
+  trait Threads extends Modifier { 
     /** The number of hot threads to provide, defaults to 3.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-hot-threads.html Docs]]
       *
@@ -86,7 +86,7 @@ object ClusterModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Interval extends Modifier { self: BaseDriverOp =>
+  trait Interval extends Modifier { 
     /** The interval to do the second sampling of threads. Defaults to 500ms.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-hot-threads.html Docs]]
       *
@@ -96,7 +96,7 @@ object ClusterModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Type extends Modifier { self: BaseDriverOp =>
+  trait Type extends Modifier { 
     /** The type to sample, defaults to `cpu`, but supports `wait` and `block`
       * to see hot threads that are in wait or block state.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-hot-threads.html Docs]]
@@ -108,7 +108,7 @@ object ClusterModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait IgnoreIdleThreads extends Modifier { self: BaseDriverOp =>
+  trait IgnoreIdleThreads extends Modifier { 
     /** If true, known idle threads (e.g. waiting in a socket select, or to get a task from an empty queue) are
       * filtered out. Defaults to true.
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-hot-threads.html Docs]]
@@ -121,7 +121,7 @@ object ClusterModifiers {
   // Task management
 
   /** (modifier - see method for details) */
-  trait Nodes extends Modifier { self: BaseDriverOp =>
+  trait Nodes extends Modifier { 
     /** The nodes on which to filter the task info request
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/tasks.html Docs]]
       *
@@ -132,7 +132,7 @@ object ClusterModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait NodeId extends Modifier { self: BaseDriverOp =>
+  trait NodeId extends Modifier { 
     /** The nodes on which to filter the task cancel request
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/tasks.html Docs]]
       *
@@ -143,7 +143,7 @@ object ClusterModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait ParentTaskId extends Modifier { self: BaseDriverOp =>
+  trait ParentTaskId extends Modifier { 
     /** For task info requests, selects on the task id of the "spawning" parent
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/tasks.html Docs]]
       *
@@ -153,7 +153,7 @@ object ClusterModifiers {
   }
 
   /** (modifier - see method for details) */
-  trait Actions extends Modifier { self: BaseDriverOp =>
+  trait Actions extends Modifier { 
     /** The actions on which to filter the task info request
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/tasks.html Docs]]
       *
