@@ -1,6 +1,8 @@
 package org.elastic.elasticsearch.scala.driver.common
 
+import org.elastic.elasticsearch.scala.driver.common.ClusterModifiers.WaitForCompletion
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups.StandardParams
+import org.elastic.elasticsearch.scala.driver.common.IndicesModifiers.IgnoreUnavailable
 import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, Modifier, Param}
 
 /** Modifiers used in the XPack API
@@ -97,6 +99,17 @@ object XpackModifierGroups {
 
   /** Params for snapshot verification */
   trait SnapshotVerifyParams extends Verify with StandardParams
+
+  //TODO update common docs with:
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_monitoring_snapshot_restore_progress
+  /** Params for create snapshots */
+  trait SnapshotCreateParams extends WaitForCompletion with StandardParams
+
+  //TODO update common docs with:
+  // https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_snapshot
+
+  /** Params for getting info about snapshots */
+  trait SnapshotInfoParams extends IgnoreUnavailable with StandardParams
 
   /** Params for watcher writes */
   trait WatcherWriteParams extends MasterTimeout with Active with StandardParams

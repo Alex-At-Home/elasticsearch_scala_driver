@@ -1873,9 +1873,6 @@ object ApiModelNavigationTree {
 
   // 0.6.4 Snapshots
 
-  //TODO: pretty sure I have the snapshot API wrong:
-  // https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html
-
   /**
     * An intermediate resource to obtain snapshot related settings
     */
@@ -1887,9 +1884,15 @@ object ApiModelNavigationTree {
     def _all = `/_snapshot/_all`()
 
     /**
-      * A resource to manage the specified snapshot
+      * A list of currently running snapshots with their detailed status information can be obtained
+      * @return A resource to return all snapshot information
+      */
+    def _status = `/_snapshot/_status`()
+
+    /**
+      * A resource to manage the specified snapshot repo
       * @param snapshotRepo The name of the snapshot to manage
-      * @return
+      * @return A resource to manage the specified snapshot repo
       */
     def $(snapshotRepo: String) = `/_snapshot/$snapshotRepo`(snapshotRepo)
 
@@ -1905,7 +1908,7 @@ object ApiModelNavigationTree {
   }
 
   /**
-    * An intermediate resource to obtain snapshot repo related settings
+    * An intermediate resource to obtain snapshot related settings
     */
   trait `tree:/_snapshot/$snapshotRepo` {
     val snapshotRepo: String
@@ -1917,9 +1920,68 @@ object ApiModelNavigationTree {
       * @return The snapshot repo verification resource
       */
     def _verify = `/_snapshot/$snapshotRepo/_verify`(snapshotRepo)
+
+    /**
+      * A list of currently running snapshots within the specified repo with
+      * their detailed status information can be obtained
+      * @return A resource to return all snapshot information in this repo
+      */
+    def _status = `/_snapshot/$snapshotRepo/_status`(snapshotRepo)
+
+    /**
+      * An intermediate resource for managing or creating a snapshot
+      * @param snapshotName The name of the snapshot within the specified repo
+      * @return An intermediate resource for managing or creating a snapshot
+      */
+    def $(snapshotName: String) = `/_snapshot/$snapshotRepo/$snapshotName`(snapshotRepo, snapshotName)
+
+    /**
+      *  An intermediate resource for retrieving information about multiple snapshots in a repo
+      * @param snapshotName1
+      * @param snapshotName2
+      * @param otherSnapshotNames
+      * @return An intermediate resource for retrieving information about multiple snapshots in a repo
+      */
+    def $(snapshotName1: String, snapshotName2: String, otherSnapshotNames: String*) =
+      `/_snapshot/$snapshotRepo/$snapshotNames`(snapshotRepo, Seq(snapshotName1, snapshotName2) ++ otherSnapshotNames:_*)
   }
 
-  // 0.6.5 Watcher (alerting)
+  /**
+    * An intermediate resource to obtain snapshot related settings
+    */
+  trait `tree:/_snapshot/$snapshotRepo/$snapshotName` {
+    val snapshotRepo: String
+    val snapshotName: String
+
+    /**
+      * Detailed status information for the specfied snapshot in the specified repo
+      * @return A resource to return detailed status information for the specfied snapshot in the specified repo
+      */
+    def _status = `/_snapshot/$snapshotRepo/$snapshotNames/_status`(snapshotRepo, snapshotName)
+
+    /**
+      * Returns a resource that restores the snapshot
+      * @return A resource that restores the snapshot
+      */
+    def _restore = `/_snapshot/$snapshotRepo/$snapshotName/_restore`(snapshotRepo, snapshotName)
+  }
+
+  /**
+    * An intermediate resource to obtain snapshot related settings
+    */
+  trait `tree:/_snapshot/$snapshotRepo/$snapshotNames` {
+    val snapshotRepo: String
+    val snapshotNames: Seq[String]
+
+    /**
+      * Detailed status information for the specfied snapshots in the specified repo
+      * @return A resource to return detailed status information for the specfied snapshot in the specified repo
+      */
+    def _status = `/_snapshot/$snapshotRepo/$snapshotNames/_status`(snapshotRepo, snapshotNames)
+  }
+
+
+    // 0.6.5 Watcher (alerting)
 
   /**
     * An intermediate resource to obtain watcher related settings

@@ -169,9 +169,9 @@ trait ApiModelXpack {
     * versions of Elasticsearch that can read the index.
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html Docs]]
     *
-    * @param $snapshotRepos The names of the snapshot repos to retrieve
+    * @param snapshotRepos The names of the snapshot repos to retrieve
     */
-  case class `/_snapshot/$snapshotRepos`($snapshotRepos: String*)
+  case class `/_snapshot/$snapshotRepos`(snapshotRepos: String*)
     extends RestReadable[StandardParams]
       with RestResource
 
@@ -198,9 +198,7 @@ trait ApiModelXpack {
 
   // Snapshots
 
-  //TODO navigation
-
-  //TODO wait for completion PUT
+  //TODO wait for completion PUT - update docs
 
   /** A repository can contain multiple snapshots of the same cluster. Snapshots are identified by unique names within
     * the cluster. Snapshots can be created, retrieved or deleted by name
@@ -209,12 +207,13 @@ trait ApiModelXpack {
     * @param snapshotName The name of the snapshot to create/manage
     */
   case class `/_snapshot/$snapshotRepo/$snapshotName`(snapshotRepo: String, snapshotName: String)
-    extends RestReadable[StandardParams]
-      with RestWritable[StandardParams]
+    extends `tree:/_snapshot/$snapshotRepo/$snapshotName`
+      with RestReadable[StandardParams]
+      with RestWritable[SnapshotCreateParams]
       with RestDeletable[StandardParams]
       with RestResource
 
-  //TODO ignore unavailable
+  //TODO ignore unavailable - update docs
 
   /** A repository can contain multiple snapshots of the same cluster. Snapshots are identified by unique names within
     * the cluster. Information about multiple snapshots within a repo can be obtained
@@ -223,14 +222,52 @@ trait ApiModelXpack {
     * @param snapshotNames The name of the snapshots to retrieve
     */
   case class `/_snapshot/$snapshotRepo/$snapshotNames`(snapshotRepo: String, snapshotNames: String*)
-    extends RestReadable[StandardParams]
-      with RestWritable[StandardParams]
-      with RestDeletable[StandardParams]
+    extends `tree:/_snapshot/$snapshotRepo/$snapshotNames`
+      with RestReadable[SnapshotInfoParams]
       with RestResource
 
-  //TODO: more snapshot API calls
-  // https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_restore
-  // https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_snapshot_status
+  /** A snapshot can be restored using this resource.
+    * By default, all indices in the snapshot as well as cluster state are restored. It’s possible to select
+    * indices that should be restored as well as prevent global cluster state from being restored by using indices
+    * and include_global_state options in the restore request body. The list of indices supports multi index syntax.
+    * The rename_pattern and rename_replacement options can be also used to rename indices on restore using regular
+    * expression that supports referencing the original text as explained here. Set include_aliases to false to
+    * prevent aliases from being restored together with associated indices
+    * Send with no data to use default options.
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_monitoring_snapshot_restore_progress Docs]]
+    * @param snapshotRepo The names of the snapshot repo to use
+    * @param snapshotName The name of the snapshot to create/manage
+    */
+  case class `/_snapshot/$snapshotRepo/$snapshotName/_restore`(snapshotRepo: String, snapshotName: String)
+    extends RestSendable[StandardParams]
+      with RestNoDataSendable[StandardParams]
+      with RestResource
+
+  /** A list of currently running snapshots with their detailed status information can be obtained using this
+    * resource
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_snapshot_status Docs]]
+    */
+  case class `/_snapshot/_status`()
+    extends RestReadable[StandardParams]
+      with RestResource
+
+  /** A list of currently running snapshots in the specified repo with their detailed status information
+    * can be obtained using this resource
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_snapshot_status Docs]]
+    * @param snapshotRepo The names of the snapshot repo to use
+    */
+  case class `/_snapshot/$snapshotRepo/_status`(snapshotRepo: String)
+    extends RestReadable[StandardParams]
+      with RestResource
+
+  /** This resource obtains detailed status information for the specified snapshots (in the specified repo)
+    * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html#_snapshot_status Docs]]
+    * @param snapshotRepo The names of the snapshot repo to use
+    * @param snapshotNames The name of the snapshots to get information about
+    */
+  case class `/_snapshot/$snapshotRepo/$snapshotNames/_status`(snapshotRepo: String, snapshotNames: String*)
+    extends RestReadable[StandardParams]
+      with RestResource
 
   // 5) Watcher
   // https://www.elastic.co/guide/en/watcher/current/api-rest.html
