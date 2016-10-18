@@ -50,8 +50,8 @@ trait ApiModelCommon {
   case class `/$index`(index: String)
     extends `tree:/$index`
       with RestReadable[StandardParams]
-      with RestWritable[StandardParams]
-      with RestDeletable[StandardParams]
+      with RestWritable[BulkStandardParams]
+      with RestDeletable[BulkStandardParams]
       with RestCheckable[NoParams]
       with RestResource
 
@@ -134,7 +134,7 @@ trait ApiModelCommon {
     * @param id The document id
     */
   case class `/$index/$type/$id/_update`(index: String, `type`: String, id: String)
-    extends RestWritable[StandardParams]
+    extends RestWritable[BulkStandardParams]
       with RestResource
 
   // 1.5] Update by query

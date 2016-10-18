@@ -4,6 +4,7 @@ import org.elastic.rest.scala.driver.RestResources._
 import org.elastic.rest.scala.driver.RestBase._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
+import org.elastic.elasticsearch.scala.driver.common.DataModelSearch.MultiSearchOps
 import org.elastic.elasticsearch.scala.driver.common.SearchModifierGroups._
 
 /** Resources to retrieve data from Elasticsearch
@@ -151,10 +152,7 @@ trait ApiModelSearch {
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html Docs]]
     */
   case class `/_msearch`() extends RestResource
-    with RestWithDataReadable[StandardParams]
-  {
-    //TODO: typed API for this
-  }
+    with RestWithDataReadableTU[StandardParams, MultiSearchOps]
 
   /** Search all indexes and the specified types, based on the query objects written to the
     * resource
@@ -163,10 +161,7 @@ trait ApiModelSearch {
     * @param types The types over which to search
     */
   case class `/_all/$types/_msearch`(types: String*) extends RestResource
-    with RestWithDataReadable[StandardParams]
-  {
-    //TODO: typed API for this
-  }
+    with RestWithDataReadableTU[StandardParams, MultiSearchOps]
 
   /** Search the specified indexes and all types, based on the query objects written to the
     * resource
@@ -175,10 +170,7 @@ trait ApiModelSearch {
     * @param indexes The indexes over which to search
     */
   case class `/$indexes/_msearch`(indexes: String*) extends RestResource
-    with RestWithDataReadable[StandardParams]
-  {
-    //TODO: typed API for this
-  }
+    with RestWithDataReadableTU[StandardParams, MultiSearchOps]
 
   /** Search the specified indexes and types, based on the query objects written to the
     * resource
@@ -188,10 +180,7 @@ trait ApiModelSearch {
     * @param types The types over which to search
     */
   case class `/$indexes/$types/_msearch`(indexes: Seq[String], types: Seq[String]) extends RestResource
-    with RestWithDataReadable[StandardParams]
-  {
-    //TODO: typed API for this
-  }
+    with RestWithDataReadableTU[StandardParams, MultiSearchOps]
 
   // 2.6 Count API
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-count.html

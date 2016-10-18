@@ -1,6 +1,7 @@
 package org.elastic.elasticsearch.scala.driver.common
 
 import io.circe.generic.JsonCodec
+import org.elastic.elasticsearch.scala.driver.common.CommonModifiers.BulkManagementDeclaration
 import org.elastic.elasticsearch.scala.driver.utils.BulkUtils
 import org.elastic.rest.scala.driver.RestBase._
 import org.elastic.rest.scala.driver.RestBaseImplicits.CustomTypedToString
@@ -44,11 +45,11 @@ object DataModelCommon {
     )
   }
 
-  /** List of operations to apply as part of the bulk operation
+  /** List of index operations to apply as part of the bulk index operation
     *
     * @param ops The list of ES operations
     */
-  case class BulkIndexOps(ops: List[BaseDriverOp]) extends CustomTypedToString {
-    override def fromTyped: String = BulkUtils.buildBulkOps(ops)
+  case class BulkIndexOps(ops: List[BaseDriverOp with BulkManagementDeclaration]) extends CustomTypedToString {
+    override def fromTyped: String = BulkUtils.buildBulkIndexOps(ops)
   }
 }

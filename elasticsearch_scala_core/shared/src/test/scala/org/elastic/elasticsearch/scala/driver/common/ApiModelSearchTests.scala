@@ -1,7 +1,9 @@
 package org.elastic.elasticsearch.scala.driver.common
 
+import org.elastic.elasticsearch.scala.driver.common.DataModelSearch.MultiSearchOps
 import utest._
 import org.elastic.rest.scala.driver.RestBase._
+import org.elastic.rest.scala.driver.utils.NoJsonHelpers
 
 object ApiModelSearchTests extends TestSuite {
 
@@ -630,6 +632,36 @@ object ApiModelSearchTests extends TestSuite {
         "/i1/t1,t2/_explain?_source=_s1,_s2"
       api.`/`().$("i1", "i2").$("t1", "t2")._explain.read()._source("_s1", "_s2").getUrl ==>
         "/i1,i2/t1,t2/_explain?_source=_s1,_s2"
+    }
+    "Custom typed operations: _msearch" - {
+
+      object search extends ApiModelSearch
+
+      import NoJsonHelpers._
+
+      val msearchOps = MultiSearchOps(List(
+        search.`/_search`().readS("TEST1").m("param1", "tp1").m("param2", "tp2"),
+        search.`/_all/$types/_search`("t1.1", "t1.2").readS("TEST2"),
+        search.`/$indexes/_search`("i2.1", "i2.2").readS("TEST3").m("param", List("l1", "l2")),
+        search.`/$indexes/$types/_search`(Seq("i3.1", "i3.2"), Seq("t3.1", "t3.2")).readS("TEST4").m("param", true)
+      ))
+
+      def formatVals(s: String) =
+        s.replace(" ", "").replace("\t", "").replace("\r", "")
+
+      val expected = formatVals(
+        s"""{ "param2": "tp2", "param1": "tp1"  }
+            |TEST1
+            |{ "type": "t1.1,t1.2" }
+            |TEST2
+            |{ "index": "i2.1,i2.2", "param": ["l1", "l2"] }
+            |TEST3
+            |{ "index": "i3.1,i3.2", "type": "t3.1,t3.2", "param": true }
+            |TEST4
+            |"""
+          .stripMargin.stripSuffix("\n"))
+
+      formatVals(search.`/_msearch`().read(msearchOps).body.get) ==> expected
     }
   }
 }
