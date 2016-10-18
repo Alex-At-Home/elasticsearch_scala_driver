@@ -1,4 +1,4 @@
-# Scala Elasticsearch REST driver   [![Build Status](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver.svg?branch=master)](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver)
+# Scala Elasticsearch REST driver   [![Build Status](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver.svg?branch=master)](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver) [![Scala.js](http://scala-js.org/assets/badges/scalajs-0.6.8.svg)](http://scala-js.org)
 
 ## Overview
 
@@ -15,19 +15,56 @@ A Scala driver for Elasticsearch, built using [this REST client library](https:/
 
 ## Example
 
+Run `sbt elasticsearch_scala_shell/console`, and then:
+
 ```scala
-import org.elastic.elasticsearch.
+import org.elastic.rest.scala.driver.RestBase._
+import org.elastic.rest.scala.driver.RestBaseImplicits._
+import org.elastic.rest.scala.driver.RestResources._
+import org.elastic.elasticsearch.scala.driver.versions.Versions.latest
+import org.elastic.elasticsearch.scala.driver.jvm.ElasticsearchDriver
+import scala.concurrent.ExecutionContext.Implicits.global
+
+implicit val client = (new ElasticsearchDriver()).withUrls("http://localhost:9200").withBasicAuth("user", "password").start() 
 
 // Resource-style syntax, async request, string format
-latest.`/_node/stats`().read().execS()
-//Future containing """{"_nodes": { "total": 1, ..."""
+latest.`/_nodes/stats`().read().execS()
+//Future containing """({"cluster_name":"<<CLUSTER_NAME>>","nodes":{"<<NODE1_ID>>":{"timestamp":1476827049189...
+
+import org.elastic.rest.scala.driver.json.CirceJsonModule._
 
 // Hierarchical-style syntax, sync request, JSON format
-latest._node.stats.read().resultJ()
-// Success(JsObject(_nodes=JsObject(total=1, ....
+latest()._nodes.stats.read().resultJ()
+// Success(io.circe.Json({"cluster_name":"<<CLUSTER_NAME>>","nodes":{"<<NODE1_ID>>":{"timestamp":1476827049189...
 
-//TODO etc
+import org.elastic.rest.scala.driver.json.CirceTypeModule._
+
+// Hierarchical-style syntax, async request, typed outputs
+latest().read().exec()
+// Future containing 
+// ElasticsearchInfo(<<HOST_NAME>>,<<CLUSTER_NAME>>,VersionInfo(2.3.4,<<BUILD_HASH>>,2016-06-30T11:24:31Z,false,5.5.0),You Know, for Search)))
+
+//TODO need to fix result() .. giving abstract error
+
+// typed input - bulk indexing operations
+
+//TODO bulk indexing example
+
+// Resource-style syntax, sync request, typed input - custom view over settings
+
+//TODO import for (Xpack) data model here?
+
+val monitorConfig = MarvelConfig(Map("test"->MarvelExporterLocalConfig()), interval = Some("300s"))
+
+//(example deserialization):
+monitorConfig.fromTyped
+// """ { "persistent": {  "marvel.agent.exporters.test": { "type": "local", "enabled": true }   ,   "marvel.agent.collection.interval": "300s"  } } """
+
+`/_cluster/settings#marvel.agent`().write(monitorConfig).resultJ()
+//TODO
+
 ```
+
 ## Import the elasticsearch driver
 
 Add the following to your `build.sbt` or `Build.scala` (assuming running in the JVM not ScalaJS):
@@ -44,7 +81,7 @@ More differences when using ScalaJS are provided below.
 ## Documentation
 
 * [Combined Documentation for the REST driver and Elasticsearch resources](https://alex-at-home.github.io/elasticsearch_scala_driver/current/index.html)
-* [The top-level REST client documentation](https://github.com/Alex-At-Home/rest_client_library/blob/master/README.md)
+* [The top-level REST client documentation, contains more examples of using the generic portions of the API](https://github.com/Alex-At-Home/rest_client_library/blob/master/README.md)
 
 ## Advanced topics
 

@@ -20,6 +20,7 @@ object Versions {
       with ApiModel_v2_3.Cluster
       with ApiModel_v2_3.Search
       with ApiModel_v2_3.Indices
+      with ApiModel_v2_3.Xpack
   {
     /**
       * Obtain the root node of the resource tree
