@@ -5,6 +5,7 @@ import javax.net.ssl.SSLContext
 import org.apache.http.HttpHost
 import org.apache.http.auth.UsernamePasswordCredentials
 import org.apache.http.client.config.RequestConfig.Builder
+import org.apache.http.entity.StringEntity
 import org.apache.http.impl.auth.BasicScheme
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
 import org.apache.http.impl.nio.reactor.IOReactorConfig
@@ -14,6 +15,7 @@ import org.elastic.rest.scala.driver.RestBase._
 import org.elasticsearch.client.RestClientBuilder.{HttpClientConfigCallback, RequestConfigCallback}
 import org.elasticsearch.client.{ResponseException, ResponseListener, RestClient}
 
+import scala.collection.JavaConverters._
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.duration.Duration
 
@@ -227,6 +229,8 @@ class StartedElasticsearchDriver(esDriver: ElasticsearchDriver) extends RestDriv
     restClient.performRequest(
       baseDriverOp.op,
       baseDriverOp.getUrl,
+      java.util.Collections.emptyMap[String, String](), //(params already built into getUrl)
+      baseDriverOp.body.map(new StringEntity(_)).orNull, //(pass null into Java code if no body)
       responseCallback,
       headers:_*)
     promise.future

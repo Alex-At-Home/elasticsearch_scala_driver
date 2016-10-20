@@ -6,7 +6,11 @@ jdk:
 
 env:
   - scala_projects="elasticsearch_scala_coreJS/test"
-  - scala_projects="elasticsearch_scala_coreJVM/test elasticsearch_scala_java_client/test"
+    after="echo NO_COVERAGE"
+  - scala_projects="clean coverage elasticsearch_scala_coreJVM/test elasticsearch_scala_java_client/test"
+    after="sbt coverageReport coverageAggregate coveralls"
 
 script:
   - sbt ++$TRAVIS_SCALA_VERSION $scala_projects
+
+after_success: $after

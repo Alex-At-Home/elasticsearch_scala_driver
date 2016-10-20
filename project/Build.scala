@@ -111,6 +111,7 @@ object MyBuild extends Build {
       name := "Elasticsearch Scala shell",
       mainClass in (Compile, run) := Some("org.elastic.elasticsearch.scala.driver.jvm.ShellMain"),
       version := esScalaDriverVersion,
+      scalacOptions ++= Seq("-Yno-load-impl-class"),
       libraryDependencies += ammoniteDeps,
       libraryDependencies += utestJvmDeps,
       testFrameworks += new TestFramework("utest.runner.Framework")
