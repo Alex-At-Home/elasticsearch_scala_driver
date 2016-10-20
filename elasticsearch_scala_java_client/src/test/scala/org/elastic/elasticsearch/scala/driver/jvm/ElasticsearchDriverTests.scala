@@ -72,6 +72,8 @@ object ElasticsearchDriverTests extends TestSuite {
           case request @ Get on Root if request.head.query.isDefined =>
             Callback.successful(request.ok(s"rx:/${request.head.query.get}"))
 
+            //TODO: need to handle writes here....
+
           // (Don't handle unexpected requests - the server will convert those into 404s)
         }
       }

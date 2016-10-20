@@ -1,19 +1,19 @@
-# Scala Elasticsearch REST driver   [![Build Status](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver.svg?branch=master)](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver) [![Scala.js](http://scala-js.org/assets/badges/scalajs-0.6.8.svg)](http://scala-js.org)
+# Scala Elasticsearch REST driver [![Build Status](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver.svg?branch=master)](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver) [![Scala.js](http://scala-js.org/assets/badges/scalajs-0.6.8.svg)](http://scala-js.org)
 
 ## Overview
 
 A Scala driver for Elasticsearch, built using [this REST client library](https://github.com/Alex-At-Home/rest_client_library), with the following attributes:
 * Maps 1-1 to the [Elasticsearch REST API](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html): each resource is named after and maps to a single REST endpoint, with identically named parameters, etc
 * Versioned - the same JAR can run multiple versions (currently: `2.3.x`)
-* Reads and writes support strings, JSON, or types
+* Read and write strings, JSON, or types
    * "Bring your own JSON library" with a _very_ thin wrapper ([CIRCE](https://github.com/travisbrown/circe) supported out of the box)
-   * The support for types is built in (using CIRCE). Some example types have been added, the intention is that users of the library (like me!) will add types as needed via PR, because it's so easy (see below).
-* Easily extendible for modules and plugins, using the underlying [REST client library](https://github.com/Alex-At-Home/rest_client_library)
+   * The support for types is built in (using ([CIRCE](https://github.com/travisbrown/circe), via a slightly less thin wrapper). Some example types have been added, the intention is that users of the library (like me!) will add types as needed via PR, because it's so easy (see below).
+* Easily extensible for modules and plugins, using the underlying [REST client library](https://github.com/Alex-At-Home/rest_client_library)
 * Built on the [Elasticsearch REST driver](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html), or you can write a _very_ thin wrapper around your preferred HTTP client
 * Runs in [Scala.JS](https://www.scala-js.org/) as well as in the JVM
 * Built-in mocking support
 
-## Example
+## Examples
 
 Run `sbt elasticsearch_scala_shell/console`, and then:
 
@@ -44,7 +44,7 @@ latest().read().exec()
 // Future containing 
 // ElasticsearchInfo(<<HOST_NAME>>,<<CLUSTER_NAME>>,VersionInfo(2.3.4,<<BUILD_HASH>>,2016-06-30T11:24:31Z,false,5.5.0),You Know, for Search)))
 
-//TODO need to fix result() .. giving abstract error
+//TODO use result here? or do i have another typed example?
 
 // typed input - bulk indexing operations
 
@@ -60,8 +60,7 @@ val monitorConfig = MarvelConfig(Map("test"->MarvelExporterLocalConfig()), inter
 monitorConfig.fromTyped
 // """ { "persistent": {  "marvel.agent.exporters.test": { "type": "local", "enabled": true }   ,   "marvel.agent.collection.interval": "300s"  } } """
 
-`/_cluster/settings#marvel.agent`().write(monitorConfig).resultJ()
-//TODO
+latest.`/_cluster/settings#marvel.agent`().write(monitorConfig).resultJ()
 
 ```
 
