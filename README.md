@@ -1,4 +1,4 @@
-# Scala Elasticsearch REST driver [![Build Status](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver.svg?branch=master)](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver) [![Scala.js](http://scala-js.org/assets/badges/scalajs-0.6.8.svg)](http://scala-js.org)
+# Scala Elasticsearch REST driver [![Build Status](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver.svg?branch=master)](https://travis-ci.org/Alex-At-Home/elasticsearch_scala_driver) [![Coverage Status](https://coveralls.io/repos/github/Alex-At-Home/elasticsearch_scala_driver/badge.svg?branch=master)](https://coveralls.io/github/Alex-At-Home/elasticsearch_scala_driver?branch=master) [![Scala.js](http://scala-js.org/assets/badges/scalajs-0.6.8.svg)](http://scala-js.org)
 
 ## Overview
 
