@@ -4,7 +4,7 @@ import org.elastic.rest.scala.driver.RestBaseImplicits.CustomTypedToString
 
 /** Typed data model for Xpack operations
   */
-object DataModelXpack {
+trait DataModelXpack {
 
   /** Additional data model for Marvel config */
   object MarvelConfig {
@@ -65,3 +65,4 @@ object DataModelXpack {
   }
 
 }
+object DataModelXpack extends DataModelXpack

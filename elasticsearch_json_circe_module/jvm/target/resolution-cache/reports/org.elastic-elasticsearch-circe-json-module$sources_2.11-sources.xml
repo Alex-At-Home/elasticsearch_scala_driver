@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ivy-report.xsl"?>
+<ivy-report version="1.0">
+	<info
+		organisation="org.elastic"
+		module="elasticsearch-circe-json-module$sources_2.11"
+		revision="0.1-SNAPSHOT"
+		extra-info.apiURL="https://alex-at-home.github.io/elasticsearch_scala_driver/current/"
+		conf="sources"
+		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
+		date="20161028152300"/>
+	<dependencies>
+	</dependencies>
+</ivy-report>

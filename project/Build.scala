@@ -39,7 +39,7 @@ object MyBuild extends Build {
 
   lazy val simpleScalaHttpServer = "com.tumblr" %% "colossus" % "0.8.1" % "test"
 
-  val rest_client_library_branch = "" //("#$branch" or "" for master)
+  val rest_client_library_branch = "#better-output-typing" //("#$branch" or "" for master)
   val rest_client_library_uri =
     uri(s"https://github.com/Alex-At-Home/rest_client_library.git$rest_client_library_branch")
 
@@ -86,8 +86,37 @@ object MyBuild extends Build {
     .jsSettings(
       scalaJSUseRhino in Global := useRhino
     )
-  lazy val elasticsearch_scala_coreJVM = elasticsearch_scala_core.jvm dependsOn rest_scala_coreJVM dependsOn rest_json_circe_moduleJVM
-  lazy val elasticsearch_scala_coreJS = elasticsearch_scala_core.js dependsOn rest_scala_coreJS dependsOn rest_json_circe_moduleJS
+  lazy val elasticsearch_scala_coreJVM = elasticsearch_scala_core.jvm
+    .dependsOn(rest_scala_coreJVM)
+    .dependsOn(rest_json_circe_moduleJVM % "test")
+
+  lazy val elasticsearch_scala_coreJS = elasticsearch_scala_core.js
+    .dependsOn(rest_scala_coreJS)
+    .dependsOn(rest_json_circe_moduleJS % "test")
+
+  lazy val elasticsearch_json_circe_module = crossProject
+    .in(file("elasticsearch_json_circe_module"))
+    .settings(
+      buildSettings ++ Seq(
+        name := "Elasticsearch CIRCE JSON module",
+        version := esScalaDriverVersion,
+        apiURL := Some(url(s"$apiRoot/$githubName/$docVersion/")),
+        autoAPIMappings := true,
+        libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaBuildVersion,
+        libraryDependencies += "com.lihaoyi" %%% "utest" % utestVersion % "test",
+        testFrameworks += new TestFramework("utest.runner.Framework")
+      ): _*)
+    .jvmSettings()
+    .jsSettings(
+      scalaJSUseRhino in Global := useRhino
+    )
+  lazy val elasticsearch_json_circe_moduleJVM = elasticsearch_json_circe_module.jvm
+    .dependsOn(elasticsearch_scala_coreJVM)
+    .dependsOn(rest_json_circe_moduleJVM)
+
+  lazy val elasticsearch_json_circe_moduleJS = elasticsearch_json_circe_module.js
+    .dependsOn(elasticsearch_scala_coreJS)
+    .dependsOn(rest_json_circe_moduleJS)
 
   lazy val elasticsearch_scala_java_clientJVM: Project = Project(
     "elasticsearch_scala_java_client",
@@ -124,7 +153,8 @@ object MyBuild extends Build {
       mainClass in assembly := Some("org.elastic.elasticsearch.scala.driver.jvm.ShellMain")
     )
   )
-  .dependsOn(rest_json_circe_moduleJVM, elasticsearch_scala_java_clientJVM)
+  .dependsOn(rest_json_circe_moduleJVM)
+  .dependsOn(elasticsearch_scala_java_clientJVM)
 
   // Doc project
   // (from https://groups.google.com/forum/#!topic/simple-build-tool/QXFsjLozLyU)

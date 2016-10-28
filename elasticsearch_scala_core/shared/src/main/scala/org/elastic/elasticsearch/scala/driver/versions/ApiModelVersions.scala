@@ -1,11 +1,12 @@
 package org.elastic.elasticsearch.scala.driver.versions
 
+import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree
 import org.elastic.elasticsearch.scala.driver.v2_3.ApiModel_v2_3
 
 /**
   * Ties together different resources into versions
   */
-object Versions {
+object ApiModelVersions {
 
   /**
     * The latest version of the driver
@@ -21,6 +22,7 @@ object Versions {
       with ApiModel_v2_3.Search
       with ApiModel_v2_3.Indices
       with ApiModel_v2_3.Xpack
+      with ApiModelNavigationTree.`tree:/`
   {
     /**
       * Obtain the root node of the resource tree
