@@ -6,7 +6,7 @@ import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
 import org.elastic.elasticsearch.scala.driver.common.DataModelSearch.{MultiSearchOps, SearchResults}
 import org.elastic.elasticsearch.scala.driver.common.SearchModifierGroups._
-import org.elastic.elasticsearch.scala.driver.common.SearchModifiers.Query
+import org.elastic.elasticsearch.scala.driver.common.DataModelSearch._
 
 /** Resources to retrieve data from Elasticsearch
   */
@@ -28,7 +28,7 @@ trait ApiModelSearch {
   case class `/_search`()
     extends `tree:/_search`
     with RestReadableT[UriQueryParams, SearchResults]
-    with RestWithDataReadableTT[QueryParams, Query, SearchResults]
+    with RestWithDataReadableTT[QueryParams, QueryBody, SearchResults]
     with RestResource
 
   /** Search all indexes and the specified types, based on the query object written to the
@@ -40,7 +40,7 @@ trait ApiModelSearch {
     */
   case class `/_all/$types/_search`(types: String*) extends RestResource
     with RestReadableT[UriQueryParams, SearchResults]
-    with RestWithDataReadableTT[QueryParams, Query, SearchResults]
+    with RestWithDataReadableTT[QueryParams, QueryBody, SearchResults]
 
   /** Search the specified indexes and all types, based on the query object written to the
     * resource
@@ -51,7 +51,7 @@ trait ApiModelSearch {
     */
   case class `/$indexes/_search`(indexes: String*) extends RestResource
     with RestReadableT[UriQueryParams, SearchResults]
-    with RestWithDataReadableTT[QueryParams, Query, SearchResults]
+    with RestWithDataReadableTT[QueryParams, QueryBody, SearchResults]
 
   /** Search the specified indexes and types, based on the query object written to the
     * resource
@@ -63,7 +63,7 @@ trait ApiModelSearch {
     */
   case class `/$indexes/$types/_search`(indexes: Seq[String], types: Seq[String]) extends RestResource
     with RestReadableT[UriQueryParams, SearchResults]
-    with RestWithDataReadableTT[QueryParams, Query, SearchResults]
+    with RestWithDataReadableTT[QueryParams, QueryBody, SearchResults]
 
   // 2.2] Search Templates
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template.html
