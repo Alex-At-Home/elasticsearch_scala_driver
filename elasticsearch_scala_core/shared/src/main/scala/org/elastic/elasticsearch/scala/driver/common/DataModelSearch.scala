@@ -20,13 +20,6 @@ trait DataModelSearch {
   /** A case class representing the query to execute
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-body.html Docs]]
     *
-    * TODO: lots of other terms to go into the query
-    * TODO: sort https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-sort.html ... requires its own object
-    * TODO: _source https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-source-filtering.html .. can be 3 diff types (string / seq String .. bool)
-    * TODO: script fields https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-script-fields.html ... requires its own object
-    * TODO: highlight https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html requires its own object
-    * TODO: rescore https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-rescore.html requires its own object
-    *
     * @param query The query term or terms that comprise the query
     * @param timeout A search timeout, bounding the search request to be executed within the specified time value and
     *                bail with the hits accumulated up to that point when expired. Defaults to no timeout.
@@ -54,7 +47,37 @@ trait DataModelSearch {
     *               off by default and generally not recommended. Use source filtering instead to select subsets of
     *               the original source document to be returned.
     *               [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-fields.html Docs]]
+    * @param script_fields Allows to return a script evaluation (based on different fields) for each hit
+    *                      [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-script-fields.html Docs]]
+    * @param fielddata_fields Allows to return the field data representation of a field for each hit.
+    *                         It’s important to understand that using the fielddata_fields parameter will cause the
+    *                         terms for that field to be loaded to memory (cached), which will result in more memory
+    *                         consumption
+    *                         [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-fielddata-fields.html Docs]]
+    * @param post_filter The post_filter is applied to the search hits at the very end of a search request, after aggregations
+    *                    have already been calculated. Allows for eg aggregations to work on a larger dataset than is
+    *                    returned from the query
+    *                    [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-post-filter.html Docs]]
+    * @param highlight Allows to highlight search results on one or more fields. The implementation uses either the
+    *                  lucene highlighter, fast-vector-highlighter or postings-highlighter.
+    *                  [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html Docs]]
+    * @param rescore Rescoring can help to improve precision by reordering just the top (eg 100 - 500) documents
+    *                returned by the query and post_filter phases, using a secondary (usually more costly) algorithm,
+    *                instead of applying the costly algorithm to all documents in the index.
+    *                [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-rescore.html Docs]]
+    * @param explain Enables explanation for each hit on how its score was computed
+    *                [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-explain.html Docs]]
+    * @param version Returns a version for each search hit.
+    *                [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-version.html Docs]]
+    * @param indices_boost Allows to configure different boost level per index when searching across more than one
+    *                      indices. This is very handy when hits coming from one index matter more than hits coming
+    *                      from another index (think social graph where each user has an index).
+    *                      [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-index-boost.html Docs]]
+    * @param min_score Exclude documents which have a _score less than the minimum specified in min_score
+    *                  (Note, most times, this does not make much sense, but is provided for advanced use cases.)
+    *                  [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-min-score.html Docs]]
     * TODO: docs for other params
+    *
     */
   case class QueryBody
     (query: qb.QueryElement,
@@ -66,21 +89,27 @@ trait DataModelSearch {
      track_scores: Boolean = false,
      _source: Either[Boolean, Seq[String]] = Left(true),
      fields: Seq[String] = Seq(),
+     script_fields: Map[String, QueryBody.ScriptFieldConfig] = Map(),
+     fielddata_fields: Seq[String] = Seq(),
+     post_filter: Option[qb.QueryElement] = None,
+     highlight: Option[QueryBody.HighlightConfig] = None,
+     rescore: Seq[QueryBody.RescoreConfig] = Seq(),
+     explain: Boolean = false,
+     version: Boolean = false,
+     indices_boost: Map[String, Double] = Map(),
      //TODO
-     script_fields: Map[String, Unit] = Map(), //TODO
-     fielddata_fields: Seq[String] = Seq(),// https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-fielddata-fields.html,
-     post_filter: Option[QueryBody], //https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-post-filter.html
-     highlight: Option[Unit] = None,  //TODO
-     rescore: Option[Unit] = None,  //TODO
-     explain: Boolean = false, //https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-explain.html
-     version: Boolean = false, //https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-explain.html
-     indices_boost: Map[String, Double] = Map(), //https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-index-boost.html
      min_score: Option[Double] = None, //https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-min-score.html
      aggregations: Map[String, ab.AggregationElement]  //TODO aggregations? https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-aggregations.html (for now just do
     )
-    //TODO: extends QueryBodyBase
+    extends QueryBodyBase
   {
+    //TODO: other fields
+    @SimpleObjectDescription("obj",
+      obj.FieldValue("query")
+    )
+    override def fromTyped: String = obj.AutoGenerated
   }
+
   /** Contains sub-objects of the query body */
   object QueryBody {
 
@@ -164,6 +193,7 @@ trait DataModelSearch {
       * @param inline (Only one of `inline` or `file` should be specified) Lets the user enter a script directly into
       *                the query body
       * @param file (Only one of `inline` or `file` should be specified) Refers to a registered script file
+      * @param lang The language (eg `groovy`, `expression`, `mustache`), defaults to `groovy`
       * @param params A generic set of parameters that are passed into the script
       * @param order The order in which the docs should be sorted according to the results of the script, should be one
       *              of `"asc"` or `"desc"`
@@ -172,6 +202,7 @@ trait DataModelSearch {
       (`type`: String,
        inline:  Option[String] = None,
        file: Option[String] = None,
+       lang: Option[String] = None,
        params: Map[String, Any] = Map(),
        order: Option[String] = None)
       extends CustomTypedToString with SortConfigBase
@@ -185,6 +216,7 @@ trait DataModelSearch {
               obj.SimpleObject("script")(
                 obj.Field("inline"),
                 obj.Field("file"),
+                obj.Field("lang"),
                 obj.SimpleObject("params")(
                   obj.KeyValues("params")()
                 )
@@ -205,6 +237,256 @@ trait DataModelSearch {
       override def fromTyped: String = jsonStr
     }
 
+    //////////////////////
+
+    // Sorting
+
+    /** Allows to return a script evaluation (based on different fields) for each hit
+      * Script fields can work on fields that are not stored (my_field_name in the above case), and allow to return
+      * custom values to be returned (the evaluated value of the script).
+      * Script fields can also access the actual _source document indexed and extract specific elements to be returned
+      * from it (can be an "object" type).
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-script-fields.html Docs]]
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/modules-scripting.html Inline vs File scripting]]
+      * @param inline (Only one of `inline` or `file` should be specified) Lets the user enter a script directly into
+      *                the query body
+      * @param file (Only one of `inline` or `file` should be specified) Refers to a registered script file
+      * @param lang The language (eg `groovy`, `expression`, `mustache`), defaults to `groovy`
+      * @param params A generic set of parameters that are passed into the script
+      * @param order The order in which the docs should be sorted according to the results of the script, should be one
+      *              of `"asc"` or `"desc"`
+      */
+    case class ScriptFieldConfig
+      (inline:  Option[String] = None,
+       file: Option[String] = None,
+       lang: Option[String] = None,
+       params: Map[String, Any] = Map(),
+       order: Option[String] = None)
+      extends CustomTypedToString with SortConfigBase
+    {
+      @SimpleObjectDescription("obj",
+        obj.SimpleObject(
+          obj.SimpleObject("script")(
+            obj.Field("inline"),
+            obj.Field("file"),
+            obj.Field("lang"),
+            obj.SimpleObject("params")(
+              obj.KeyValues("params")()
+            )
+          )
+        )
+      )
+      override def fromTyped: String = obj.AutoGenerated
+    }
+
+    //////////////////////
+
+    // Highlighting
+
+    /** The per field configuration for highlighting
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html Docs]]
+      * @param `type` The type field allows to force a specific highlighter type. This is useful for instance when
+      *               needing to use the plain highlighter on a field that has term_vectors enabled.
+      *               The allowed values are: `"plain"`, `"postings"` and `"fvh"`.
+      *               [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#_force_highlighter_type Docs]]
+      * @param force_source Forces the highlighting to highlight fields based on the source even if fields are stored
+      *                     separately. Defaults to false.
+      *                     [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#_force_highlighter_type Docs]]
+      * @param number_of_fragments Each field highlighted can control the size of the highlighted fragment in
+      *                            characters (defaults to 100), and the maximum number of fragments to return
+      *                            (defaults to 5).
+      *                            [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#_highlighted_fragments  Docs]]
+      * @param fragment_size Each field highlighted can control the size of the highlighted fragment in
+      *                      characters (defaults to 100), and the maximum number of fragments to return
+      *                      (defaults to 5).
+      *                      The fragment_size is ignored when using the postings highlighter, as it outputs sentences
+      *                      regardless of their length.
+      *                      [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#_highlighted_fragments  Docs]]
+      * @param no_match_size In the case where there is no matching fragment to highlight, the default is to not return
+      *                      anything. Instead, we can return a snippet of text from the beginning of the field by
+      *                      setting no_match_size (default 0) to the length of the text that you want returned.
+      * @param highlight_query It is also possible to highlight against a query other than the search query by setting
+      *                        highlight_query. This is especially useful if you use a rescore query because those are
+      *                        not taken into account by highlighting by default. Elasticsearch does not validate that
+      *                        highlight_query contains the search query in any way so it is possible to define it
+      *                        so legitimate query results aren’t highlighted at all. Generally it is better to
+      *                        include the search query in the highlight_query.
+      *                        [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#_highlight_query Docs]]
+      * @param pre_tags By default, the highlighting will wrap highlighted text in `<em>` and `</em>`.
+      *                 This can be controlled by setting `pre_tags` and `post_tags`
+      *                 [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#tags Docs]]
+      * @param post_tags By default, the highlighting will wrap highlighted text in `<em>` and `</em>`.
+      *                 This can be controlled by setting `pre_tags` and `post_tags`
+      *                 [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#tags Docs]]
+      * @param matched_fields The Fast Vector Highlighter can combine matches on multiple fields to highlight a single
+      *                       field using matched_fields. This is most intuitive for multifields that analyze the same
+      *                       string in different ways. All matched_fields must have term_vector set to
+      *                       with_positions_offsets but only the field to which the matches are combined is loaded
+      *                       so only that field would benefit from having store set to yes.
+      *                       [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#matched-fields Docs]]
+      */
+    case class FieldHighlightConfig
+      (`type`: Option[String] = None,
+       force_source: Boolean = false,
+       number_of_fragments: Option[Int] = None,
+       fragment_size: Option[Int] = None,
+       no_match_size: Option[Int] = None,
+       highlight_query: Option[qb.QueryElement] = None,
+       pre_tags: Seq[String] = Seq(),
+       post_tags: Seq[String] = Seq(),
+       matched_fields: Seq[String] = Seq()
+      )
+      extends CustomTypedToString
+    {
+      @SimpleObjectDescription("obj",
+        obj.SimpleObject(
+          obj.Field("`type`"),
+          obj.Field("force_source"),
+          obj.Field("number_of_fragments"),
+          obj.Field("fragment_size"),
+          obj.Field("no_match_size"),
+          obj.Field("highlight_query"),
+          obj.MultiTypeField("pre_tags"),
+          obj.MultiTypeField("post_tags"),
+          obj.MultiTypeField("matched_fields")
+        )
+      )
+      override def fromTyped: String = obj.AutoGenerated
+    }
+
+    /** Allows to highlight search results on one or more fields. The implementation uses either the lucene
+      * highlighter, fast-vector-highlighter or postings-highlighter.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html Docs]]
+      * @param fields A map of document fields to which to apply highlighting, associated with
+      * @param order If specified (only value currently supported is `"score"`) then controls how highlighted
+      *              fields are ordered (by default - their order in the field)
+      * @param require_field_match require_field_match can be set to false which will cause any field to be highlighted
+      *                            regardless of whether the query matched specifically on them. The default behaviour
+      *                            is true, meaning that only fields that hold a query match will be highlighted.
+      *
+      *
+      * @param `type` (Global applied by default - unless overridden - to all fields) The type field allows to force a specific highlighter type. This is useful for instance when
+      *               needing to use the plain highlighter on a field that has term_vectors enabled.
+      *               The allowed values are: `"plain"`, `"postings"` and `"fvh"`.
+      *               [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#_force_highlighter_type Docs]]
+      * @param force_source (Global applied by default - unless overridden - to all fields) Forces the highlighting to highlight fields based on the source even if fields are stored
+      *                     separately. Defaults to false.
+      *                     [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#_force_highlighter_type Docs]]
+      * @param number_of_fragments (Global applied by default - unless overridden - to all fields) Each field highlighted can control the size of the highlighted fragment in
+      *                            characters (defaults to 100), and the maximum number of fragments to return
+      *                            (defaults to 5).
+      *                            [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#_highlighted_fragments  Docs]]
+      * @param fragment_size (Global applied by default - unless overridden - to all fields) Each field highlighted can control the size of the highlighted fragment in
+      *                      characters (defaults to 100), and the maximum number of fragments to return
+      *                      (defaults to 5).
+      *                      The fragment_size is ignored when using the postings highlighter, as it outputs sentences
+      *                      regardless of their length.
+      *                      [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#_highlighted_fragments  Docs]]
+      * @param no_match_size (Global applied by default - unless overridden - to all fields) In the case where there is no matching fragment to highlight, the default is to not return
+      *                      anything. Instead, we can return a snippet of text from the beginning of the field by
+      *                      setting no_match_size (default 0) to the length of the text that you want returned.
+      * @param highlight_query (Global applied by default - unless overridden - to all fields) It is also possible to highlight against a query other than the search query by setting
+      *                        highlight_query. This is especially useful if you use a rescore query because those are
+      *                        not taken into account by highlighting by default. Elasticsearch does not validate that
+      *                        highlight_query contains the search query in any way so it is possible to define it
+      *                        so legitimate query results aren’t highlighted at all. Generally it is better to
+      *                        include the search query in the highlight_query.
+      *                        [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#_highlight_query Docs]]
+      * @param pre_tags (Global applied by default - unless overridden - to all fields) By default, the highlighting will wrap highlighted text in `<em>` and `</em>`.
+      *                 This can be controlled by setting `pre_tags` and `post_tags`
+      *                 [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#tags Docs]]
+      * @param post_tags (Global applied by default - unless overridden - to all fields) By default, the highlighting will wrap highlighted text in `<em>` and `</em>`.
+      *                   This can be controlled by setting `pre_tags` and `post_tags`
+      *                   [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#tags Docs]]
+      * @param matched_fields (Global applied by default - unless overridden - to all fields) The Fast Vector Highlighter can combine matches on multiple fields to highlight a single
+      *                       field using matched_fields. This is most intuitive for multifields that analyze the same
+      *                       string in different ways. All matched_fields must have term_vector set to
+      *                       with_positions_offsets but only the field to which the matches are combined is loaded
+      *                       so only that field would benefit from having store set to yes.
+      *                       [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#matched-fields Docs]]
+      */
+    case class HighlightConfig
+      (fields: Map[String, FieldHighlightConfig],
+       order: Option[String] = None,
+       require_field_match: Boolean = true,
+       // These are the global overrides:
+       `type`: Option[String] = None,
+       force_source: Boolean = false,
+       number_of_fragments: Option[Int] = None,
+       fragment_size: Option[Int] = None,
+       no_match_size: Option[Int] = None,
+       highlight_query: Option[qb.QueryElement] = None,
+       pre_tags: Seq[String] = Seq(),
+       post_tags: Seq[String] = Seq(),
+       matched_fields: Seq[String] = Seq()
+      )
+      extends CustomTypedToString
+    {
+      @SimpleObjectDescription("obj",
+        obj.SimpleObject(
+          obj.Field("order"),
+          obj.Field("require_field_match"),
+          obj.SimpleObject("fields")(
+            obj.KeyValues("fields")()
+          ),
+          obj.Field("`type`"),
+          obj.Field("force_source"),
+          obj.Field("number_of_fragments"),
+          obj.Field("fragment_size"),
+          obj.Field("no_match_size"),
+          obj.Field("highlight_query"),
+          obj.MultiTypeField("pre_tags"),
+          obj.MultiTypeField("post_tags"),
+          obj.MultiTypeField("matched_fields")
+        )
+      )
+      override def fromTyped: String = obj.AutoGenerated
+    }
+
+    //////////////////////
+
+    // Rescoring
+
+    /** Rescoring can help to improve precision by reordering just the top (eg 100 - 500) documents returned by the
+      * query and post_filter phases, using a secondary (usually more costly) algorithm, instead of applying the costly
+      * algorithm to all documents in the index.
+      * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-rescore.html Docs]]
+      * @param rescore_query The new query that will be applied on the top matches and re-order them
+      * @param window_size The query rescorer executes a second query only on the Top-K results returned by the query
+      *                    and post_filter phases. The number of docs which will be examined on each shard can be
+      *                    controlled by the window_size parameter, which defaults to from and size.
+      * @param score_mode The way the scores are combined can be controlled with the score_mode:
+      *                   "total", "multiply", "avg", "min", "max"
+      * @param query_weight By default the scores from the original query and the rescore query are combined linearly
+      *                     to produce the final _score for each document. The relative importance of the original
+      *                     query and of the rescore query can be controlled with the query_weight and
+      *                     rescore_query_weight respectively. Both default to 1.
+      * @param rescore_query_weight By default the scores from the original query and the rescore query are combined
+      *                             linearly to produce the final _score for each document. The relative importance of
+      *                             the original query and of the rescore query can be controlled with the query_weight
+      *                             and rescore_query_weight respectively. Both default to 1.
+      */
+    case class RescoreConfig
+      (rescore_query: qb.QueryElement,
+       window_size: Option[Int],
+       score_mode: Option[String],
+       query_weight: Option[Double],
+       rescore_query_weight: Option[Double])
+      extends CustomTypedToString
+    {
+      @SimpleObjectDescription("obj",
+        obj.SimpleObject(
+          obj.Field("window_size"),
+          obj.SimpleObject("query")(
+            obj.Field("rescore_query"),
+            obj.Field("score_mode"),
+            obj.Field("query_weight"),
+            obj.Field("rescore_query_weight")
+          )
+        )
+      )
+      override def fromTyped: String = obj.AutoGenerated
+    }
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -213,10 +495,12 @@ trait DataModelSearch {
   object qb {
 
     /** The base trait that all query elements must inherit */
-    trait QueryElement
+    trait QueryElement {
+      /** Each filter and query can accept a _name in its top level definition. */
+      def _name: Option[String]
+    }
 
     //TODO: things to add to some/all of the individual query elements:
-    // * https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html (all)
     // * https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-inner-hits.html (HasParentQuery/HasChildQuery)
 
     /////////////////////////////////////////////////////////////////////////////
@@ -224,11 +508,19 @@ trait DataModelSearch {
     /** A query term to retrieve all documents in the specified index/indicies (optionally with specified types)
       *
       * @param boost The optional boost to apply to the scoring
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
-    case class MatchAllQuery(boost: Option[Double] = None) extends CustomTypedToString with QueryElement {
+    case class MatchAllQuery
+      (boost: Option[Double] = None, _name: Option[String] = None)
+      extends CustomTypedToString with QueryElement
+    {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("match_all")(
-          obj.Field("boost")
+          obj.Field("boost"),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -240,12 +532,19 @@ trait DataModelSearch {
       * @param field The field in the document to test against (can include nested fields using dot notation)
       * @param value The term of match against
       * @param boost The boost multiplier to the scoring (eg `1.0` is equivalent to not setting it)
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
     case class TermQuery
-    (field: String, value: String, boost: Option[Double] = None) extends CustomTypedToString with QueryElement {
+      (field: String, value: String, boost: Option[Double] = None, _name: Option[String] = None)
+      extends CustomTypedToString with QueryElement
+    {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("term")(
-          obj.KeyValue("field", "value")(obj.Field("boost"))
+          obj.KeyValue("field", "value")(obj.Field("boost")),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -272,11 +571,18 @@ trait DataModelSearch {
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/query-dsl-terms-query.html Docs]]
       *
       * @param terms The fields to filter, and for each one a list of the allowed matching terms
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
-    case class TermsQuery(terms: Map[String, Seq[String]]) extends CustomTypedToString with QueryElement {
+    case class TermsQuery(terms: Map[String, Seq[String]], _name: Option[String] = None)
+      extends CustomTypedToString with QueryElement
+    {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("terms")(
-          obj.KeyValues("terms")()
+          obj.KeyValues("terms")(),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -294,16 +600,28 @@ trait DataModelSearch {
       * @param id      The id of the document to fetch the term values from.
       * @param path    The field specified as path to fetch the actual values for the terms filter.
       * @param routing A custom routing value to be used when retrieving the external terms doc.
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
-    case class TermLookupQuery(index: String, `type`: String, id: String, path: String, routing: Option[String])
-      extends CustomTypedToString {
+    case class TermLookupQuery
+      (index: String,
+       `type`: String,
+       id: String,
+       path: String,
+       routing: Option[String] = None,
+       _name: Option[String] = None)
+      extends CustomTypedToString
+    {
       @SimpleObjectDescription("obj",
         obj.SimpleObject(
           obj.Field("index"),
           obj.Field("`type`"),
           obj.Field("id"),
           obj.Field("path"),
-          obj.Field("routing")
+          obj.Field("routing"),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -316,11 +634,19 @@ trait DataModelSearch {
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/query-dsl-terms-query.html Docs]]
       *
       * @param terms The map of lookup filters keyed on the field name
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
-    case class TermsLookupQuery(terms: Map[String, TermLookupQuery]) extends CustomTypedToString with QueryElement {
+    case class TermsLookupQuery
+      (terms: Map[String, TermLookupQuery], _name: Option[String] = None)
+      extends CustomTypedToString with QueryElement
+    {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("terms")(
-          obj.KeyValues("terms")()
+          obj.KeyValues("terms")(),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -344,12 +670,18 @@ trait DataModelSearch {
       *                  can be overridden by passing the format parameter to the range query
       * @param time_zone Dates can be converted from another timezone to UTC either by specifying the time zone in the
       *                  date value itself (if the format accepts it), or it can be specified as the time_zone parameter
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
     case class RangeQuery
-    (field: String,
-     gt: Option[Any] = None, gte: Option[Any] = None, lt: Option[Any] = None, lte: Option[Any] = None,
-     boost: Option[Double] = None, format: Option[String], time_zone: Option[String])
-      extends CustomTypedToString with QueryElement {
+      (field: String,
+      gt: Option[Any] = None, gte: Option[Any] = None, lt: Option[Any] = None, lte: Option[Any] = None,
+       boost: Option[Double] = None, format: Option[String] = None, time_zone: Option[String] = None,
+       _name: Option[String] = None)
+      extends CustomTypedToString with QueryElement
+    {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("range")(
           obj.KeyValue("field")(
@@ -362,7 +694,8 @@ trait DataModelSearch {
               obj.Field("format"),
               obj.Field("time_zone")
             )
-          )
+          ),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -375,12 +708,19 @@ trait DataModelSearch {
       * @param field The field in the document to test against (can include nested fields using dot notation)
       * @param value The term of match against (by prefix matching)
       * @param boost The boost multiplier to the scoring (eg `1.0` is equivalent to not setting it)
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
     case class PrefixQuery
-    (field: String, value: String, boost: Option[Double] = None) extends CustomTypedToString with QueryElement {
+      (field: String, value: String, boost: Option[Double] = None, _name: Option[String] = None)
+      extends CustomTypedToString with QueryElement
+    {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("prefix")(
-          obj.KeyValue("field", "value")(obj.Field("boost"))
+          obj.KeyValue("field", "value")(obj.Field("boost")),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -392,13 +732,18 @@ trait DataModelSearch {
       * @param values The list of ids to filter on
       * @param `type` The type is optional and can be omitted, and can also accept an array of values.
       *               If no type is specified, all types defined in the index mapping are tried.
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
-    case class IdsQuery(values: Seq[String], `type`: Seq[String] = Seq.empty)
+    case class IdsQuery(values: Seq[String], `type`: Seq[String] = Seq.empty, _name: Option[String] = None)
       extends CustomTypedToString with QueryElement {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("ids")(
-          obj.MultiTypeField("`type`"),
-          obj.Field("values")
+          obj.MultiTypeField("`type`"), //TODO: update and set arrayIfSingleton = true
+          obj.Field("values"),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -415,15 +760,21 @@ trait DataModelSearch {
       *                             will be ignored.
       * @param minimum_should_match If specified, can allow a more restrictive `should` where >1 clause must match
       * @param boost                The optional boost to apply to the scoring
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
     case class BoolQuery
-    (must: Seq[QueryElement] = Seq.empty,
-     must_not: Seq[QueryElement] = Seq.empty,
-     should: Seq[QueryElement] = Seq.empty,
-     filter: Seq[QueryElement] = Seq.empty,
-     minimum_should_match: Option[Integer] = None,
-     boost: Option[Double] = None)
-      extends CustomTypedToString with QueryElement {
+      (must: Seq[QueryElement] = Seq.empty,
+       must_not: Seq[QueryElement] = Seq.empty,
+       should: Seq[QueryElement] = Seq.empty,
+       filter: Seq[QueryElement] = Seq.empty,
+       minimum_should_match: Option[Integer] = None,
+       boost: Option[Double] = None,
+       _name: Option[String] = None)
+      extends CustomTypedToString with QueryElement
+    {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("bool")(
           obj.MultiTypeField("must"),
@@ -431,7 +782,8 @@ trait DataModelSearch {
           obj.MultiTypeField("should"),
           obj.MultiTypeField("filter"),
           obj.Field("minimum_should_match"),
-          obj.Field("boost")
+          obj.Field("boost"),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -443,12 +795,20 @@ trait DataModelSearch {
       *
       * @param filter The query to apply
       * @param boost  The boost that generates the score
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
-    case class ConstantScore(filter: QueryElement, boost: Option[Double]) extends CustomTypedToString with QueryElement {
+    case class ConstantScore
+      (filter: QueryElement, boost: Option[Double] = None, _name: Option[String] = None)
+      extends CustomTypedToString with QueryElement
+    {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("constant_score")(
           obj.Field("filter"),
-          obj.Field("boost")
+          obj.Field("boost"),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -468,20 +828,27 @@ trait DataModelSearch {
       *                     children are required to match for the parent doc to be considered a match
       * @param max_children The has_child query allows you to specify that a minimum and/or maximum number of
       *                     children are required to match for the parent doc to be considered a match
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
     case class HasChildQuery
-    (query: QueryElement,
-     `type`: Option[String] = None, score_mode: Option[String] = None,
-     min_children: Option[Int], max_children: Option[Int]
-    )
-      extends CustomTypedToString with QueryElement {
+      (query: QueryElement,
+       `type`: Option[String] = None, score_mode: Option[String] = None,
+       min_children: Option[Int], max_children: Option[Int],
+       _name: Option[String] = None
+      )
+      extends CustomTypedToString with QueryElement
+    {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("has_child")(
           obj.Field("`type`"),
           obj.Field("score_mode"),
           obj.Field("min_children"),
           obj.Field("max_children"),
-          obj.Field("query")
+          obj.Field("query"),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -499,15 +866,22 @@ trait DataModelSearch {
       *                    equal to the boost on the has_parent query (Defaults to 1). If the score type is set to score,
       *                    then the score of the matching parent document is aggregated into the child documents belonging
       *                    to the matching parent document.
+      * @param _name Each filter and query can accept a _name in its top level definition.
+      *              The search response will include for each hit the matched_queries it matched on.
+      *              The tagging of queries and filters only make sense for the bool query.
+      *              [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-named-queries-and-filters.html Docs]]
       */
     case class HasParentQuery
-    (query: QueryElement, parent_type: Option[String] = None, score_mode: Option[String] = None)
-      extends CustomTypedToString with QueryElement {
+      (query: QueryElement, parent_type: Option[String] = None,
+       score_mode: Option[String] = None, _name: Option[String] = None)
+      extends CustomTypedToString with QueryElement
+    {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("has_parent")(
           obj.Field("parent_type"),
           obj.Field("score_mode"),
-          obj.Field("query")
+          obj.Field("query"),
+          obj.Field("_name")
         )
       )
       override def fromTyped: String = obj.AutoGenerated
@@ -519,6 +893,8 @@ trait DataModelSearch {
       * @param jsonStr String representation of a valid JSON object
       */
     case class RawQuery(jsonStr: String) extends CustomTypedToString with QueryElement {
+      /** (embed this directly into the JSON via the string, this explicit param is unused) */
+      def _name: Option[String] = None
       override def fromTyped: String = jsonStr
     }
 
