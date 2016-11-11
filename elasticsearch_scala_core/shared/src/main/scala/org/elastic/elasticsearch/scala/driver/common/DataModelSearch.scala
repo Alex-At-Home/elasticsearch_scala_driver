@@ -117,16 +117,16 @@ trait DataModelSearch {
         obj.FieldValue("track_scores"),
         obj.FieldValue("_source"),
         obj.MultiTypeField("fields"),
-        obj.FieldValue("script_fields"),
+        obj.MultiTypeField("script_fields"),
         obj.MultiTypeField("fielddata_fields"),
         obj.FieldValue("post_filter"),
         obj.FieldValue("highlight"),
         obj.MultiTypeField("rescore"),
         obj.FieldValue("explain"),
         obj.FieldValue("version"),
-        obj.FieldValue("indices_boost"),
+        obj.MultiTypeField("indices_boost"),
         obj.FieldValue("min_score"),
-        obj.FieldValue("aggregations"),
+        obj.MultiTypeField("aggregations"),
         obj.KeyValues("other_fields")()
       )
     )
@@ -203,7 +203,7 @@ trait DataModelSearch {
     {
       @SimpleObjectDescription("obj",
         obj.SimpleObject(
-          obj.KeyValue(field)(
+          obj.KeyValue("field")(
             obj.SimpleObject(
               obj.Field("order"),
               obj.Field("mode"),
@@ -252,9 +252,7 @@ trait DataModelSearch {
                 obj.Field("inline"),
                 obj.Field("file"),
                 obj.Field("lang"),
-                obj.SimpleObject("params")(
-                  obj.KeyValues("params")()
-                )
+                obj.MultiTypeField("params")
               )
             )
           )
@@ -307,9 +305,7 @@ trait DataModelSearch {
             obj.Field("inline"),
             obj.Field("file"),
             obj.Field("lang"),
-            obj.SimpleObject("params")(
-              obj.KeyValues("params")()
-            )
+            obj.MultiTypeField("params")
           )
         )
       )
@@ -463,9 +459,7 @@ trait DataModelSearch {
         obj.SimpleObject(
           obj.Field("order"),
           obj.Field("require_field_match"),
-          obj.SimpleObject("fields")(
-            obj.KeyValues("fields")()
-          ),
+          obj.Field("fields"),
           obj.Field("`type`"),
           obj.Field("force_source"),
           obj.Field("number_of_fragments"),
@@ -778,7 +772,7 @@ trait DataModelSearch {
       extends CustomTypedToString with QueryElement {
       @SimpleObjectDescription("obj",
         obj.SimpleObject("ids")(
-          obj.MultiTypeField("`type`"), //TODO: update and set arrayIfSingleton = true
+          obj.MultiTypeField("`type`", arrayIfSingleton = true),
           obj.Field("values"),
           obj.Field("_name")
         )
