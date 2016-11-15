@@ -939,7 +939,7 @@ object ApiModelNavigationTree {
 
   // 0.3.1 Search navigation
 
-  class `tree:/_search`() {
+  trait `tree:/_search` {
     /**
       * An intermediate result to use templates to search
       *
