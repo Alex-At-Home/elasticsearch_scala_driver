@@ -346,14 +346,186 @@ object DataModelSearchTests extends TestSuite {
             |}
           """.stripMargin)
 
-        //TODO various combos
+        parse(
+          qb.HasChildQuery(
+            query = qb.TermQuery("tag", "something"),
+            score_mode = Some("min"),
+            min_children = Some(1), max_children = Some(2),
+            inner_hits = Some(QueryBody(_source = Right(Seq("message")))),
+            _name = Some("test_name")
+          ).fromTyped
+        ) ==> parse(
+          """
+            |{
+            |    "has_child" : {
+            |        "query" : {
+            |            "term" : {
+            |                "tag" : "something"
+            |            }
+            |        },
+            |        "score_mode": "min",
+            |        "min_children": 1,
+            |        "max_children": 2,
+            |        "inner_hits": {
+            |           "size": 10,
+            |           "from": 0,
+            |           "track_scores": false,
+            |           "_source": [ "message" ],
+            |           "explain": false,
+            |           "version": false
+            |        },
+            |        "_name": "test_name"
+            |    }
+            |}
+          """.stripMargin)
       }
       "Has Parent query term" - {
-        //TODO
+        parse(
+          qb.HasParentQuery(
+            query = qb.TermQuery("tag", "something"),
+            parent_type = Some("blog_tag")
+          ).fromTyped
+        ) ==> parse(
+          """
+            |{
+            |    "has_parent" : {
+            |        "parent_type" : "blog_tag",
+            |        "query" : {
+            |            "term" : {
+            |                "tag" : "something"
+            |            }
+            |        }
+            |    }
+            |}
+          """.stripMargin)
+
+        parse(
+          qb.HasParentQuery(
+            query = qb.TermQuery("tag", "something"),
+            score_mode = Some("min"),
+            inner_hits = Some(QueryBody(_source = Right(Seq("message")))),
+            _name = Some("test_name")
+          ).fromTyped
+        ) ==> parse(
+          """
+            |{
+            |    "has_parent" : {
+            |        "query" : {
+            |            "term" : {
+            |                "tag" : "something"
+            |            }
+            |        },
+            |        "score_mode": "min",
+            |        "inner_hits": {
+            |           "size": 10,
+            |           "from": 0,
+            |           "track_scores": false,
+            |           "_source": [ "message" ],
+            |           "explain": false,
+            |           "version": false
+            |        },
+            |        "_name": "test_name"
+            |    }
+            |}
+          """.stripMargin)
       }
       "Raw query term" - {
         qb.RawQuery("test").fromTyped ==> "test"
       }
+    }
+    "Query config builds" - {
+      "RescoreConfig" - {
+
+        parse(
+          QueryBody.RescoreConfig(
+            rescore_query = qb.MatchAllQuery(),
+            rescore_query_weight = Some(0.0)
+          ).fromTyped
+        ) ==> parse(
+          """
+            |{ "query": {
+            |   "rescore_query": {
+            |      "match_all": {}
+            |   },
+            |   "rescore_query_weight": 0.0
+            | }
+            |}
+          """.stripMargin
+        )
+
+        parse(
+          QueryBody.RescoreConfig(
+            rescore_query = qb.MatchAllQuery(),
+            window_size = Some(5),
+            score_mode = Some("min"),
+            query_weight = Some(0.0)
+          ).fromTyped
+        ) ==> parse(
+          """
+            |{
+            | "window_size": 5,
+            | "query": {
+            |  "rescore_query": {
+            |     "match_all": {}
+            |   },
+            |   "score_mode": "min",
+            |   "query_weight": 0.0
+            | }
+            |}
+          """.stripMargin
+        )
+      }
+      "HighlightConfig" - {
+
+        parse(
+          QueryBody.HighlightConfig(
+            fields = Map(
+              "content" -> QueryBody.FieldHighlightConfig(
+                `type` = Some("fvh"),
+                matched_fields = Seq("content", "content.plain")
+              )
+            ),
+            order = Some("score")
+          ).fromTyped
+        ) ==> parse(
+          """
+            |{
+            |        "order": "score",
+            |        "require_field_match" : true,
+            |        "fields": {
+            |            "content": {
+            |               "force_source": false,
+            |                "matched_fields": ["content", "content.plain"],
+            |                "type" : "fvh"
+            |            }
+            |        },
+            |        "force_source": false
+            |}
+          """.stripMargin
+        )
+
+        //TODO coverage inc coverage of FieldHighlightConfig
+      }
+      "ScriptFieldConfig" - {
+        //TODO
+      }
+      "Sorting" - {
+        "SimpleSortConfig" - {
+          //TODO
+        }
+        "FullSortConfig" - {
+          //TODO
+        }
+        "ScriptSortConfig" - {
+          //TODO
+        }
+        "RawSortConfig" - {
+          //TODO
+        }
+      }
+    }
+    "Full query builder" - {
+      //TODO
     }
     "Aggregation builders" - {
       "Raw aggregation builder" - {
