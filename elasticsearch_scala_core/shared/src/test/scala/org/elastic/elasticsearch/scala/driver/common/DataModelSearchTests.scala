@@ -482,6 +482,7 @@ object DataModelSearchTests extends TestSuite {
             fields = Map(
               "content" -> QueryBody.FieldHighlightConfig(
                 `type` = Some("fvh"),
+                force_source = true,
                 matched_fields = Seq("content", "content.plain")
               )
             ),
@@ -494,7 +495,7 @@ object DataModelSearchTests extends TestSuite {
             |        "require_field_match" : true,
             |        "fields": {
             |            "content": {
-            |               "force_source": false,
+            |               "force_source": true,
             |                "matched_fields": ["content", "content.plain"],
             |                "type" : "fvh"
             |            }
@@ -504,7 +505,56 @@ object DataModelSearchTests extends TestSuite {
           """.stripMargin
         )
 
-        //TODO coverage inc coverage of FieldHighlightConfig
+        parse(
+          QueryBody.HighlightConfig(
+            fields = Map(
+              "content" -> QueryBody.FieldHighlightConfig(
+                number_of_fragments = Some(20),
+                fragment_size = Some(200),
+                no_match_size = Some(2),
+                highlight_query = Some(qb.TermQuery("k", "v")),
+                pre_tags = Seq("aa", "bb"),
+                post_tags = Seq("xx", "yy")
+              )
+            ),
+            `type` = Some("max"),
+            require_field_match = false,
+            force_source = true,
+            number_of_fragments = Some(10),
+            fragment_size = Some(100),
+            no_match_size = Some(1),
+            highlight_query = Some(qb.MatchAllQuery()),
+            pre_tags = Seq("a", "b"),
+            post_tags = Seq("x", "y"),
+            matched_fields = Seq("1", "2")
+          ).fromTyped
+        ) ==> parse(
+          """
+            |{
+            |        "require_field_match" : false,
+            |        "fields": {
+            |            "content": {
+            |               "force_source": false,
+            |               "number_of_fragments": 20,
+            |               "fragment_size": 200,
+            |               "no_match_size": 2,
+            |               "highlight_query": { "term": { "k": "v" } },
+            |                "pre_tags": ["aa", "bb"],
+            |                "post_tags": ["xx", "yy"]
+            |            }
+            |        },
+            |        "type": "max",
+            |        "force_source": true,
+            |        "number_of_fragments": 10,
+            |        "fragment_size": 100,
+            |        "no_match_size": 1,
+            |        "highlight_query": { "match_all": {} },
+            |        "pre_tags": [ "a", "b" ],
+            |        "post_tags": [ "x", "y" ],
+            |        "matched_fields": [ "1", "2" ]
+            |}
+          """.stripMargin
+        )
       }
       "ScriptFieldConfig" - {
         //TODO
