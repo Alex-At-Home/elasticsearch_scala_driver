@@ -613,7 +613,10 @@ object DataModelSearchTests extends TestSuite {
         ScriptLang.expression.toString ==> "expression"
         ScriptLang.moustache.toString ==> "moustache"
       }
-
+      "SortOrder" - {
+        SortOrder.asc.toString ==> "asc"
+        SortOrder.desc.toString ==> "desc"
+      }
       //TODO
     }
     "Full query builder" - {

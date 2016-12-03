@@ -2,18 +2,22 @@ package org.elastic.elasticsearch.scala.driver.common
 
 import org.elastic.elasticsearch.scala.driver.common.SearchModifiers.MultiSearchDeclaration
 import org.elastic.elasticsearch.scala.driver.utils.BulkUtils
-import org.elastic.rest.scala.driver.RestBase.BaseDriverOp
+import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, Constant, ToStringAnyVal}
 import org.elastic.rest.scala.driver.RestBaseImplicits.CustomTypedToString
 import org.elastic.rest.scala.driver.utils.NoJsonHelpers.{SimpleObjectDescription => obj}
-import org.elastic.rest.scala.driver.utils.NoJsonHelpers.{SimpleObjectDescription, ToStringAnyVal}
+import org.elastic.rest.scala.driver.utils.NoJsonHelpers.SimpleObjectDescription
 
 /** Value class for script languages, including the defaults */
 case class ScriptLang(value: String) extends AnyVal with ToStringAnyVal[String]
 /** Default provided script languages */
 object ScriptLang {
-  val groovy = ScriptLang("groovy")
-  val expression = ScriptLang("expression")
-  val moustache = ScriptLang("moustache")
+  @Constant val groovy, expression, moustache = ToStringAnyVal.AutoGenerate[ScriptLang]
+}
+/** Value class for determining the sort order */
+case class SortOrder(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Available sort orders */
+object SortOrder {
+  @Constant val asc, desc = ToStringAnyVal.AutoGenerate[SortOrder]
 }
 
 /** Data model types used by the search resources
@@ -197,7 +201,7 @@ trait DataModelSearch {
       */
     case class FullSortConfig
       (field: String,
-       order: Option[String] = None,
+       order: Option[SortOrder] = None,
        mode: Option[String] = None,
        nested_path: Option[String] = None,
        nested_filter: Option[qb.QueryElement] = None,
@@ -239,7 +243,7 @@ trait DataModelSearch {
        file: Option[String] = None,
        lang: Option[ScriptLang] = None,
        params: Map[String, Any] = Map(),
-       order: Option[String] = None)
+       order: Option[SortOrder] = None)
       extends CustomTypedToString with SortConfigBase
     {
       @SimpleObjectDescription("obj",
@@ -294,7 +298,7 @@ trait DataModelSearch {
        file: Option[String] = None,
        lang: Option[ScriptLang] = None,
        params: Map[String, Any] = Map(),
-       order: Option[String] = None)
+       order: Option[SortOrder] = None)
       extends CustomTypedToString with SortConfigBase
     {
       @SimpleObjectDescription("obj",
