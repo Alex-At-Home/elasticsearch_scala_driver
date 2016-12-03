@@ -557,11 +557,44 @@ object DataModelSearchTests extends TestSuite {
         )
       }
       "ScriptFieldConfig" - {
-        //TODO
+
+        parse(
+          QueryBody.ScriptFieldConfig(
+            inline = Some("doc['my_field_name'].value * factor"),
+            params = Map("factor" -> 0.0)
+          ).fromTyped
+        ) ==> parse(
+          """
+            |{
+            | "script": {
+            |                "inline": "doc['my_field_name'].value * factor",
+            |                "params" : {
+            |                    "factor"  : 0.0
+            |                }
+            | }
+            |}
+          """.stripMargin
+        )
+
+        parse(
+          QueryBody.ScriptFieldConfig(
+            file = Some("test"),
+            lang = Some("groovy")
+          ).fromTyped
+        ) ==> parse(
+          """
+            |{
+            | "script": {
+            |   "file": "test",
+            |   "lang": "groovy"
+            | }
+            |}
+          """.stripMargin
+        )
       }
       "Sorting" - {
         "SimpleSortConfig" - {
-          //TODO
+          QueryBody.SimpleSortConfig("test").fromTyped ==> "\"test\""
         }
         "FullSortConfig" - {
           //TODO
@@ -570,7 +603,7 @@ object DataModelSearchTests extends TestSuite {
           //TODO
         }
         "RawSortConfig" - {
-          //TODO
+          QueryBody.RawSortConfig("test").fromTyped ==> "test"
         }
       }
     }
