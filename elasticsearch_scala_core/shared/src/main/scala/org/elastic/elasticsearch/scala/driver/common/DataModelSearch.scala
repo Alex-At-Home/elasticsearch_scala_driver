@@ -11,7 +11,6 @@ import org.elastic.rest.scala.driver.utils.NoJsonHelpers.{SimpleObjectDescriptio
 case class ScriptLang(value: String) extends AnyVal with ToStringAnyVal[String]
 /** Default provided script languages */
 object ScriptLang {
-  //TODO: replace with macros?
   val groovy = ScriptLang("groovy")
   val expression = ScriptLang("expression")
   val moustache = ScriptLang("moustache")
