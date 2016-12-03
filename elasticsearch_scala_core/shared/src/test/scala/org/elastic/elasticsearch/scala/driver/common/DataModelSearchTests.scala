@@ -579,7 +579,7 @@ object DataModelSearchTests extends TestSuite {
         parse(
           QueryBody.ScriptFieldConfig(
             file = Some("test"),
-            lang = Some("groovy")
+            lang = Some(ScriptLang.groovy)
           ).fromTyped
         ) ==> parse(
           """
@@ -606,6 +606,15 @@ object DataModelSearchTests extends TestSuite {
           QueryBody.RawSortConfig("test").fromTyped ==> "test"
         }
       }
+    }
+    "Value classes" - {
+      "ScriptLang" - {
+        ScriptLang.groovy.toString ==> "groovy"
+        ScriptLang.expression.toString ==> "expression"
+        ScriptLang.moustache.toString ==> "moustache"
+      }
+
+      //TODO
     }
     "Full query builder" - {
       //TODO
