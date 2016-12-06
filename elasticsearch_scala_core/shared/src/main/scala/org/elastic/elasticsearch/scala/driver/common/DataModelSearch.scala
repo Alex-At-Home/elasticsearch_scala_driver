@@ -13,11 +13,51 @@ case class ScriptLang(value: String) extends AnyVal with ToStringAnyVal[String]
 object ScriptLang {
   @Constant val groovy, expression, moustache = ToStringAnyVal.AutoGenerate[ScriptLang]
 }
+
 /** Value class for determining the sort order */
 case class SortOrder(value: String) extends AnyVal with ToStringAnyVal[String]
 /** Available sort orders */
 object SortOrder {
   @Constant val asc, desc = ToStringAnyVal.AutoGenerate[SortOrder]
+}
+
+/** Value class for determining how to calculate the statistic used to determine the sort order */
+case class SortMode(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Currently available sort modes */
+object SortMode {
+  @Constant val min, max, sum, avg, median = ToStringAnyVal.AutoGenerate[SortMode]
+}
+
+case class ScriptSortType(value: String) extends AnyVal with ToStringAnyVal[String]
+object ScriptSortType {
+  @Constant val string, number = ToStringAnyVal.AutoGenerate[ScriptSortType]
+}
+
+/** Controls how missing fields are handled in sorts */
+case class SortMissingFieldPolicy(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Default values for the sort missing field policy */
+object SortMissingFieldPolicy {
+  @Constant val _last, _first = ToStringAnyVal.AutoGenerate[SortMissingFieldPolicy]
+}
+
+/** The way the scores are combined */
+case class ScoreMode(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Currently available score modes */
+object ScoreMode {
+  @Constant val total, multiple, avg, min, max = ToStringAnyVal.AutoGenerate[ScoreMode]
+}
+
+/** Forces a specific highlighter type */
+case class HighlightType(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Currently available highlight types */
+object HighlightType {
+  @Constant val plain, postings, fvh = ToStringAnyVal.AutoGenerate[HighlightType]
+}
+/** Controls how highlighted fields are ordered */
+case class HighlightOrder(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Currently available highlight orders */
+object HighlightOrder {
+  @Constant val score = ToStringAnyVal.AutoGenerate[HighlightOrder]
 }
 
 /** Data model types used by the search resources
@@ -175,7 +215,7 @@ trait DataModelSearch {
       override def fromTyped: String = s""""$field""""
     }
 
-    /** The full sort configration, with various options (defaulted where possible)
+    /** The full sort configuration, with various options (defaulted where possible)
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-sort.html Docs]]
       * @param field The field on which to sort (dot notation supported for nested fields)
       * @param order A string representing the order (should be "asc" or "desc")
@@ -202,15 +242,16 @@ trait DataModelSearch {
     case class FullSortConfig
       (field: String,
        order: Option[SortOrder] = None,
-       mode: Option[String] = None,
+       mode: Option[SortMode] = None,
        nested_path: Option[String] = None,
        nested_filter: Option[qb.QueryElement] = None,
-       missing: Option[String] = None,
+       missing: Option[SortMissingFieldPolicy] = None,
        unmapped_type: Option[String] = None)
       extends CustomTypedToString with SortConfigBase
     {
       @SimpleObjectDescription("obj",
-        obj.SimpleObject("field")(
+        obj.FieldKey("field"),
+        obj.SimpleObject(
           obj.Field("order"),
           obj.Field("mode"),
           obj.Field("nested_path"),
@@ -238,7 +279,7 @@ trait DataModelSearch {
       *              of `"asc"` or `"desc"`
       */
     case class ScriptSortConfig
-      (`type`: String,
+      (`type`: ScriptSortType,
        inline:  Option[String] = None,
        file: Option[String] = None,
        lang: Option[ScriptLang] = None,
@@ -247,16 +288,14 @@ trait DataModelSearch {
       extends CustomTypedToString with SortConfigBase
     {
       @SimpleObjectDescription("obj",
-        obj.SimpleObject("_score")(
-          obj.SimpleObject(
-            obj.Field("`type`"),
-            obj.Field("order"),
-            obj.SimpleObject("script")(
-              obj.Field("inline"),
-              obj.Field("file"),
-              obj.Field("lang"),
-              obj.MultiTypeField("params")
-            )
+        obj.SimpleObject("_script")(
+          obj.Field("`type`"),
+          obj.Field("order"),
+          obj.SimpleObject("script")(
+            obj.Field("inline"),
+            obj.Field("file"),
+            obj.Field("lang"),
+            obj.MultiTypeField("params")
           )
         )
       )
@@ -359,7 +398,7 @@ trait DataModelSearch {
       *                       [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#matched-fields Docs]]
       */
     case class FieldHighlightConfig
-      (`type`: Option[String] = None,
+      (`type`: Option[HighlightType] = None,
        force_source: Boolean = false,
        number_of_fragments: Option[Int] = None,
        fragment_size: Option[Int] = None,
@@ -438,10 +477,10 @@ trait DataModelSearch {
       */
     case class HighlightConfig
       (fields: Map[String, FieldHighlightConfig],
-       order: Option[String] = None,
+       order: Option[HighlightOrder] = None,
        require_field_match: Boolean = true,
        // These are the global overrides:
-       `type`: Option[String] = None,
+       `type`: Option[HighlightType] = None,
        force_source: Boolean = false,
        number_of_fragments: Option[Int] = None,
        fragment_size: Option[Int] = None,
@@ -496,7 +535,7 @@ trait DataModelSearch {
     case class RescoreConfig
       (rescore_query: qb.QueryElement,
        window_size: Option[Int] = None,
-       score_mode: Option[String] = None,
+       score_mode: Option[ScoreMode] = None,
        query_weight: Option[Double] = None,
        rescore_query_weight: Option[Double] = None)
       extends CustomTypedToString
@@ -844,7 +883,7 @@ trait DataModelSearch {
     case class HasChildQuery
       (query: QueryElement,
        `type`: Option[String] = None,
-       score_mode: Option[String] = None,
+       score_mode: Option[ScoreMode] = None,
        min_children: Option[Int] = None, max_children: Option[Int] = None,
        inner_hits: Option[QueryBodyBase] = None,
        _name: Option[String] = None
@@ -892,7 +931,7 @@ trait DataModelSearch {
       */
     case class HasParentQuery
       (query: QueryElement, parent_type: Option[String] = None,
-       score_mode: Option[String] = None,
+       score_mode: Option[ScoreMode] = None,
        inner_hits: Option[QueryBodyBase] = None,
        _name: Option[String] = None)
       extends CustomTypedToString with QueryElement

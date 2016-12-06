@@ -349,7 +349,7 @@ object DataModelSearchTests extends TestSuite {
         parse(
           qb.HasChildQuery(
             query = qb.TermQuery("tag", "something"),
-            score_mode = Some("min"),
+            score_mode = Some(ScoreMode.min),
             min_children = Some(1), max_children = Some(2),
             inner_hits = Some(QueryBody(_source = Right(Seq("message")))),
             _name = Some("test_name")
@@ -402,7 +402,7 @@ object DataModelSearchTests extends TestSuite {
         parse(
           qb.HasParentQuery(
             query = qb.TermQuery("tag", "something"),
-            score_mode = Some("min"),
+            score_mode = Some(ScoreMode.min),
             inner_hits = Some(QueryBody(_source = Right(Seq("message")))),
             _name = Some("test_name")
           ).fromTyped
@@ -457,7 +457,7 @@ object DataModelSearchTests extends TestSuite {
           QueryBody.RescoreConfig(
             rescore_query = qb.MatchAllQuery(),
             window_size = Some(5),
-            score_mode = Some("min"),
+            score_mode = Some(ScoreMode.min),
             query_weight = Some(0.0)
           ).fromTyped
         ) ==> parse(
@@ -481,12 +481,12 @@ object DataModelSearchTests extends TestSuite {
           QueryBody.HighlightConfig(
             fields = Map(
               "content" -> QueryBody.FieldHighlightConfig(
-                `type` = Some("fvh"),
+                `type` = Some(HighlightType.fvh),
                 force_source = true,
                 matched_fields = Seq("content", "content.plain")
               )
             ),
-            order = Some("score")
+            order = Some(HighlightOrder.score)
           ).fromTyped
         ) ==> parse(
           """
@@ -517,7 +517,7 @@ object DataModelSearchTests extends TestSuite {
                 post_tags = Seq("xx", "yy")
               )
             ),
-            `type` = Some("max"),
+            `type` = Some(HighlightType.plain),
             require_field_match = false,
             force_source = true,
             number_of_fragments = Some(10),
@@ -543,7 +543,7 @@ object DataModelSearchTests extends TestSuite {
             |                "post_tags": ["xx", "yy"]
             |            }
             |        },
-            |        "type": "max",
+            |        "type": "plain",
             |        "force_source": true,
             |        "number_of_fragments": 10,
             |        "fragment_size": 100,
@@ -597,10 +597,90 @@ object DataModelSearchTests extends TestSuite {
           QueryBody.SimpleSortConfig("test").fromTyped ==> "\"test\""
         }
         "FullSortConfig" - {
-          //TODO
+
+          parse(
+            QueryBody.FullSortConfig(
+              field = "test_field",
+              order = Some(SortOrder.asc),
+              missing = Some(SortMissingFieldPolicy._first)
+            ).fromTyped
+          ) ==> parse(
+            """
+              |{
+              | "test_field": {
+              |   "order": "asc",
+              |   "missing": "_first"
+              | }
+              |}
+            """.stripMargin
+          )
+
+          parse(
+            QueryBody.FullSortConfig(
+              field = "test_field",
+              mode = Some(SortMode.avg),
+              nested_path = Some("nested_field"),
+              nested_filter = Some(qb.MatchAllQuery()),
+              unmapped_type = Some("none")
+            ).fromTyped
+          ) ==> parse(
+            """
+              |{
+              | "test_field": {
+              |   "mode": "avg",
+              |   "nested_path": "nested_field",
+              |   "nested_filter": { "match_all": {} },
+              |   "unmapped_type": "none"
+              | }
+              |}
+            """.stripMargin
+          )
         }
         "ScriptSortConfig" - {
-          //TODO
+
+          parse(
+            QueryBody.ScriptSortConfig(
+              `type` = ScriptSortType.number,
+              inline = Some("doc['field_name'].value * factor"),
+              order = Some(SortOrder.asc)
+            ).fromTyped
+          ) ==> parse(
+            """
+              |{
+              | "_script": {
+              |   "type": "number",
+              |   "script": {
+              |     "inline": "doc['field_name'].value * factor"
+              |   },
+              |   "order": "asc"
+              | }
+              |}
+            """.stripMargin
+          )
+
+          parse(
+            QueryBody.ScriptSortConfig(
+              `type` = ScriptSortType.number,
+              file = Some("test_file"),
+              lang = Some(ScriptLang.groovy),
+              params = Map("factor" -> "test_factor")
+            ).fromTyped
+          ) ==> parse(
+            """
+              |{
+              | "_script": {
+              |   "type": "number",
+              |   "script": {
+              |     "file": "test_file",
+              |     "lang": "groovy",
+              |     "params": {
+              |       "factor": "test_factor"
+              |     }
+              |   }
+              | }
+              |}
+            """.stripMargin
+          )
         }
         "RawSortConfig" - {
           QueryBody.RawSortConfig("test").fromTyped ==> "test"
@@ -617,7 +697,36 @@ object DataModelSearchTests extends TestSuite {
         SortOrder.asc.toString ==> "asc"
         SortOrder.desc.toString ==> "desc"
       }
-      //TODO
+      "SortMode" - {
+        SortMode.avg.toString ==> "avg"
+        SortMode.max.toString ==> "max"
+        SortMode.min.toString ==> "min"
+        SortMode.median.toString ==> "median"
+        SortMode.sum.toString ==> "sum"
+      }
+      "ScriptSortType" - {
+        ScriptSortType.number.toString ==> "number"
+        ScriptSortType.string.toString ==> "string"
+      }
+      "SortMissingFieldPolicy" - {
+        SortMissingFieldPolicy._last.toString ==> "_last"
+        SortMissingFieldPolicy._first.toString ==> "_first"
+      }
+      "ScoreMode" - {
+        ScoreMode.avg.toString ==> "avg"
+        ScoreMode.max.toString ==> "max"
+        ScoreMode.min.toString ==> "min"
+        ScoreMode.multiple.toString ==> "multiple"
+        ScoreMode.total.toString ==> "total"
+      }
+      "HighlightType" - {
+        HighlightType.plain.toString ==> "plain"
+        HighlightType.fvh.toString ==> "fvh"
+        HighlightType.postings.toString ==> "postings"
+      }
+      "HighlightOrder" - {
+        HighlightOrder.score.toString ==> "score"
+      }
     }
     "Full query builder" - {
       //TODO
