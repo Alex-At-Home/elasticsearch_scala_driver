@@ -729,7 +729,101 @@ object DataModelSearchTests extends TestSuite {
       }
     }
     "Full query builder" - {
-      //TODO
+      parse(QueryBody().fromTyped) ==> parse(
+        """
+          |{
+          | "size" : 10,
+          | "from" : 0,
+          | "track_scores" : false,
+          | "_source" : true,
+          | "explain" : false,
+          | "version" : false
+          |}
+        """.stripMargin)
+
+      parse(QueryBody(
+          query = Some(qb.MatchAllQuery()),
+          timeout = Some("5s"),
+          from = 100,
+          size = 100,
+          terminate_after = Some(100),
+          sort = Seq(
+            QueryBody.SimpleSortConfig("sort_field1"),
+            QueryBody.FullSortConfig("sort_field2", order = Some(SortOrder.asc))
+          ),
+          _source = Right(Seq("source_test1", "source_test2")),
+          track_scores = true,
+          fields = Seq("test_field1", "test_field2"),
+          script_fields = Map(
+            "script_field" -> QueryBody.ScriptFieldConfig(file = Some("test_file_script"))
+          ),
+          fielddata_fields = Seq("test_fielddata1", "test_fielddata2"),
+          post_filter = Some(qb.MatchAllQuery()),
+          highlight = Some(QueryBody.HighlightConfig(
+            fields = Map(
+              "highlight_field1" -> QueryBody.FieldHighlightConfig()
+            )
+          )),
+          rescore = Seq(
+            QueryBody.RescoreConfig(rescore_query = qb.MatchAllQuery())
+          ),
+          explain = true,
+          version = true,
+          indices_boost = Map("test_index" -> 0.0),
+          min_score = Some(0.0),
+          aggregations = Map("test_agg" -> ab.RawAggregation("""{"test": "agg" }""")),
+          other_fields = Map("test_other_field1" -> QueryBody.RawQueryConfig("""{"test": "other" }"""))
+        ).fromTyped
+      ) ==> parse(
+        """
+          |{
+          | "query": { "match_all": {} },
+          | "timeout": "5s",
+          | "size" : 100,
+          | "from" : 100,
+          | "terminate_after": 100,
+          | "sort": [
+          |   "sort_field1",
+          |   { "sort_field2": { "order": "asc" } }
+          | ],
+          | "track_scores" : true,
+          | "_source": [ "source_test1", "source_test2" ],
+          | "fields": [ "test_field1", "test_field2" ],
+          | "script_fields": {
+          |   "script_field": {
+          |     "script": { "file": "test_file_script" }
+          |   }
+          | },
+          | "fielddata_fields": [ "test_fielddata1", "test_fielddata2" ],
+          | "post_filter": { "match_all": {} },
+          | "highlight": {
+          |     "require_field_match": true,
+          |     "fields": {
+          |       "highlight_field1": {
+          |         "force_source": false
+          |       }
+          |     },
+          |     "force_source": false
+          | },
+          | "rescore": [
+          |   {
+          |     "query": {
+          |       "rescore_query": { "match_all": {} }
+          |     }
+          |   }
+          | ],
+          | "explain" : true,
+          | "version" : true,
+          | "indices_boost": {
+          |   "test_index": 0.0
+          | },
+          | "min_score": 0.0,
+          | "aggregations": {
+          |   "test_agg": { "test": "agg" }
+          | },
+          | "test_other_field1": { "test": "other" }
+          |}
+        """.stripMargin)
     }
     "Aggregation builders" - {
       "Raw aggregation builder" - {
