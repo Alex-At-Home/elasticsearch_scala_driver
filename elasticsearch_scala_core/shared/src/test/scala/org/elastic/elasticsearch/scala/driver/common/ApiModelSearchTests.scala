@@ -8,6 +8,27 @@ import org.elastic.rest.scala.driver.utils.NoJsonHelpers
 object ApiModelSearchTests extends TestSuite {
 
   val tests = this {
+    "Enums" - {
+      "DefaultOperator" - {
+        DefaultOperator.AND.toString ==> "AND"
+        DefaultOperator.OR.toString ==> "OR"
+      }
+      "SearchType" - {
+        SearchType.dfs_query_then_fetch.toString ==> "dfs_query_then_fetch"
+        SearchType.query_then_fetch.toString ==> "query_then_fetch"
+      }
+      "Preference" - {
+        Preference._local.toString ==> "_local"
+        Preference._only_nodes.toString ==> "_only_nodes"
+        Preference._primary.toString ==> "_primary"
+        Preference._primary_first.toString ==> "_primary_first"
+        Preference._replica.toString ==> "_replica"
+        Preference._replica_first.toString ==> "_replica_first"
+        Preference._only_node("test") ==> Preference("_only_node:test")
+        Preference._prefer_node("test") ==> Preference("_prefer_node:test")
+        Preference._shards("s1", "s2") ==> Preference("_shards:s1,s2")
+      }
+    }
     "Basic checking for all the search resources" - {
 
       object api extends ApiModelCommon
@@ -19,7 +40,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_search`().readS("TEST")
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .from(10).request_cache(true).search_type("ss").size(100).terminate_after(10).timeout("1s")
+        .from(10).request_cache(true).search_type(SearchType("ss")).size(100).terminate_after(10).timeout("1s")
         .getUrl ==> "/_search?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
                     "&from=10&request_cache=true&search_type=ss&size=100&terminate_after=10&timeout=1s"
 
@@ -27,7 +48,8 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_search`().read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .from(10).search_type("ss").size(100).terminate_after(10).timeout("1s").df("field").default_operator("op")
+        .from(10).search_type(SearchType("ss")).size(100).terminate_after(10).timeout("1s").df("field")
+        .default_operator(DefaultOperator("op"))
         .track_scores(true).sort("s1", "s2").query("qq").lowercase_expanded_terms(true).lenient(true)
         .explain(true)._source(true)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(true)
@@ -43,7 +65,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_all/$types/_search`("t1", "t2").readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .from(10).request_cache(false).search_type("ss").size(100).terminate_after(10).timeout("1s")
+        .from(10).request_cache(false).search_type(SearchType("ss")).size(100).terminate_after(10).timeout("1s")
         .getUrl ==> "/_all/t1,t2/_search?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
                     "&from=10&request_cache=false&search_type=ss&size=100&terminate_after=10&timeout=1s"
 
@@ -51,7 +73,8 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_all/$types/_search`("t1", "t2").read()
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .from(10).search_type("ss").size(100).terminate_after(10).timeout("1s").df("field").default_operator("op")
+        .from(10).search_type(SearchType("ss")).size(100).terminate_after(10).timeout("1s").df("field")
+        .default_operator(DefaultOperator("op"))
         .track_scores(false).sort("s1", "s2").query("qq").lowercase_expanded_terms(false).lenient(false)
         .explain(false)._source(false)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(true)
@@ -68,7 +91,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/_search`("i1", "i2").readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .from(10).request_cache(false).search_type("ss").size(100).terminate_after(10).timeout("1s")
+        .from(10).request_cache(false).search_type(SearchType("ss")).size(100).terminate_after(10).timeout("1s")
         .getUrl ==> "/i1,i2/_search?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
                     "&from=10&request_cache=false&search_type=ss&size=100&terminate_after=10&timeout=1s"
 
@@ -77,7 +100,8 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/_search`("i1", "i2").read()
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .from(10).search_type("ss").size(100).terminate_after(10).timeout("1s").df("field").default_operator("op")
+        .from(10).search_type(SearchType("ss")).size(100).terminate_after(10).timeout("1s").df("field")
+        .default_operator(DefaultOperator("op"))
         .track_scores(false).sort("s1", "s2").query("qq").lowercase_expanded_terms(false).lenient(false)
         .explain(false)._source(false)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(false)
@@ -96,7 +120,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/$types/_search`(Seq("i1", "i2"), Seq("t1", "t2")).readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .from(10).request_cache(false).search_type("ss").size(100).terminate_after(10).timeout("1s")
+        .from(10).request_cache(false).search_type(SearchType("ss")).size(100).terminate_after(10).timeout("1s")
         .getUrl ==> "/i1,i2/t1,t2/_search?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
                     "&from=10&request_cache=false&search_type=ss&size=100&terminate_after=10&timeout=1s"
 
@@ -105,7 +129,8 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/$types/_search`(Seq("i1", "i2"), Seq("t1", "t2")).read()
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .from(10).search_type("ss").size(100).terminate_after(10).timeout("1s").df("field").default_operator("op")
+        .from(10).search_type(SearchType("ss")).size(100).terminate_after(10).timeout("1s").df("field")
+        .default_operator(DefaultOperator("op"))
         .track_scores(false).sort("s1", "s2").query("qq").lowercase_expanded_terms(false).lenient(false)
         .explain(false)._source(false)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(false)
@@ -141,7 +166,7 @@ object ApiModelSearchTests extends TestSuite {
       // Search shards
 
       search.`/$indexes/_search_shards`("i1", "i2").readS("TEST")
-        .human(true).routing("n").preference("pr").local(true)
+        .human(true).routing("n").preference(Preference("pr")).local(true)
         .getUrl ==> "/i1,i2/_search_shards?human=true&routing=n&preference=pr&local=true"
 
       api.`/`().$("i1")._search_shards.readS("TEST").getUrl ==> "/i1/_search_shards"
@@ -153,7 +178,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_suggest`().readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false)
         .getUrl ==> "/_suggest?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -165,7 +190,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_suggest`().read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true)
         .getUrl ==> "/_suggest?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -179,7 +204,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_all/$types/_suggest`("t1", "t2").readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false)
         .getUrl ==> "/_all/t1,t2/_suggest?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -191,7 +216,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_all/$types/_suggest`("t1", "t2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true)
         .getUrl ==> "/_all/t1,t2/_suggest?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -205,7 +230,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/_suggest`("i1", "i2").readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false)
         .getUrl ==> "/i1,i2/_suggest?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -218,7 +243,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/_suggest`("i1", "i2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true)
         .getUrl ==> "/i1,i2/_suggest?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -233,7 +258,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/$types/_suggest`(Seq("i1", "i2"), Seq("t1", "t2")).readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false)
         .getUrl ==> "/i1,i2/t1,t2/_suggest?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -246,7 +271,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/$types/_suggest`(Seq("i1", "i2"), Seq("t1", "t2")).read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true)
         .getUrl ==> "/i1,i2/t1,t2/_suggest?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -288,7 +313,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_count`().readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false).terminate_after(100)
         .getUrl ==> "/_count?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -300,7 +325,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_count`().read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true).terminate_after(100)
         .getUrl ==> "/_count?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -314,7 +339,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_all/$types/_count`("t1", "t2").readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false).terminate_after(100)
         .getUrl ==> "/_all/t1,t2/_count?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -326,7 +351,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_all/$types/_count`("t1", "t2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true).terminate_after(100)
         .getUrl ==> "/_all/t1,t2/_count?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -340,7 +365,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/_count`("i1", "i2").readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false).terminate_after(100)
         .getUrl ==> "/i1,i2/_count?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -353,7 +378,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/_count`("i1", "i2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true).terminate_after(100)
         .getUrl ==> "/i1,i2/_count?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -368,7 +393,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/$types/_count`(Seq("i1", "i2"), Seq("t1", "t2")).readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false).terminate_after(100)
         .getUrl ==> "/i1,i2/t1,t2/_count?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -381,7 +406,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/$types/_count`(Seq("i1", "i2"), Seq("t1", "t2")).read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true).terminate_after(100)
         .getUrl ==> "/i1,i2/t1,t2/_count?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -398,7 +423,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_validate`().readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false).terminate_after(10)
         .getUrl ==> "/_validate?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -410,7 +435,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_validate`().read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true)
         .getUrl ==> "/_validate?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -424,7 +449,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_all/$types/_validate`("t1", "t2").readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false).terminate_after(10)
         .getUrl ==> "/_all/t1,t2/_validate?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -436,7 +461,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_all/$types/_validate`("t1", "t2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true)
         .getUrl ==> "/_all/t1,t2/_validate?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -450,7 +475,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/_validate`("i1", "i2").readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false).terminate_after(10)
         .getUrl ==> "/i1,i2/_validate?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -463,7 +488,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/_validate`("i1", "i2").read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true)
         .getUrl ==> "/i1,i2/_validate?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -478,7 +503,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/$types/_validate`(Seq("i1", "i2"), Seq("t1", "t2")).readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(false).lenient(false)
         .analyzer("an").analyze_wildcard(false).terminate_after(10)
         .getUrl ==> "/i1,i2/t1,t2/_validate?case=false&filter_path=f1,f2&flat_settings=false&human=false&pretty=false" +
@@ -491,7 +516,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/$types/_validate`(Seq("i1", "i2"), Seq("t1", "t2")).read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         .analyzer("an").analyze_wildcard(true)
         .getUrl ==> "/i1,i2/t1,t2/_validate?case=true&filter_path=f1,f2&flat_settings=true&human=true&pretty=true" +
@@ -508,7 +533,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_explain`().readS("TEST")
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         ._source(true)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(true)
@@ -522,7 +547,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_explain`().read()
         .`case`(true).filter_path("f1", "f2").flat_settings(true).human(true).pretty(true)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         ._source(true)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(true)
@@ -538,7 +563,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_all/$types/_explain`("t1", "t2").readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         ._source(true)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(true)
@@ -552,7 +577,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/_all/$types/_explain`("t1", "t2").read()
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         ._source(true)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(true)
@@ -569,7 +594,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/_explain`("i1", "i2").readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         ._source(true)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(true)
@@ -584,7 +609,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/_explain`("i1", "i2").read()
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         ._source(true)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(true)
@@ -603,7 +628,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/$types/_explain`(Seq("i1", "i2"), Seq("t1", "t2")).readS("TEST")
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         ._source(true)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(true)
@@ -618,7 +643,7 @@ object ApiModelSearchTests extends TestSuite {
 
       search.`/$indexes/$types/_explain`(Seq("i1", "i2"), Seq("t1", "t2")).read()
         .`case`(false).filter_path("f1", "f2").flat_settings(false).human(false).pretty(false)
-        .df("field").default_operator("op")
+        .df("field").default_operator(DefaultOperator("op"))
         .query("qq").lowercase_expanded_terms(true).lenient(true)
         ._source(true)._source_exclude("ex1", "ex2")._source_include("in1", "in2")
         .analyzer("an").analyze_wildcard(true)
