@@ -689,43 +689,51 @@ object DataModelSearchTests extends TestSuite {
     }
     "Value classes" - {
       "ScriptLang" - {
-        ScriptLang.groovy.toString ==> "groovy"
-        ScriptLang.expression.toString ==> "expression"
-        ScriptLang.moustache.toString ==> "moustache"
+        ScriptLang("test").toString ==> "test"
+        ScriptLang.groovy ==> ScriptLang("groovy")
+        ScriptLang.expression ==> ScriptLang("expression")
+        ScriptLang.moustache ==> ScriptLang("moustache")
       }
       "SortOrder" - {
-        SortOrder.asc.toString ==> "asc"
-        SortOrder.desc.toString ==> "desc"
+        SortOrder("test").toString ==> "test"
+        SortOrder.asc ==> SortOrder("asc")
+        SortOrder.desc ==> SortOrder("desc")
       }
       "SortMode" - {
-        SortMode.avg.toString ==> "avg"
-        SortMode.max.toString ==> "max"
-        SortMode.min.toString ==> "min"
-        SortMode.median.toString ==> "median"
-        SortMode.sum.toString ==> "sum"
+        SortMode("test").toString ==> "test"
+        SortMode.avg ==> SortMode("avg")
+        SortMode.max ==> SortMode("max")
+        SortMode.min ==> SortMode("min")
+        SortMode.median ==> SortMode("median")
+        SortMode.sum ==> SortMode("sum")
       }
       "ScriptSortType" - {
-        ScriptSortType.number.toString ==> "number"
-        ScriptSortType.string.toString ==> "string"
+        ScriptSortType("test").toString ==> "test"
+        ScriptSortType.number ==> ScriptSortType("number")
+        ScriptSortType.string ==> ScriptSortType("string")
       }
       "SortMissingFieldPolicy" - {
-        SortMissingFieldPolicy._last.toString ==> "_last"
-        SortMissingFieldPolicy._first.toString ==> "_first"
+        SortMissingFieldPolicy("test").toString ==> "test"
+        SortMissingFieldPolicy._last ==> SortMissingFieldPolicy("_last")
+        SortMissingFieldPolicy._first ==> SortMissingFieldPolicy("_first")
       }
       "ScoreMode" - {
-        ScoreMode.avg.toString ==> "avg"
-        ScoreMode.max.toString ==> "max"
-        ScoreMode.min.toString ==> "min"
-        ScoreMode.multiple.toString ==> "multiple"
-        ScoreMode.total.toString ==> "total"
+        ScoreMode("test").toString ==> "test"
+        ScoreMode.avg ==> ScoreMode("avg")
+        ScoreMode.max ==> ScoreMode("max")
+        ScoreMode.min ==> ScoreMode("min")
+        ScoreMode.multiple ==> ScoreMode("multiple")
+        ScoreMode.total ==> ScoreMode("total")
       }
       "HighlightType" - {
-        HighlightType.plain.toString ==> "plain"
-        HighlightType.fvh.toString ==> "fvh"
-        HighlightType.postings.toString ==> "postings"
+        HighlightType("test").toString ==> "test"
+        HighlightType.plain ==> HighlightType("plain")
+        HighlightType.fvh ==> HighlightType("fvh")
+        HighlightType.postings ==> HighlightType("postings")
       }
       "HighlightOrder" - {
-        HighlightOrder.score.toString ==> "score"
+        HighlightOrder("test").toString ==> "test"
+        HighlightOrder.score ==> HighlightOrder("score")
       }
     }
     "Full query builder" - {

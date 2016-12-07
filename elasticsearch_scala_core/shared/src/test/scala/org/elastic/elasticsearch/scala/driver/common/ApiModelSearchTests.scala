@@ -10,20 +10,23 @@ object ApiModelSearchTests extends TestSuite {
   val tests = this {
     "Enums" - {
       "DefaultOperator" - {
-        DefaultOperator.AND.toString ==> "AND"
-        DefaultOperator.OR.toString ==> "OR"
+        DefaultOperator("test").toString ==> "test"
+        DefaultOperator.AND ==> DefaultOperator("AND")
+        DefaultOperator.OR ==> DefaultOperator("OR")
       }
       "SearchType" - {
-        SearchType.dfs_query_then_fetch.toString ==> "dfs_query_then_fetch"
-        SearchType.query_then_fetch.toString ==> "query_then_fetch"
+        SearchType("test").toString ==> "test"
+        SearchType.dfs_query_then_fetch ==> SearchType("dfs_query_then_fetch")
+        SearchType.query_then_fetch ==> SearchType("query_then_fetch")
       }
       "Preference" - {
-        Preference._local.toString ==> "_local"
-        Preference._only_nodes.toString ==> "_only_nodes"
-        Preference._primary.toString ==> "_primary"
-        Preference._primary_first.toString ==> "_primary_first"
-        Preference._replica.toString ==> "_replica"
-        Preference._replica_first.toString ==> "_replica_first"
+        Preference("test").toString ==> "test"
+        Preference._local ==> Preference("_local")
+        Preference._only_nodes ==> Preference("_only_nodes")
+        Preference._primary ==> Preference("_primary")
+        Preference._primary_first ==> Preference("_primary_first")
+        Preference._replica ==> Preference("_replica")
+        Preference._replica_first ==> Preference("_replica_first")
         Preference._only_node("test") ==> Preference("_only_node:test")
         Preference._prefer_node("test") ==> Preference("_prefer_node:test")
         Preference._shards("s1", "s2") ==> Preference("_shards:s1,s2")
