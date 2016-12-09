@@ -2,6 +2,25 @@ package org.elastic.elasticsearch.scala.driver.common
 
 import org.elastic.rest.scala.driver.RestBase._
 
+/** Value class representing the different operation types that can be applied to create/update requests */
+case class Operation(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Available operation types */
+object Operation {
+  @Constant val TODO = ToStringAnyVal.AutoGenerate[Operation]
+}
+/** Value class representing the different approaches to take on conflicts via `_update_by_query` */
+case class ConflictPolicy(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Available update conflict policies */
+object ConflictPolicy {
+  @Constant val proceed = ToStringAnyVal.AutoGenerate[ConflictPolicy]
+}
+/** Value class representing the different level of status returned from index/cluster stats requests */
+case class StatsLevel(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Available update conflict policies */
+object StatsLevel {
+  @Constant val shards, indices, cluster = ToStringAnyVal.AutoGenerate[StatsLevel]
+}
+
 /**
   * Modifiers for Elasticearch resources - apply across most API categories
   */
@@ -100,6 +119,7 @@ object CommonModifiers {
       */
     @Param def version(v: Int): this.type = Modifier.Body
   }
+
   /** (modifier - see method for details) */
   trait OpType extends Modifier { 
     /** The index operation also accepts an op_type that can be used to force a create operation,
@@ -109,7 +129,7 @@ object CommonModifiers {
       * @param opType The operation type
       * @return The updated driver operation
       */
-    @Param def op_type(opType: String): this.type = Modifier.Body
+    @Param def op_type(opType: Operation): this.type = Modifier.Body
   }
   /** (modifier - see method for details) */
   trait Parent extends Modifier { 
@@ -193,10 +213,10 @@ object CommonModifiers {
       * conflicts=proceed on the url
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update-by-query.html Docs]]
       *
-      * @param op If set to "proceed" then doesn't abort on version conflicts
+      * @param policy If set to "proceed" then doesn't abort on version conflicts
       * @return The updated driver operation
       */
-    @Param def conflict(op: String): this.type = Modifier.Body
+    @Param def conflict(policy: ConflictPolicy): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -231,14 +251,14 @@ object CommonModifiers {
   trait Level extends Modifier { 
     /** Defines if various stats (cluster health. fields) should be returned on a per index level or on a
       * cluster wide level.
-      * Valid values are "shards", "indices "and "cluster" (@Param def ault).
+      * Valid values are "shards", "indices "and "cluster".
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/2.3/cluster-health.html#request-params Cluster Health Stats]]
       * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html#indices-stats Index Stats]]
       *
       * @param level "shards", "indices" or "cluster"
       * @return The updated driver operation
       */
-    @Param def level(level: String): this.type = Modifier.Body
+    @Param def level(level: StatsLevel): this.type = Modifier.Body
   }
 
   // Cluster/search modifiers

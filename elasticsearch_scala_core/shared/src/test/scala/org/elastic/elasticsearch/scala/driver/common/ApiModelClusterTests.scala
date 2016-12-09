@@ -28,7 +28,7 @@ object ApiModelClusterTests  extends TestSuite {
       // Cluster health
 
       clusters.`/_cluster/health`().read().human(true)
-        .local(true).timeout("1m").level("red").wait_for_active_shards(1)
+        .local(true).timeout("1m").level(StatsLevel("red")).wait_for_active_shards(1)
         .wait_for_nodes(2).wait_for_relocating_shards(1).wait_for_status(ClusterStatus.red)
         .getUrl ==> "/_cluster/health?human=true&local=true&timeout=1m&level=red&wait_for_active_shards=1" +
                     "&wait_for_nodes=2&wait_for_relocating_shards=1&wait_for_status=red"
@@ -36,7 +36,7 @@ object ApiModelClusterTests  extends TestSuite {
       api.`/`()._cluster.health.read().wait_for_nodes("3").getUrl ==> "/_cluster/health?wait_for_nodes=3"
 
       clusters.`/_cluster/health/$indexes`("i1", "i2").read().human(true)
-        .local(true).timeout("1m").level("red").wait_for_active_shards(1)
+        .local(true).timeout("1m").level(StatsLevel("red")).wait_for_active_shards(1)
         .wait_for_nodes(2).wait_for_relocating_shards(1).wait_for_status(ClusterStatus.red)
         .getUrl ==> "/_cluster/health/i1,i2?human=true&local=true&timeout=1m&level=red&wait_for_active_shards=1" +
         "&wait_for_nodes=2&wait_for_relocating_shards=1&wait_for_status=red"

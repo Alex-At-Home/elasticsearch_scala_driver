@@ -6,6 +6,14 @@ import org.elastic.rest.scala.driver.RestBase._
 object ApiModelIndicesTests extends TestSuite {
 
   val tests = this {
+    "Enums" - {
+      "ShardStatus" - {
+        ShardStatus("test").toString ==> "test"
+        ShardStatus.red ==> ShardStatus("red")
+        ShardStatus.green ==> ShardStatus("green")
+        ShardStatus.yellow ==> ShardStatus("yellow")
+      }
+    }
     "Basic checking for all the indices resources" - {
 
       object api extends ApiModelCommon
@@ -251,7 +259,7 @@ object ApiModelIndicesTests extends TestSuite {
       // 3.8
 
       indices.`/_stats`().read()
-        .level("l1").groups("g1", "g2").types("t1", "t2").human(true)
+        .level(StatsLevel("l1")).groups("g1", "g2").types("t1", "t2").human(true)
         .getUrl ==> "/_stats?level=l1&groups=g1,g2&types=t1,t2&human=true"
       api.`/`()._stats.read().getUrl ==> "/_stats"
 
@@ -261,7 +269,7 @@ object ApiModelIndicesTests extends TestSuite {
       api.`/`()._stats.$("sg1", "sg2").read().getUrl ==> "/_stats/sg1,sg2"
 
       indices.`/_stats/$statsGroups/$fieldGroups`(Seq("sg1", "sg2"), Seq("fg1", "fg2")).read()
-        .level("l1").groups("g1", "g2").types("t1", "t2").human(true)
+        .level(StatsLevel("l1")).groups("g1", "g2").types("t1", "t2").human(true)
         .getUrl ==> "/_stats/sg1,sg2/fg1,fg2?level=l1&groups=g1,g2&types=t1,t2&human=true"
       api.`/`()._stats.$("sg1", "sg2").$("fg1", "fg2").read().getUrl ==> "/_stats/sg1,sg2/fg1,fg2"
 
@@ -273,14 +281,14 @@ object ApiModelIndicesTests extends TestSuite {
 
       indices.`/$indexes/_stats/$statsGroups`(
         Seq("a", "b"), Seq("sg1", "sg2")).read()
-        .level("l1").groups("g1", "g2").types("t1", "t2").human(true)
+        .level(StatsLevel("l1")).groups("g1", "g2").types("t1", "t2").human(true)
         .getUrl ==> "/a,b/_stats/sg1,sg2?level=l1&groups=g1,g2&types=t1,t2&human=true"
       api.`/`().$("a")._stats.$("sg1", "sg2").read().getUrl ==> "/a/_stats/sg1,sg2"
       api.`/`().$("a", "b")._stats.$("sg1", "sg2").read().getUrl ==> "/a,b/_stats/sg1,sg2"
 
       indices.`/$indexes/_stats/$statsGroups/$fieldGroups`(
         Seq("a", "b"), Seq("sg1", "sg2"), Seq("fg1", "fg2")).read()
-        .level("l1").groups("g1", "g2").types("t1", "t2").human(true)
+        .level(StatsLevel("l1")).groups("g1", "g2").types("t1", "t2").human(true)
         .getUrl ==> "/a,b/_stats/sg1,sg2/fg1,fg2?level=l1&groups=g1,g2&types=t1,t2&human=true"
       api.`/`().$("a")._stats.$("sg1", "sg2").$("fg1", "fg2").read().getUrl ==> "/a/_stats/sg1,sg2/fg1,fg2"
       api.`/`().$("a", "b")._stats.$("sg1", "sg2").$("fg1", "fg2").read().getUrl ==> "/a,b/_stats/sg1,sg2/fg1,fg2"
@@ -315,11 +323,11 @@ object ApiModelIndicesTests extends TestSuite {
       
       // 3.11
 
-      indices.`/_shard_stores`().read().status("s").pretty(true)
+      indices.`/_shard_stores`().read().status(ShardStatus("s")).pretty(true)
         .getUrl ==> "/_shard_stores?status=s&pretty=true"
       api.`/`()._shard_stores.read().getUrl ==> "/_shard_stores"
 
-      indices.`/_all/_shard_stores`().read().status("s").pretty(false)
+      indices.`/_all/_shard_stores`().read().status(ShardStatus("s")).pretty(false)
         .getUrl ==> "/_all/_shard_stores?status=s&pretty=false"
       api.`/`()._all._shard_stores.read().getUrl ==> "/_all/_shard_stores"
 

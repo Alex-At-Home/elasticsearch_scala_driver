@@ -4,6 +4,13 @@ import org.elastic.elasticsearch.scala.driver.common.CommonModifiers._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups.StandardParams
 import org.elastic.rest.scala.driver.RestBase._
 
+/** Value class representing the different metric types that can be requested */
+case class MetricType(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Available metrics types */
+object MetricType {
+  @Constant val queued_watches, current_watches, executing_watches, _all = ToStringAnyVal.AutoGenerate[MetricType]
+}
+
 /** Modifiers used in the XPack API
   */
 object XpackModifiers {
@@ -80,11 +87,10 @@ object XpackModifiers {
       *               "queued_watches", "current_watches", "executing_watches", "_all"
       * @return The updated driver operation
       */
-    @Param def metric(metric: String): this.type = Modifier.Body
+    @Param def metric(metric: MetricType): this.type = Modifier.Body
   }
-
-
 }
+
 /** Collections of modifiers used in the XPack API
   */
 object XpackModifierGroups {

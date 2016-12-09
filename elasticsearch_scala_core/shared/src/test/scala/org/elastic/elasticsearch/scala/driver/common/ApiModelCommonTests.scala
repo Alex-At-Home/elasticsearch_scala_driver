@@ -10,6 +10,22 @@ import org.elastic.rest.scala.driver.utils.NoJsonHelpers
 object ApiModelCommonTests extends TestSuite {
 
   val tests = this {
+    "Enums" - {
+      "Operation" - {
+        Operation("test").toString ==> "test"
+        Operation.TODO ==> "figure out what enums there are"
+      }
+      "ConflictPolicy" - {
+        ConflictPolicy("test").toString ==> "test"
+        ConflictPolicy.proceed ==> ConflictPolicy("proceed")
+      }
+      "StatsLevel" - {
+        StatsLevel("test").toString ==> "test"
+        StatsLevel.cluster ==> StatsLevel("cluster")
+        StatsLevel.shards ==> StatsLevel("shards")
+        StatsLevel.indices ==> StatsLevel("indices")
+      }
+    }
     "Basic checking for all the standard resources" - {
 
       object api extends ApiModelCommon
@@ -38,7 +54,7 @@ object ApiModelCommonTests extends TestSuite {
       api.`/`().$("a", "b").$("x", "y").check().getUrl ==> "/a,b/x,y"
 
       api.`/$index/$type`("a", "x").writeS("TEST")
-        .pretty(true).parent("P").op_type("O").version(9).routing("R").timeout("T")
+        .pretty(true).parent("P").op_type(Operation("O")).version(9).routing("R").timeout("T")
         .getUrl == "/a/x?pretty=true&parent=P&op_type=O&version=9&routing=R&timeout=T"
       api.`/$index/$type`("a", "x").check().getUrl == "/a/x"
       api.`/`().$("a").$("x").writeS("TEST").getUrl ==> "/a/x"
@@ -50,10 +66,10 @@ object ApiModelCommonTests extends TestSuite {
       "/a/x/1?pretty=true&_source=true&_source=s1,s2&_source_include=s3,s4&_source_exclude=s5,s6&fields=f1,f2"
       api.`/$index/$type/$id`("a", "x", "1").check().getUrl ==> "/a/x/1"
       api.`/$index/$type/$id`("a", "x", "1").writeS("TEST").pretty(true)
-        .op_type("op").parent("2").routing("node").timeout("1m").version(3).getUrl ==>
+        .op_type(Operation("op")).parent("2").routing("node").timeout("1m").version(3).getUrl ==>
         "/a/x/1?pretty=true&op_type=op&parent=2&routing=node&timeout=1m&version=3"
       api.`/$index/$type/$id`("a", "x", "1").delete().pretty(false)
-          .op_type("op").parent("2").routing("node").timeout("1m").getUrl ==>
+          .op_type(Operation("op")).parent("2").routing("node").timeout("1m").getUrl ==>
         "/a/x/1?pretty=false&op_type=op&parent=2&routing=node&timeout=1m"
       api.`/`().$("a").$("x").$("1").read().getUrl ==> "/a/x/1"
       api.`/`().$("a").$("x").$("1").check().getUrl ==> "/a/x/1"
@@ -71,7 +87,7 @@ object ApiModelCommonTests extends TestSuite {
       api.`/`().$("a").$("x").$("1")._update.writeS("TEST").getUrl ==> "/a/x/1/_update"
 
       api.`/$index/_update_by_query`("a").writeS("TEST").pretty(false)
-          .conflict("proceed").getUrl ==> "/a/_update_by_query?pretty=false&conflict=proceed"
+          .conflict(ConflictPolicy.proceed).getUrl ==> "/a/_update_by_query?pretty=false&conflict=proceed"
       api.`/`().$("a")._update_by_query.writeS("TEST").getUrl ==> "/a/_update_by_query"
 
       api.`/_mget`().read().pretty(true).routing("a").getUrl ==> "/_mget?pretty=true&routing=a"

@@ -4,6 +4,13 @@ import CommonModifiers._
 import CommonModifierGroups._
 import org.elastic.rest.scala.driver.RestBase._
 
+/** Value class representing the different shard statuses */
+case class ShardStatus(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Available shard statuses */
+object ShardStatus {
+  @Constant val red, green, yellow = ToStringAnyVal.AutoGenerate[ShardStatus]
+}
+
 /** Parameters for resources to monitor and manage indices in Elasticsearch
   */
 object IndicesModifiers {
@@ -69,7 +76,7 @@ object IndicesModifiers {
       * @param status Only shards with this status are shown
       * @return The updated driver operation
       */
-    @Param def status(status: String): this.type = Modifier.Body
+    @Param def status(status: ShardStatus): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
