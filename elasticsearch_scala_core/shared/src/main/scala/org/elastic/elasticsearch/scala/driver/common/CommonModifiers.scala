@@ -6,7 +6,7 @@ import org.elastic.rest.scala.driver.RestBase._
 case class Operation(value: String) extends AnyVal with ToStringAnyVal[String]
 /** Available operation types */
 object Operation {
-  @Constant val TODO = ToStringAnyVal.AutoGenerate[Operation]
+  @Constant val create = ToStringAnyVal.AutoGenerate[Operation]
 }
 /** Value class representing the different approaches to take on conflicts via `_update_by_query` */
 case class ConflictPolicy(value: String) extends AnyVal with ToStringAnyVal[String]

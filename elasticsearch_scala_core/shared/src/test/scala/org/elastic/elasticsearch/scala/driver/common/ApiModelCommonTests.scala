@@ -13,7 +13,7 @@ object ApiModelCommonTests extends TestSuite {
     "Enums" - {
       "Operation" - {
         Operation("test").toString ==> "test"
-        Operation.TODO ==> "figure out what enums there are"
+        Operation.create ==> Operation("create")
       }
       "ConflictPolicy" - {
         ConflictPolicy("test").toString ==> "test"
