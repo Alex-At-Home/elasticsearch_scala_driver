@@ -39,7 +39,7 @@ object MyBuild extends Build {
 
   lazy val simpleScalaHttpServer = "com.tumblr" %% "colossus" % "0.8.1" % "test"
 
-  val rest_client_library_branch = "#better-output-typing" //("#$branch" or "" for master)
+  val rest_client_library_branch = "" //("#$branch" or "" for master)
   val rest_client_library_uri =
     uri(s"https://github.com/Alex-At-Home/rest_client_library.git$rest_client_library_branch")
 
