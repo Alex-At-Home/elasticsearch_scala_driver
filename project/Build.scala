@@ -24,8 +24,11 @@ object MyBuild extends Build {
   import BuildSettings._
 
   // (Node.js is faster, rhino doesn't require any additional deps)
-  //(running into issues using NodeJS on TravisCI: https://github.com/scala-js/scala-js/issues/2378):
-  val useRhino = true
+  val useRhino = false
+  val testStage = sys.props.get("testOpt").map {
+    case "full" => FullOptStage
+    case "fast" => FastOptStage
+  }.getOrElse(FastOptStage)
 
   // Dependencies:
 
@@ -85,6 +88,7 @@ object MyBuild extends Build {
       ): _*)
     .jvmSettings()
     .jsSettings(
+      scalaJSStage in Global := testStage,
       scalaJSUseRhino in Global := useRhino
     )
   lazy val elasticsearch_scala_coreJVM = elasticsearch_scala_core.jvm
@@ -109,6 +113,7 @@ object MyBuild extends Build {
       ): _*)
     .jvmSettings()
     .jsSettings(
+      scalaJSStage in Global := testStage,
       scalaJSUseRhino in Global := useRhino
     )
   lazy val elasticsearch_json_circe_moduleJVM = elasticsearch_json_circe_module.jvm
