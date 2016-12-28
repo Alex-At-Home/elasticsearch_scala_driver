@@ -1,6 +1,5 @@
 package org.elastic.elasticsearch.scala.driver.common
 
-import io.circe.generic.JsonCodec
 import org.elastic.elasticsearch.scala.driver.common.CommonModifiers.BulkManagementDeclaration
 import org.elastic.elasticsearch.scala.driver.utils.BulkUtils
 import org.elastic.rest.scala.driver.RestBase._
@@ -8,7 +7,7 @@ import org.elastic.rest.scala.driver.RestBaseImplicits.CustomTypedToString
 
 /** Common data model types used by the resources
   */
-object DataModelCommon {
+trait DataModelCommon {
 
   /** The return type from '/', information about Elasticsearch
     *
@@ -17,7 +16,7 @@ object DataModelCommon {
     * @param version Version info about the cluster build
     * @param tagline "You know, for search"
     */
-  @JsonCodec case class ElasticsearchInfo
+  case class ElasticsearchInfo
     (name: String,
      cluster_name: String,
      version: ElasticsearchInfo.VersionInfo,
@@ -35,7 +34,7 @@ object DataModelCommon {
       * @param build_snapshot Build snapshot info
       * @param lucene_version Underying Lucene version
       */
-    @JsonCodec case class VersionInfo
+    case class VersionInfo
     (
       number: String,
       build_hash: String,
@@ -53,3 +52,4 @@ object DataModelCommon {
     override def fromTyped: String = BulkUtils.buildBulkIndexOps(ops)
   }
 }
+object DataModelCommon extends DataModelCommon

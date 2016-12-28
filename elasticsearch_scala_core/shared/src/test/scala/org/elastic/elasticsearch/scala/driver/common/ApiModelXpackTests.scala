@@ -6,6 +6,15 @@ import org.elastic.rest.scala.driver.RestBase._
 object ApiModelXpackTests extends TestSuite {
 
   val tests = this {
+    "Enums" - {
+      "MetricType" - {
+        MetricType("test").toString ==> "test"
+        MetricType._all ==> MetricType("_all")
+        MetricType.current_watches ==> MetricType("current_watches")
+        MetricType.executing_watches ==> MetricType("executing_watches")
+        MetricType.queued_watches ==> MetricType("queued_watches")
+      }
+    }
     "Basic checking for all the xpack resources" - {
 
       object api extends ApiModelCommon
@@ -144,7 +153,7 @@ object ApiModelXpackTests extends TestSuite {
         .getUrl ==> "/_watcher/watch/w1/_deactivate?pretty=false"
       api.`/`()._watcher.watch.$("w1")._deactivate.write().getUrl ==> "/_watcher/watch/w1/_deactivate"
 
-      xpack.`/_watcher/stats`().read().metric("m").pretty(true).getUrl ==> "/_watcher/stats?metric=m&pretty=true"
+      xpack.`/_watcher/stats`().read().metric(MetricType("m")).pretty(true).getUrl ==> "/_watcher/stats?metric=m&pretty=true"
       api.`/`()._watcher.stats.read().getUrl ==> "/_watcher/stats"
 
       xpack.`/_watcher/stats/$metric`("m").read().pretty(true).getUrl ==> "/_watcher/stats/m?pretty=true"

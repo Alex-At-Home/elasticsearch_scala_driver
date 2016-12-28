@@ -4,12 +4,15 @@ import org.elastic.rest.scala.driver.RestResources._
 import org.elastic.rest.scala.driver.RestBase._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
-import org.elastic.elasticsearch.scala.driver.common.DataModelSearch.MultiSearchOps
+import org.elastic.elasticsearch.scala.driver.common.DataModelSearch.{MultiSearchOps, SearchResultsBase}
 import org.elastic.elasticsearch.scala.driver.common.SearchModifierGroups._
+import org.elastic.elasticsearch.scala.driver.common.DataModelSearch._
 
 /** Resources to retrieve data from Elasticsearch
   */
 trait ApiModelSearch {
+
+  //TODO: need to handle scroll?
 
   // 2] Search API
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html
@@ -24,8 +27,8 @@ trait ApiModelSearch {
     */
   case class `/_search`()
     extends `tree:/_search`
-    with RestReadable[UriQueryParams]
-    with RestWithDataReadable[QueryParams]
+    with RestReadableT[UriQueryParams, SearchResultsBase]
+    with RestWithDataReadableTT[QueryParams, QueryBodyBase, SearchResultsBase]
     with RestResource
 
   /** Search all indexes and the specified types, based on the query object written to the
@@ -36,8 +39,8 @@ trait ApiModelSearch {
     * @param types The types over which to search
     */
   case class `/_all/$types/_search`(types: String*) extends RestResource
-    with RestReadable[UriQueryParams]
-    with RestWithDataReadable[QueryParams]
+    with RestReadableT[UriQueryParams, SearchResultsBase]
+    with RestWithDataReadableTT[QueryParams, QueryBodyBase, SearchResultsBase]
 
   /** Search the specified indexes and all types, based on the query object written to the
     * resource
@@ -47,8 +50,8 @@ trait ApiModelSearch {
     * @param indexes The indexes over which to search
     */
   case class `/$indexes/_search`(indexes: String*) extends RestResource
-    with RestReadable[UriQueryParams]
-    with RestWithDataReadable[QueryParams]
+    with RestReadableT[UriQueryParams, SearchResultsBase]
+    with RestWithDataReadableTT[QueryParams, QueryBodyBase, SearchResultsBase]
 
   /** Search the specified indexes and types, based on the query object written to the
     * resource
@@ -59,8 +62,8 @@ trait ApiModelSearch {
     * @param types The types over which to search
     */
   case class `/$indexes/$types/_search`(indexes: Seq[String], types: Seq[String]) extends RestResource
-    with RestReadable[UriQueryParams]
-    with RestWithDataReadable[QueryParams]
+    with RestReadableT[UriQueryParams, SearchResultsBase]
+    with RestWithDataReadableTT[QueryParams, QueryBodyBase, SearchResultsBase]
 
   // 2.2] Search Templates
   // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template.html
@@ -70,7 +73,7 @@ trait ApiModelSearch {
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template.html Read Docs]]
     */
   case class `/_search/template`() extends `tree:/_search/template`
-    with RestWithDataReadable[StandardParams]
+    with RestWithDataReadableUT[StandardParams, SearchResultsBase]
     with RestResource
 
   /** Retrieves/stores/deletes templates from/to/from the .scripts index

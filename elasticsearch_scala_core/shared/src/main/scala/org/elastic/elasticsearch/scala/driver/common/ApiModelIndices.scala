@@ -2,6 +2,7 @@ package org.elastic.elasticsearch.scala.driver.common
 
 import org.elastic.rest.scala.driver.RestResources._
 import org.elastic.rest.scala.driver.RestBase._
+import org.elastic.elasticsearch.scala.driver.common.DataModelIndices._
 import org.elastic.elasticsearch.scala.driver.common.ApiModelNavigationTree._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
 import org.elastic.elasticsearch.scala.driver.common.IndicesModifierGroups._
@@ -169,7 +170,7 @@ trait ApiModelIndices {
     * [[https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html Docs]]
     */
   case class `/_aliases`()
-    extends RestWritable[StandardParams]
+    extends RestWritableTU[StandardParams, AliasControlBase]
       with RestResource
 
   /** Retrieve/check the aliases across all aliases

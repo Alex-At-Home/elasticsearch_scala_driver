@@ -1,11 +1,13 @@
 
 /target/
 /elasticsearch_scala_core/target/
-/elasticsearch_scala_core/shared/target/
 /elasticsearch_scala_core/js/target/
 /elasticsearch_scala_core/jvm/target/
 /elasticsearch_scala_java_client/target/
 /elasticsearch_scala_shell/target/
+/elasticsearch_json_circe_module/target/
+/elasticsearch_json_circe_module/jvm/target/
+/elasticsearch_json_circe_module/js/target/
 /doc/target/
 /.idea/
 /project/target/

@@ -34,7 +34,7 @@ latest.`/_nodes/stats`().read().execS()
 import org.elastic.rest.scala.driver.json.CirceJsonModule._
 
 // Hierarchical-style syntax, sync request, JSON format
-latest()._nodes.stats.read().resultJ()
+latest._nodes.stats.read().resultJ()
 // Success(io.circe.Json({"cluster_name":"<<CLUSTER_NAME>>","nodes":{"<<NODE1_ID>>":{"timestamp":1476827049189...
 
 import org.elastic.rest.scala.driver.json.CirceTypeModule._
@@ -54,7 +54,7 @@ latest().read().exec()
 
 //TODO import for (Xpack) data model here?
 
-val monitorConfig = MarvelConfig(Map("test"->MarvelExporterLocalConfig()), interval = Some("300s"))
+val monitorConfig = MarvelConfig(Map("test" -> MarvelExporterLocalConfig()), interval = Some("300s"))
 
 //(example deserialization):
 monitorConfig.fromTyped

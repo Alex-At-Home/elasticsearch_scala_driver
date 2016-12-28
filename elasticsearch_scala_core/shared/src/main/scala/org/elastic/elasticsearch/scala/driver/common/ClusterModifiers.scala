@@ -3,7 +3,23 @@ package org.elastic.elasticsearch.scala.driver.common
 import org.elastic.elasticsearch.scala.driver.common.ClusterModifiers._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifiers._
 import org.elastic.elasticsearch.scala.driver.common.CommonModifierGroups._
-import org.elastic.rest.scala.driver.RestBase.{BaseDriverOp, Modifier, Param}
+import org.elastic.rest.scala.driver.RestBase._
+
+/** Value class representing the different cluster statuses */
+case class ClusterStatus(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Available cluster statuses */
+object ClusterStatus {
+  @Constant val red, green, yellow = ToStringAnyVal.AutoGenerate[ClusterStatus]
+}
+
+/** Value class representing the different thread types to sample */
+case class SampleType(value: String) extends AnyVal with ToStringAnyVal[String]
+/** Available thread types */
+object SampleType {
+  @Constant val cpu, block = ToStringAnyVal.AutoGenerate[SampleType]
+  /** Threads in  the `"wait"` state (_ appended because `wait` is reserved) */
+  val wait_ : SampleType = SampleType("wait")
+}
 
 /** Parameters for resources to monitor and manage top level Elasticsearch cluster attributes
   */
@@ -17,7 +33,7 @@ object ClusterModifiers {
       *
       * @param status "red", "yellow" or "green", the status to wait for
       */
-    @Param def wait_for_status(status: String): this.type = Modifier.Body
+    @Param def wait_for_status(status: ClusterStatus): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */
@@ -104,7 +120,7 @@ object ClusterModifiers {
       * @param `type` The type to sample, defaults to `cpu`, but supports `wait` and `block`
       *               to see hot threads that are in wait or block state.
       */
-    @Param def `type`(`type`: String): this.type = Modifier.Body
+    @Param def `type`(`type`: SampleType): this.type = Modifier.Body
   }
 
   /** (modifier - see method for details) */

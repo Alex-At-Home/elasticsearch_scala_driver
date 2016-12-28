@@ -6,6 +6,20 @@ import org.elastic.rest.scala.driver.RestBase._
 object ApiModelClusterTests  extends TestSuite {
 
   val tests = this {
+    "Enums" - {
+      "ClusterStatus" - {
+        ClusterStatus("test").toString ==> "test"
+        ClusterStatus.red ==> ClusterStatus("red")
+        ClusterStatus.green ==> ClusterStatus("green")
+        ClusterStatus.yellow ==> ClusterStatus("yellow")
+      }
+      "SampleType" - {
+        SampleType("test").toString ==> "test"
+        SampleType.cpu ==> SampleType("cpu")
+        SampleType.block ==> SampleType("block")
+        SampleType.wait_ ==> SampleType("wait")
+      }
+    }
     "Basic checking for all the cluster resources" - {
 
       object api extends ApiModelCommon
@@ -14,16 +28,16 @@ object ApiModelClusterTests  extends TestSuite {
       // Cluster health
 
       clusters.`/_cluster/health`().read().human(true)
-        .local(true).timeout("1m").level("red").wait_for_active_shards(1)
-        .wait_for_nodes(2).wait_for_relocating_shards(1).wait_for_status("red")
+        .local(true).timeout("1m").level(StatsLevel("red")).wait_for_active_shards(1)
+        .wait_for_nodes(2).wait_for_relocating_shards(1).wait_for_status(ClusterStatus.red)
         .getUrl ==> "/_cluster/health?human=true&local=true&timeout=1m&level=red&wait_for_active_shards=1" +
                     "&wait_for_nodes=2&wait_for_relocating_shards=1&wait_for_status=red"
 
       api.`/`()._cluster.health.read().wait_for_nodes("3").getUrl ==> "/_cluster/health?wait_for_nodes=3"
 
       clusters.`/_cluster/health/$indexes`("i1", "i2").read().human(true)
-        .local(true).timeout("1m").level("red").wait_for_active_shards(1)
-        .wait_for_nodes(2).wait_for_relocating_shards(1).wait_for_status("red")
+        .local(true).timeout("1m").level(StatsLevel("red")).wait_for_active_shards(1)
+        .wait_for_nodes(2).wait_for_relocating_shards(1).wait_for_status(ClusterStatus.red)
         .getUrl ==> "/_cluster/health/i1,i2?human=true&local=true&timeout=1m&level=red&wait_for_active_shards=1" +
         "&wait_for_nodes=2&wait_for_relocating_shards=1&wait_for_status=red"
 
@@ -101,13 +115,13 @@ object ApiModelClusterTests  extends TestSuite {
 
       clusters.`/_nodes/hot_threads`().read()
         .human(true)
-        .threads(3).interval("in").`type`("ty").ignore_idle_threads(true)
+        .threads(3).interval("in").`type`(SampleType("ty")).ignore_idle_threads(true)
         .getUrl ==> "/_nodes/hot_threads?human=true&threads=3&interval=in&type=ty&ignore_idle_threads=true"
       api.`/`()._nodes.hot_threads.read().getUrl ==> "/_nodes/hot_threads"
 
       clusters.`/_nodes/$nodes/hot_threads`("n1", "n2").read()
         .human(false)
-        .threads(2).interval("val").`type`("tpe").ignore_idle_threads(false)
+        .threads(2).interval("val").`type`(SampleType("tpe")).ignore_idle_threads(false)
         .getUrl ==> "/_nodes/n1,n2/hot_threads?human=false&threads=2&interval=val&type=tpe&ignore_idle_threads=false"
       api.`/`()._nodes.$("n1", "n2").hot_threads.read().getUrl ==> "/_nodes/n1,n2/hot_threads"
 

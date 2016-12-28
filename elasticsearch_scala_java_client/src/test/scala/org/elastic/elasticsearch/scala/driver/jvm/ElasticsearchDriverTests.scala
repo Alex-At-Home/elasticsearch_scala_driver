@@ -10,7 +10,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
 import org.apache.http.message.BasicHeader
 import org.elastic.elasticsearch.driver.utils.ServerUtils
-import org.elastic.elasticsearch.scala.driver.versions.Versions
+import org.elastic.elasticsearch.scala.driver.versions.ApiModelVersions
 import org.elastic.rest.scala.driver.RestBase._
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback
 import utest._
@@ -93,33 +93,33 @@ object ElasticsearchDriverTests extends TestSuite {
 
         // Basic check
         {
-          val futureResult = driver.exec(Versions.latest.`/`().read())
+          val futureResult = driver.exec(ApiModelVersions.latest.`/`().read())
           val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ false false"
         }
         // Basic check (default header)
         {
-          val futureResult = driver2.exec(Versions.latest.`/`().read())
+          val futureResult = driver2.exec(ApiModelVersions.latest.`/`().read())
           val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ true false"
         }
         // custom headers
         {
           val futureResult = driver2.exec(
-            Versions.latest.`/`().read().h("x-request: test2"))
+            ApiModelVersions.latest.`/`().read().h("x-request: test2"))
           val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ true true"
         }
         // URL params
         {
-          val futureResult = driver.exec(Versions.latest.`/`().read().pretty(true))
+          val futureResult = driver.exec(ApiModelVersions.latest.`/`().read().pretty(true))
           val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/pretty=true"
         }
         // Check errors
         {
           val futureResult =
-            driver.exec(Versions.latest.`/$uri`("/not_present").read())
+            driver.exec(ApiModelVersions.latest.`/$uri`("/not_present").read())
                 .recover {
                   case ex: RestServerException => s"${ex.code}"
                 }
@@ -132,21 +132,21 @@ object ElasticsearchDriverTests extends TestSuite {
         // Check that thread count at least doesn't break anything...
         {
           val threadDriver = driver.createCopy.withThreads(2).start()
-          val futureResult = threadDriver.exec(Versions.latest.`/`().read())
+          val futureResult = threadDriver.exec(ApiModelVersions.latest.`/`().read())
           val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ false false"
         }
         // Check SSL (should at make it fail!)
         {
           val sslDriver = driver.createCopy.withUrls(s"https://localhost:$port").start()
-          val futureResult = sslDriver.exec(Versions.latest.`/`().read())
+          val futureResult = sslDriver.exec(ApiModelVersions.latest.`/`().read())
           val retVal = scala.util.Try { Await.ready(futureResult, Duration("5 seconds")) }
           retVal.isFailure ==> true
         }
         // Check basic auth:
         {
           val authDriver = driver.createCopy.withBasicAuth("user", "pass").start()
-          val futureResult = authDriver.exec(Versions.latest.`/`().read())
+          val futureResult = authDriver.exec(ApiModelVersions.latest.`/`().read())
           val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ false false Basic dXNlcjpwYXNz"
         }
@@ -156,13 +156,13 @@ object ElasticsearchDriverTests extends TestSuite {
           val authDriver = driver.createCopy.withAdvancedConfig(
             List(client => client.setDefaultHeaders(List(new BasicHeader("x-default", "test1")))))
             .start()
-          val futureResult = authDriver.exec(Versions.latest.`/`().read())
+          val futureResult = authDriver.exec(ApiModelVersions.latest.`/`().read())
           val retVal = Await.result(futureResult, Duration("5 seconds"))
           retVal ==> "rx:/ true false"
         }
 
         // Method coverage
-        Versions.latest.`/$uri`("test_index")
+        ApiModelVersions.latest.`/$uri`("test_index")
       }
       finally {
         server.die()
