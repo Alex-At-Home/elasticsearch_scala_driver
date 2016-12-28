@@ -24,7 +24,8 @@ object MyBuild extends Build {
   import BuildSettings._
 
   // (Node.js is faster, rhino doesn't require any additional deps)
-  val useRhino = false
+  //(running into issues using NodeJS on TravisCI: https://github.com/scala-js/scala-js/issues/2378):
+  val useRhino = true
 
   // Dependencies:
 
